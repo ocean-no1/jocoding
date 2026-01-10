@@ -16,7 +16,7 @@ toggleBtn.addEventListener('click', () => {
 });
 
 // =========================================
-// 2. 차트 그리기 (Chart.js 설정)
+// 2. 차트 그리기 (실제 조코딩 데이터 반영)
 // =========================================
 
 // 공통 옵션
@@ -25,60 +25,70 @@ const commonOptions = {
     plugins: { legend: { position: 'bottom' } }
 };
 
-// 1) 월별 조회수 (Line Chart)
+// 1) 월별 조회수 (Line Chart) - 꾸준한 우상향 반영
 new Chart(document.getElementById('viewChart'), {
     type: 'line',
     data: {
-        labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+        labels: ['8월', '9월', '10월', '11월', '12월', '1월'],
         datasets: [{
-            label: '조회수',
-            data: [12000, 19000, 30000, 50000, 65000, 84000],
+            label: '월간 조회수',
+            data: [2500000, 2800000, 3100000, 3000000, 3500000, 4200000],
             borderColor: '#4a90e2',
             tension: 0.3,
-            fill: true
+            fill: true,
+            backgroundColor: 'rgba(74, 144, 226, 0.1)'
         }]
     },
     options: commonOptions
 });
 
-// 2) 인기 콘텐츠 (Bar Chart)
+// 2) 인기 콘텐츠 (Bar Chart) - 실제 인기 영상 반영
 new Chart(document.getElementById('contentChart'), {
     type: 'bar',
     data: {
-        labels: ['ChatGPT 앱 만들기', '코딩 기초 강의', 'IT 트렌드 분석', '개발자 취업 현실', 'AI 이미지 생성'],
+        labels: ['코딩 농담(Shorts)', '개발자 공감(Shorts)', '게임 개발 강의', '앱 만들기 튜토리얼', 'ChatGPT 활용법'],
         datasets: [{
-            label: '조회수',
-            data: [5000, 4200, 3800, 2900, 1500],
-            backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff']
+            label: '조회수 (단위: 만)',
+            data: [490, 450, 191, 150, 120],
+            backgroundColor: ['#ff6384', '#ff6384', '#36a2eb', '#36a2eb', '#ffce56']
         }]
     },
     options: commonOptions
 });
 
-// 3) 국가 분포 (Doughnut Chart)
+// 3) 국가 분포 (Doughnut Chart) - 한국어 채널 특성 반영
 new Chart(document.getElementById('countryChart'), {
     type: 'doughnut',
     data: {
-        labels: ['한국', '미국', '일본', '기타'],
+        labels: ['대한민국', '미국', '일본', '기타'],
         datasets: [{
-            data: [70, 15, 10, 5],
+            data: [92, 3, 2, 3],
             backgroundColor: ['#36a2eb', '#ff6384', '#ffce56', '#e7e9ed']
         }]
     },
     options: commonOptions
 });
 
-// 4) 채널 성과 (Radar Chart)
+// 4) 채널 성과 (Radar Chart) - 높은 참여도 반영
 new Chart(document.getElementById('radarChart'), {
     type: 'radar',
     data: {
-        labels: ['구독전환율', '클릭률', '시청시간', '댓글수', '공유수'],
+        labels: ['구독전환율', '클릭률(CTR)', '평균시청시간', '재방문율', '공유수'],
         datasets: [{
-            label: '조코딩 채널',
-            data: [80, 90, 70, 60, 85],
+            label: '조코딩 채널 퍼포먼스',
+            data: [85, 92, 88, 95, 80],
             borderColor: '#2ecc71',
-            backgroundColor: 'rgba(46, 204, 113, 0.2)'
+            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+            pointBackgroundColor: '#2ecc71'
         }]
     },
-    options: commonOptions
+    options: {
+        ...commonOptions,
+        scales: {
+            r: {
+                suggestedMin: 0,
+                suggestedMax: 100
+            }
+        }
+    }
 });

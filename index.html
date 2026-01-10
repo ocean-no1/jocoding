@@ -1,14 +1,66 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Lens K | Analytics Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+
+    <div class="container">
+        <header>
+            <h1>📊 Public Lens K Dashboard</h1>
+            <span class="badge">LIVE DATA</span>
+        </header>
+
+        <div class="summary-grid">
+            <div class="card">
+                <h3>총 구독자 수</h3>
+                <div class="number">12,450</div>
+                <div class="change up">▲ 15% (지난달 대비)</div>
+            </div>
+            <div class="card">
+                <h3>누적 조회수</h3>
+                <div class="number">842,000</div>
+                <div class="change up">▲ 23% (지난달 대비)</div>
+            </div>
+            <div class="card">
+                <h3>평균 시청 지속 시간</h3>
+                <div class="number">4:12</div>
+                <div class="change down">▼ 1.2% (지난달 대비)</div>
+            </div>
+            <div class="card">
+                <h3>예상 수익 (월)</h3>
+                <div class="number">$ 1,250</div>
+                <div class="change up">▲ 5% (지난달 대비)</div>
+            </div>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-container">
+                <div class="chart-title">📈 월별 조회수 추이</div>
+                <canvas id="viewChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">🏆 인기 콘텐츠 TOP 5</div>
+                <canvas id="contentChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">🌍 시청자 국가 분포</div>
+                <canvas id="countryChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">⚡ 채널 성과 지표</div>
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+    </div>
+restar
+    <script src="main.js"></script>
 </body>
 </html>

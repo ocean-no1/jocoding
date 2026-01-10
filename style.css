@@ -1,1 +1,89 @@
-/* Add styles here */
+/* 1. 다크 모드 & 기본 설정 */
+        :root {
+            --bg-dark: #1e1e2f;
+            --card-bg: #27293d;
+            --text-main: #ffffff;
+            --text-sub: #9a9a9a;
+            --accent: #e14eca; /* 핫핑크 포인트 */
+            --accent-blue: #1d8cf8;
+            --accent-green: #00f2c3;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Pretendard', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 2. 헤더 영역 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+        }
+        
+        h1 { margin: 0; font-size: 1.5rem; }
+        .badge {
+            background: var(--accent-blue);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* 3. 상단 요약 카드 (Grid) */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .card h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-sub); }
+        .card .number { font-size: 1.8rem; font-weight: bold; margin-bottom: 5px; }
+        .card .change { font-size: 0.8rem; }
+        .up { color: var(--accent-green); }
+        .down { color: var(--accent); }
+
+        /* 4. 차트 영역 레이아웃 */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-container {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            height: 350px; /* 차트 높이 고정 */
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        /* 반응형 처리 */
+        @media (max-width: 768px) {
+            .chart-grid { grid-template-columns: 1fr; }
+        }

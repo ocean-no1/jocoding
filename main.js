@@ -45,7 +45,7 @@ new Chart(document.getElementById('viewChart'), {
 new Chart(document.getElementById('contentChart'), {
     type: 'bar',
     data: {
-        labels: ['서울 맛집', '한강 브이로그', '코딩 튜토리얼', '여행', '언박싱'],
+        labels: ['ChatGPT 앱 만들기', '코딩 기초 강의', 'IT 트렌드 분석', '개발자 취업 현실', 'AI 이미지 생성'],
         datasets: [{
             label: '조회수',
             data: [5000, 4200, 3800, 2900, 1500],
@@ -74,7 +74,7 @@ new Chart(document.getElementById('radarChart'), {
     data: {
         labels: ['구독전환율', '클릭률', '시청시간', '댓글수', '공유수'],
         datasets: [{
-            label: '내 채널',
+            label: '조코딩 채널',
             data: [80, 90, 70, 60, 85],
             borderColor: '#2ecc71',
             backgroundColor: 'rgba(46, 204, 113, 0.2)'

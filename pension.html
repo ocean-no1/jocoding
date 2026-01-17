@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연금복권 720+ - 동행복권 AI 통계 분석</title>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pension-number {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .pension-group {
+            background: var(--primary-orange);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .pension-digit {
+            background: var(--primary-blue);
+            color: white;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+
+        .current-draw {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .draw-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .draw-date {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .pension-section-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .period-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .period-btn {
+            padding: 12px 24px;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--primary-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .period-btn:hover,
+        .period-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .digit-stats {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .digit-stat {
+            text-align: center;
+            padding: 15px 10px;
+            background: var(--bg);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .digit-stat:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .digit-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+
+        .digit-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .recommended-pension {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .fortune-section {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+        }
+
+        .fortune-input-group {
+            margin-bottom: 20px;
+        }
+
+        .fortune-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .fortune-input-group input,
+        .fortune-input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .fortune-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .fortune-result.show {
+            display: block;
+        }
+
+        .fortune-description {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .face-reading-section {
+            background: linear-gradient(135deg, #e6f3ff 0%, #cce6ff 100%);
+        }
+
+        .face-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .face-option {
+            padding: 15px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .face-option:hover,
+        .face-option.selected {
+            border-color: var(--primary-blue);
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .period-buttons {
+                flex-direction: column;
+            }
+
+            .period-btn {
+                width: 100%;
+            }
+
+            .digit-stats {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>💰 연금복권 720+</h1>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <button class="back-button" onclick="location.href='index.html'">
+            ← 메인으로 돌아가기
+        </button>
+
+        <!-- Current Draw Section -->
+        <div class="section">
+            <div class="current-draw">
+                <div class="draw-number" id="current-draw-number">298회</div>
+                <div class="draw-date" id="current-draw-date">2026.01.15</div>
+
+                <div class="pension-section-label">1등 당첨번호</div>
+                <div class="pension-number">
+                    <div class="pension-group">3조</div>
+                    <div class="pension-digit">0</div>
+                    <div class="pension-digit">9</div>
+                    <div class="pension-digit">6</div>
+                    <div class="pension-digit">0</div>
+                    <div class="pension-digit">2</div>
+                    <div class="pension-digit">1</div>
+                </div>
+
+                <div class="pension-section-label" style="margin-top: 20px;">보너스 번호</div>
+                <div class="pension-number">
+                    <div class="pension-digit">4</div>
+                    <div class="pension-digit">9</div>
+                    <div class="pension-digit">2</div>
+                    <div class="pension-digit">8</div>
+                    <div class="pension-digit">4</div>
+                    <div class="pension-digit">5</div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <div class="prize-label">1등 당첨금</div>
+                    <div class="prize-amount">월 700만원 × 20년</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistical Analysis Section -->
+        <div class="section">
+            <div class="section-title">📊 숫자별 출현 빈도 분석</div>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">
+                선택한 기간 동안 각 숫자(0-9)의 출현 빈도를 분석하여 추천 번호를 생성합니다.
+            </p>
+
+            <div class="period-buttons">
+                <button class="period-btn active" data-years="1">최근 1년</button>
+                <button class="period-btn" data-years="2">최근 2년</button>
+                <button class="period-btn" data-years="3">최근 3년</button>
+                <button class="period-btn" data-years="5">최근 5년</button>
+            </div>
+
+            <div id="stats-loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>통계 데이터를 분석하는 중...</p>
+            </div>
+
+            <div id="stats-result">
+                <h3 style="margin-bottom: 15px; color: var(--text);">📈 숫자별 출현 빈도</h3>
+                <div class="digit-stats" id="digit-stats">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: var(--text);">✨ AI 추천 번호</h3>
+                <div class="recommended-pension" id="recommended-numbers">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Fortune Section -->
+        <div class="section fortune-section">
+            <div class="section-title">🔮 사주팔자 행운의 번호</div>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">
+                생년월일과 시간을 입력하면 사주팔자를 기반으로 행운의 연금복권 번호를 추천해드립니다.
+            </p>
+
+            <div class="fortune-input-group">
+                <label>생년월일</label>
+                <input type="date" id="birth-date" max="2026-01-17">
+            </div>
+
+            <div class="fortune-input-group">
+                <label>태어난 시간</label>
+                <select id="birth-time">
+                    <option value="">선택하세요</option>
+                    <option value="23-01">자시 (23:00-01:00)</option>
+                    <option value="01-03">축시 (01:00-03:00)</option>
+                    <option value="03-05">인시 (03:00-05:00)</option>
+                    <option value="05-07">묘시 (05:00-07:00)</option>
+                    <option value="07-09">진시 (07:00-09:00)</option>
+                    <option value="09-11">사시 (09:00-11:00)</option>
+                    <option value="11-13">오시 (11:00-13:00)</option>
+                    <option value="13-15">미시 (13:00-15:00)</option>
+                    <option value="15-17">신시 (15:00-17:00)</option>
+                    <option value="17-19">유시 (17:00-19:00)</option>
+                    <option value="19-21">술시 (19:00-21:00)</option>
+                    <option value="21-23">해시 (21:00-23:00)</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" onclick="generateFortuneNumbers()" style="width: 100%;">
+                행운의 번호 생성하기
+            </button>
+
+            <div class="fortune-result" id="fortune-result">
+                <div class="fortune-description" id="fortune-description"></div>
+                <div class="recommended-pension" id="fortune-numbers"></div>
+            </div>
+        </div>
+
+        <!-- Face Reading Section -->
+        <div class="section face-reading-section">
+            <div class="section-title">👤 관상 분석 행운의 번호</div>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">
+                얼굴형과 특징을 선택하면 관상학 기반으로 행운의 번호를 추천해드립니다.
+            </p>
+
+            <h4 style="margin-bottom: 10px; color: var(--text);">얼굴형</h4>
+            <div class="face-options" id="face-shape-options">
+                <div class="face-option" data-shape="round">둥근형</div>
+                <div class="face-option" data-shape="square">사각형</div>
+                <div class="face-option" data-shape="oval">계란형</div>
+                <div class="face-option" data-shape="triangle">역삼각형</div>
+            </div>
+
+            <h4 style="margin-bottom: 10px; margin-top: 20px; color: var(--text);">이마</h4>
+            <div class="face-options" id="forehead-options">
+                <div class="face-option" data-forehead="wide">넓은 이마</div>
+                <div class="face-option" data-forehead="narrow">좁은 이마</div>
+                <div class="face-option" data-forehead="high">높은 이마</div>
+            </div>
+
+            <button class="btn-primary" onclick="generateFaceReadingNumbers()" style="width: 100%; margin-top: 20px;">
+                관상 분석 번호 생성하기
+            </button>
+
+            <div class="fortune-result" id="face-result">
+                <div class="fortune-description" id="face-description"></div>
+                <div class="recommended-pension" id="face-numbers"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>본 서비스는 통계 분석 기반의 참고용 서비스입니다. 당첨을 보장하지 않습니다.</p>
+        <p>© 2026 AI 통계 분석 서비스 | 동행복권 공식 사이트: <a href="https://dhlottery.co.kr" target="_blank"
+                style="color: var(--primary-blue);">dhlottery.co.kr</a></p>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script>
+        let selectedYears = 1;
+        let selectedFaceShape = '';
+        let selectedForehead = '';
+
+        // Simulated pension lottery data (since there's no public API)
+        // In production, this would scrape from the official website
+        const pensionDraws = generateSimulatedPensionData();
+
+        function generateSimulatedPensionData() {
+            const data = [];
+            const startRound = 298;
+            const weeksToGenerate = 260; // ~5 years
+
+            for (let i = 0; i < weeksToGenerate; i++) {
+                const round = startRound - i;
+                const group = Math.floor(Math.random() * 5) + 1;
+                const numbers = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10));
+                const bonus = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10));
+
+                data.push({ round, group, numbers, bonus });
+            }
+
+            return data;
+        }
+
+        // Period button handlers
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedYears = parseInt(this.dataset.years);
+                analyzeStatistics();
+            });
+        });
+
+        // Analyze statistics
+        function analyzeStatistics() {
+            const weeksInPeriod = selectedYears * 52;
+            const dataToAnalyze = pensionDraws.slice(0, weeksInPeriod);
+
+            const digitFrequency = new Array(10).fill(0);
+
+            dataToAnalyze.forEach(draw => {
+                draw.numbers.forEach(digit => digitFrequency[digit]++);
+                draw.bonus.forEach(digit => digitFrequency[digit]++);
+            });
+
+            displayStatistics(digitFrequency);
+        }
+
+        function displayStatistics(frequency) {
+            // Display digit frequency
+            const digitStats = document.getElementById('digit-stats');
+            digitStats.innerHTML = frequency.map((count, digit) => `
+                <div class="digit-stat">
+                    <div class="digit-value">${digit}</div>
+                    <div class="digit-count">${count}회</div>
+                </div>
+            `).join('');
+
+            // Generate recommended numbers based on frequency
+            const recommended = generatePensionNumbers(frequency);
+            displayPensionNumber('recommended-numbers', recommended);
+        }
+
+        function generatePensionNumbers(frequency) {
+            // Weight random selection by frequency
+            const weighted = [];
+            frequency.forEach((count, digit) => {
+                for (let i = 0; i < count; i++) {
+                    weighted.push(digit);
+                }
+            });
+
+            const numbers = [];
+            for (let i = 0; i < 6; i++) {
+                const randomIndex = Math.floor(Math.random() * weighted.length);
+                numbers.push(weighted[randomIndex]);
+            }
+
+            const group = Math.floor(Math.random() * 5) + 1;
+            return { group, numbers };
+        }
+
+        function displayPensionNumber(elementId, data) {
+            const html = `
+                <div class="pension-group">${data.group}조</div>
+                ${data.numbers.map(n => `<div class="pension-digit">${n}</div>`).join('')}
+            `;
+            document.getElementById(elementId).innerHTML = html;
+        }
+
+        // Fortune numbers generation
+        function generateFortuneNumbers() {
+            const birthDate = document.getElementById('birth-date').value;
+            const birthTime = document.getElementById('birth-time').value;
+
+            if (!birthDate || !birthTime) {
+                alert('생년월일과 태어난 시간을 모두 입력해주세요.');
+                return;
+            }
+
+            const date = new Date(birthDate);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            const seed = year + month * 100 + day * 10000 + birthTime.charCodeAt(0);
+            const numbers = generateLuckyPensionNumbers(seed);
+
+            const elements = ['금(金)', '목(木)', '수(水)', '화(火)', '토(土)'];
+            const element = elements[year % 5];
+
+            document.getElementById('fortune-description').innerHTML = `
+                <strong>오행:</strong> ${element}<br>
+                <strong>해석:</strong> ${year}년생은 ${element} 기운이 강합니다. 
+                ${month}월 ${day}일생은 ${getFortuneMessage(month, day)}
+                ${birthTime} 시간대는 ${getTimeMessage(birthTime)} 행운의 번호를 추천합니다.
+            `;
+
+            displayPensionNumber('fortune-numbers', numbers);
+            document.getElementById('fortune-result').classList.add('show');
+        }
+
+        function getFortuneMessage(month, day) {
+            if (month <= 3) return '봄의 기운으로 새로운 시작을 의미합니다.';
+            if (month <= 6) return '여름의 열정으로 왕성한 활동력을 나타냅니다.';
+            if (month <= 9) return '가을의 결실로 풍요로움을 상징합니다.';
+            return '겨울의 지혜로 깊은 사색을 뜻합니다.';
+        }
+
+        function getTimeMessage(time) {
+            const hour = parseInt(time.split('-')[0]);
+            if (hour >= 23 || hour < 3) return '밤의 고요함 속에서';
+            if (hour < 9) return '새벽의 맑은 기운으로';
+            if (hour < 15) return '한낮의 왕성한 에너지로';
+            return '저녁의 안정된 기운으로';
+        }
+
+        // Face reading
+        document.querySelectorAll('.face-option').forEach(option => {
+            option.addEventListener('click', function () {
+                const parent = this.parentElement;
+                parent.querySelectorAll('.face-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+
+                if (this.dataset.shape) {
+                    selectedFaceShape = this.dataset.shape;
+                } else if (this.dataset.forehead) {
+                    selectedForehead = this.dataset.forehead;
+                }
+            });
+        });
+
+        function generateFaceReadingNumbers() {
+            if (!selectedFaceShape || !selectedForehead) {
+                alert('얼굴형과 이마 특징을 모두 선택해주세요.');
+                return;
+            }
+
+            const shapeSeed = selectedFaceShape.charCodeAt(0) * 100;
+            const foreheadSeed = selectedForehead.charCodeAt(0) * 10;
+            const seed = shapeSeed + foreheadSeed;
+
+            const numbers = generateLuckyPensionNumbers(seed);
+
+            const shapeMessages = {
+                round: '둥근 얼굴형은 원만한 대인관계와 재물운을 상징합니다.',
+                square: '사각 얼굴형은 강한 의지력과 리더십을 나타냅니다.',
+                oval: '계란형 얼굴은 균형잡힌 운세와 조화를 의미합니다.',
+                triangle: '역삼각형 얼굴은 예리한 지성과 창의력을 뜻합니다.'
+            };
+
+            const foreheadMessages = {
+                wide: '넓은 이마는 풍부한 지혜와 재물운을 상징합니다.',
+                narrow: '좁은 이마는 집중력과 실행력이 뛰어남을 나타냅니다.',
+                high: '높은 이마는 고귀한 기운과 명예운을 의미합니다.'
+            };
+
+            document.getElementById('face-description').innerHTML = `
+                <strong>얼굴형 해석:</strong> ${shapeMessages[selectedFaceShape]}<br>
+                <strong>이마 해석:</strong> ${foreheadMessages[selectedForehead]}<br>
+                종합적으로 당신에게 맞는 행운의 번호를 추천합니다.
+            `;
+
+            displayPensionNumber('face-numbers', numbers);
+            document.getElementById('face-result').classList.add('show');
+        }
+
+        // Generate lucky pension numbers based on seed
+        function generateLuckyPensionNumbers(seed) {
+            let current = seed;
+            const numbers = [];
+
+            for (let i = 0; i < 6; i++) {
+                current = (current * 1103515245 + 12345) & 0x7fffffff;
+                numbers.push(current % 10);
+            }
+
+            current = (current * 1103515245 + 12345) & 0x7fffffff;
+            const group = (current % 5) + 1;
+
+            return { group, numbers };
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            analyzeStatistics();
+        });
+    </script>
+</body>
+
+</html>

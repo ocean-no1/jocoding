@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로또 6/45 - 동행복권 AI 통계 분석</title>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <style>
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .period-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .period-btn {
+            padding: 12px 24px;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--primary-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .period-btn:hover,
+        .period-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .stat-ball {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: var(--bg);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .stat-ball:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-ball .ball {
+            margin-bottom: 8px;
+        }
+
+        .stat-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .recommended-numbers {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .recommended-numbers .ball {
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+        }
+
+        .fortune-section {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+        }
+
+        .fortune-input-group {
+            margin-bottom: 20px;
+        }
+
+        .fortune-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .fortune-input-group input,
+        .fortune-input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .fortune-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .fortune-result.show {
+            display: block;
+        }
+
+        .fortune-description {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .face-reading-section {
+            background: linear-gradient(135deg, #e6f3ff 0%, #cce6ff 100%);
+        }
+
+        .face-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .face-option {
+            padding: 15px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .face-option:hover,
+        .face-option.selected {
+            border-color: var(--primary-blue);
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .current-draw {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .draw-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .draw-date {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .period-buttons {
+                flex-direction: column;
+            }
+
+            .period-btn {
+                width: 100%;
+            }
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-container.show {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-orange));
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .face-reading-steps {
+            margin-bottom: 30px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--border);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-circle {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .step.active .step-label {
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        /* Face reading disabled state */
+        .face-reading-section.disabled {
+            position: relative;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .disabled-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            border-radius: 16px;
+        }
+
+        .disabled-message {
+            text-align: center;
+            padding: 50px 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .disabled-message p {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 10px 0;
+        }
+
+        .disabled-message small {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .activation-notice {
+            background: linear-gradient(135deg, var(--primary-orange), var(--primary-blue));
+            color: white;
+            padding: 18px 25px;
+            border-radius: 14px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 20px 0;
+            animation: slideDown 0.5s ease-out;
+            transition: opacity 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🎯 로또 6/45</h1>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <button class="back-button" onclick="location.href='index.html'">
+            ← 메인으로 돌아가기
+        </button>
+
+        <!-- Current Draw Section -->
+        <div class="section">
+            <div class="current-draw">
+                <div class="draw-number" id="current-draw-number">최신 회차 로딩 중...</div>
+                <div class="draw-date" id="current-draw-date"></div>
+                <div class="balls-container" id="current-draw-balls">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>최신 당첨번호를 불러오는 중...</p>
+                    </div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <div class="prize-label">1등 당첨금</div>
+                    <div class="prize-amount" id="current-prize">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistical Analysis Section -->
+        <div class="section">
+            <div class="section-title">📊 연도별 통계 분석</div>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">
+                선택한 기간 동안의 당첨번호 빈도를 분석하여 가장 많이 나온 번호를 추천합니다.
+            </p>
+
+            <div class="period-buttons">
+                <button class="period-btn active" data-years="5">최근 5년</button>
+                <button class="period-btn" data-years="10">최근 10년</button>
+                <button class="period-btn" data-years="15">최근 15년</button>
+                <button class="period-btn" data-years="20">최근 20년</button>
+            </div>
+
+            <div id="stats-loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>통계 데이터를 분석하는 중...</p>
+            </div>
+
+            <div id="stats-result" style="display: none;">
+                <h3 style="margin-bottom: 15px; color: var(--text);">📈 번호별 출현 빈도</h3>
+                <div class="stats-grid" id="stats-grid"></div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px; color: var(--text);">✨ AI 추천 번호</h3>
+                <div class="recommended-numbers" id="recommended-numbers"></div>
+            </div>
+        </div>
+
+        <!-- Fortune Section -->
+        <div class="section fortune-section">
+            <div class="section-title">🔮 사주팔자 행운의 번호</div>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">
+                생년월일과 시간을 입력하면 사주팔자를 기반으로 행운의 번호를 추천해드립니다.
+            </p>
+
+            <div class="fortune-input-group">
+                <label>생년월일</label>
+                <input type="date" id="birth-date" max="2026-01-18">
+            </div>
+
+            <div class="fortune-input-group">
+                <label>태어난 시간</label>
+                <div class="time-cards" id="time-selection">
+                    <div class="time-card" data-time="dawn">
+                        <div class="time-icon">🌙</div>
+                        <div class="time-label">새벽</div>
+                        <div class="time-range">23:00-05:00</div>
+                    </div>
+                    <div class="time-card" data-time="morning">
+                        <div class="time-icon">🌅</div>
+                        <div class="time-label">아침</div>
+                        <div class="time-range">05:00-09:00</div>
+                    </div>
+                    <div class="time-card" data-time="noon">
+                        <div class="time-icon">☀️</div>
+                        <div class="time-label">점심</div>
+                        <div class="time-range">09:00-13:00</div>
+                    </div>
+                    <div class="time-card" data-time="afternoon">
+                        <div class="time-icon">🌤️</div>
+                        <div class="time-label">오후</div>
+                        <div class="time-range">13:00-17:00</div>
+                    </div>
+                    <div class="time-card" data-time="evening">
+                        <div class="time-icon">🌆</div>
+                        <div class="time-label">저녁</div>
+                        <div class="time-range">17:00-21:00</div>
+                    </div>
+                    <div class="time-card" data-time="night">
+                        <div class="time-icon">🌃</div>
+                        <div class="time-label">밤</div>
+                        <div class="time-range">21:00-23:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="generateFortuneNumbers()" style="width: 100%;">
+                행운의 번호 생성하기
+            </button>
+
+            <div class="fortune-result" id="fortune-result">
+                <div class="fortune-description" id="fortune-description"></div>
+                <div class="recommended-numbers" id="fortune-numbers"></div>
+            </div>
+        </div>
+
+        <!-- Face Reading Section -->
+        <div class="section face-reading-section">
+            <div class="section-title">👤 관상 분석 행운의 번호</div>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">
+                얼굴 특징을 단계별로 선택하면 AI가 관상학 기반으로 행운의 번호를 추천해드립니다.
+            </p>
+
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">얼굴형</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">이마</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">코</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">눈썹</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Face Shape -->
+            <div class="face-reading-steps" id="step-1" style="display: block;">
+                <h4 style="margin-bottom: 15px; color: var(--text);">얼굴형을 선택하세요</h4>
+                <div class="face-shape-cards">
+                    <div class="face-card" data-value="round" onclick="selectFaceFeature('shape', 'round', this)">
+                        <div class="face-icon">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="35" fill="var(--primary-blue)" opacity="0.3"
+                                    stroke="var(--primary-blue)" stroke-width="2" />
+                            </svg>
+                        </div>
+                        <div class="face-label">둥근형</div>
+                    </div>
+                    <div class="face-card" data-value="square" onclick="selectFaceFeature('shape', 'square', this)">
+                        <div class="face-icon">
+                            <svg viewBox="0 0 100 100">
+                                <rect x="20" y="20" width="60" height="60" fill="var(--primary-blue)" opacity="0.3"
+                                    stroke="var(--primary-blue)" stroke-width="2" />
+                            </svg>
+                        </div>
+                        <div class="face-label">사각형</div>
+                    </div>
+                    <div class="face-card" data-value="oval" onclick="selectFaceFeature('shape', 'oval', this)">
+                        <div class="face-icon">
+                            <svg viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="50" rx="28" ry="40" fill="var(--primary-blue)" opacity="0.3"
+                                    stroke="var(--primary-blue)" stroke-width="2" />
+                            </svg>
+                        </div>
+                        <div class="face-label">계란형</div>
+                    </div>
+                    <div class="face-card" data-value="triangle" onclick="selectFaceFeature('shape', 'triangle', this)">
+                        <div class="face-icon">
+                            <svg viewBox="0 0 100 100">
+                                <polygon points="50,25 80,75 20,75" fill="var(--primary-blue)" opacity="0.3"
+                                    stroke="var(--primary-blue)" stroke-width="2" />
+                            </svg>
+                        </div>
+                        <div class="face-label">역삼각형</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Forehead -->
+            <div class="face-reading-steps" id="step-2" style="display: none;">
+                <h4 style="margin-bottom: 15px; color: var(--text);">이마 특징을 선택하세요</h4>
+                <div class="face-options">
+                    <div class="face-option" data-value="wide" onclick="selectFaceFeature('forehead', 'wide', this)">넓은
+                        이마</div>
+                    <div class="face-option" data-value="narrow"
+                        onclick="selectFaceFeature('forehead', 'narrow', this)">좁은 이마</div>
+                    <div class="face-option" data-value="high" onclick="selectFaceFeature('forehead', 'high', this)">높은
+                        이마</div>
+                </div>
+            </div>
+
+            <!-- Step 3: Nose -->
+            <div class="face-reading-steps" id="step-3" style="display: none;">
+                <h4 style="margin-bottom: 15px; color: var(--text);">코 특징을 선택하세요</h4>
+                <div class="face-options">
+                    <div class="face-option" data-value="straight"
+                        onclick="selectFaceFeature('nose', 'straight', this)">곧은 코</div>
+                    <div class="face-option" data-value="round" onclick="selectFaceFeature('nose', 'round', this)">둥근 코
+                    </div>
+                    <div class="face-option" data-value="sharp" onclick="selectFaceFeature('nose', 'sharp', this)">오똑한 코
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Eyebrows -->
+            <div class="face-reading-steps" id="step-4" style="display: none;">
+                <h4 style="margin-bottom: 15px; color: var(--text);">눈썹 특징을 선택하세요</h4>
+                <div class="face-options">
+                    <div class="face-option" data-value="thick" onclick="selectFaceFeature('eyebrow', 'thick', this)">진한
+                        눈썹</div>
+                    <div class="face-option" data-value="thin" onclick="selectFaceFeature('eyebrow', 'thin', this)">얇은
+                        눈썹</div>
+                    <div class="face-option" data-value="arched" onclick="selectFaceFeature('eyebrow', 'arched', this)">
+                        아치형 눈썹</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container" id="face-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill">AI가 관상을 분석 중...</div>
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div class="fortune-result" id="face-result">
+                <div class="fortune-description" id="face-description"></div>
+                <div class="recommended-numbers" id="face-numbers"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>본 서비스는 통계 분석 기반의 참고용 서비스입니다. 당첨을 보장하지 않습니다.</p>
+        <p>© 2026 AI 통계 분석 서비스 | 동행복권 공식 사이트: <a href="https://dhlottery.co.kr" target="_blank"
+                style="color: var(--primary-blue);">dhlottery.co.kr</a></p>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/fallback-data.js"></script>
+    <script src="js/face-reading-control.js"></script>
+    <script src="js/lotto-enhanced.js"></script>
+    <script>
+        let currentDrawNo = 0;
+        let selectedYears = 5;
+        let selectedFaceShape = '';
+        let selectedForehead = '';
+
+        // Fetch latest draw
+        async function fetchLatestDraw() {
+            const latestDrawNo = calculateLatestDrawNo();
+            currentDrawNo = latestDrawNo;
+
+            try {
+                const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${latestDrawNo}`;
+                const proxyUrl = CORS_PROXY + encodeURIComponent(url);
+
+                const response = await fetch(proxyUrl);
+                const proxyData = await response.json();
+                const data = JSON.parse(proxyData.contents);
+
+                if (data.returnValue === 'success') {
+                    displayCurrentDraw(data);
+                } else {
+                    // Try previous draw
+                    const prevUrl = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${latestDrawNo - 1}`;
+                    const prevResponse = await fetch(CORS_PROXY + encodeURIComponent(prevUrl));
+                    const prevProxyData = await prevResponse.json();
+                    const prevData = JSON.parse(prevProxyData.contents);
+
+                    if (prevData.returnValue === 'success') {
+                        currentDrawNo = latestDrawNo - 1;
+                        displayCurrentDraw(prevData);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch draw:', error);
+                document.getElementById('current-draw-balls').innerHTML =
+                    '<p style="color: var(--text-muted);">최신 당첨번호를 불러올 수 없습니다.</p>';
+            }
+        }
+
+        function displayCurrentDraw(data) {
+            const numbers = [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6];
+            const bonus = data.bnusNo;
+
+            document.getElementById('current-draw-number').textContent = `${data.drwNo}회`;
+            document.getElementById('current-draw-date').textContent = data.drwNoDate;
+
+            const html = `
+                ${renderBalls(numbers, false)}
+                <span style="margin: 0 10px; color: var(--text-muted); font-size: 1.2rem;">+</span>
+                ${createBallHTML(bonus, false)}
+            `;
+
+            document.getElementById('current-draw-balls').innerHTML = html;
+
+            const firstPrize = data.firstWinamnt;
+            if (firstPrize) {
+                const prizeInBillion = (firstPrize / 100000000).toFixed(1);
+                document.getElementById('current-prize').textContent = `${prizeInBillion}억원`;
+            }
+        }
+
+        // Period button handlers
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedYears = parseInt(this.dataset.years);
+                analyzeStatistics();
+            });
+        });
+
+        // Analyze statistics
+        async function analyzeStatistics() {
+            document.getElementById('stats-loading').style.display = 'block';
+            document.getElementById('stats-result').style.display = 'none';
+
+            const weeksInPeriod = selectedYears * 52;
+            const startDrawNo = Math.max(1, currentDrawNo - weeksInPeriod);
+            const frequency = new Array(46).fill(0); // Index 0 unused, 1-45 for numbers
+
+            try {
+                // Sample every 10th draw to reduce API calls
+                const sampleRate = 10;
+                const promises = [];
+
+                for (let i = startDrawNo; i <= currentDrawNo; i += sampleRate) {
+                    promises.push(fetchDrawData(i));
+                }
+
+                const results = await Promise.all(promises);
+
+                results.forEach(data => {
+                    if (data && data.returnValue === 'success') {
+                        [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6].forEach(num => {
+                            frequency[num]++;
+                        });
+                    }
+                });
+
+                displayStatistics(frequency);
+            } catch (error) {
+                console.error('Statistics analysis failed:', error);
+                document.getElementById('stats-loading').style.display = 'none';
+                alert('통계 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            }
+        }
+
+        async function fetchDrawData(drawNo) {
+            try {
+                const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${drawNo}`;
+                const proxyUrl = CORS_PROXY + encodeURIComponent(url);
+                const response = await fetch(proxyUrl);
+                const proxyData = await response.json();
+                return JSON.parse(proxyData.contents);
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function displayStatistics(frequency) {
+            // Create array of [number, count] and sort by count
+            const stats = frequency.slice(1).map((count, idx) => [idx + 1, count])
+                .sort((a, b) => b[1] - a[1]);
+
+            // Display all numbers with their frequency
+            const statsGrid = document.getElementById('stats-grid');
+            statsGrid.innerHTML = stats.map(([num, count]) => `
+                <div class="stat-ball">
+                    ${createBallHTML(num, false)}
+                    <div class="stat-count">${count}회</div>
+                </div>
+            `).join('');
+
+            // Recommend top 6 numbers
+            const recommended = stats.slice(0, 6).map(s => s[0]).sort((a, b) => a - b);
+            document.getElementById('recommended-numbers').innerHTML = renderBalls(recommended, false);
+
+            document.getElementById('stats-loading').style.display = 'none';
+            document.getElementById('stats-result').style.display = 'block';
+        }
+
+        // Fortune numbers generation
+        function generateFortuneNumbers() {
+            const birthDate = document.getElementById('birth-date').value;
+            const birthTime = document.getElementById('birth-time').value;
+
+            if (!birthDate || !birthTime) {
+                alert('생년월일과 태어난 시간을 모두 입력해주세요.');
+                return;
+            }
+
+            const date = new Date(birthDate);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            // Simple fortune algorithm based on birth data
+            const seed = year + month * 100 + day * 10000 + birthTime.charCodeAt(0);
+            const numbers = generateLuckyNumbers(seed, 6);
+
+            const elements = ['금(金)', '목(木)', '수(水)', '화(火)', '토(土)'];
+            const element = elements[year % 5];
+
+            document.getElementById('fortune-description').innerHTML = `
+                <strong>오행:</strong> ${element}<br>
+                <strong>해석:</strong> ${year}년생은 ${element} 기운이 강합니다. 
+                ${month}월 ${day}일생은 ${getFortuneMessage(month, day)}
+                ${birthTime} 시간대는 ${getTimeMessage(birthTime)} 행운의 번호를 추천합니다.
+            `;
+
+            document.getElementById('fortune-numbers').innerHTML = renderBalls(numbers, false);
+            document.getElementById('fortune-result').classList.add('show');
+        }
+
+        function getFortuneMessage(month, day) {
+            if (month <= 3) return '봄의 기운으로 새로운 시작을 의미합니다.';
+            if (month <= 6) return '여름의 열정으로 왕성한 활동력을 나타냅니다.';
+            if (month <= 9) return '가을의 결실로 풍요로움을 상징합니다.';
+            return '겨울의 지혜로 깊은 사색을 뜻합니다.';
+        }
+
+        function getTimeMessage(time) {
+            const hour = parseInt(time.split('-')[0]);
+            if (hour >= 23 || hour < 3) return '밤의 고요함 속에서';
+            if (hour < 9) return '새벽의 맑은 기운으로';
+            if (hour < 15) return '한낮의 왕성한 에너지로';
+            return '저녁의 안정된 기운으로';
+        }
+
+        // Face reading
+        document.querySelectorAll('.face-option').forEach(option => {
+            option.addEventListener('click', function () {
+                const parent = this.parentElement;
+                parent.querySelectorAll('.face-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+
+                if (this.dataset.shape) {
+                    selectedFaceShape = this.dataset.shape;
+                } else if (this.dataset.forehead) {
+                    selectedForehead = this.dataset.forehead;
+                }
+            });
+        });
+
+        function generateFaceReadingNumbers() {
+            if (!selectedFaceShape || !selectedForehead) {
+                alert('얼굴형과 이마 특징을 모두 선택해주세요.');
+                return;
+            }
+
+            const shapeSeed = selectedFaceShape.charCodeAt(0) * 100;
+            const foreheadSeed = selectedForehead.charCodeAt(0) * 10;
+            const seed = shapeSeed + foreheadSeed;
+
+            const numbers = generateLuckyNumbers(seed, 6);
+
+            const shapeMessages = {
+                round: '둥근 얼굴형은 원만한 대인관계와 재물운을 상징합니다.',
+                square: '사각 얼굴형은 강한 의지력과 리더십을 나타냅니다.',
+                oval: '계란형 얼굴은 균형잡힌 운세와 조화를 의미합니다.',
+                triangle: '역삼각형 얼굴은 예리한 지성과 창의력을 뜻합니다.'
+            };
+
+            const foreheadMessages = {
+                wide: '넓은 이마는 풍부한 지혜와 재물운을 상징합니다.',
+                narrow: '좁은 이마는 집중력과 실행력이 뛰어남을 나타냅니다.',
+                high: '높은 이마는 고귀한 기운과 명예운을 의미합니다.'
+            };
+
+            document.getElementById('face-description').innerHTML = `
+                <strong>얼굴형 해석:</strong> ${shapeMessages[selectedFaceShape]}<br>
+                <strong>이마 해석:</strong> ${foreheadMessages[selectedForehead]}<br>
+                종합적으로 당신에게 맞는 행운의 번호를 추천합니다.
+            `;
+
+            document.getElementById('face-numbers').innerHTML = renderBalls(numbers, false);
+            document.getElementById('face-result').classList.add('show');
+        }
+
+        // Generate lucky numbers based on seed
+        function generateLuckyNumbers(seed, count) {
+            const numbers = new Set();
+            let current = seed;
+
+            while (numbers.size < count) {
+                current = (current * 1103515245 + 12345) & 0x7fffffff;
+                const num = (current % 45) + 1;
+                numbers.add(num);
+            }
+
+            return Array.from(numbers).sort((a, b) => a - b);
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchLatestDraw();
+            // Auto-analyze 5 years on load
+            setTimeout(() => analyzeStatistics(), 1000);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+/* Additional styles for card-style UI improvements */
+
+/* Time selection cards - enhanced sizes */
+.time-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.time-card {
+    padding: 24px 18px;
+    background: white;
+    border: 3px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.time-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-blue);
+}
+
+.time-card.selected {
+    border-color: var(--primary-orange);
+    background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+}
+
+.time-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+}
+
+.time-label {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.time-range {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Face shape cards with SVG icons - enhanced sizes */
+.face-shape-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.face-card {
+    padding: 20px 15px;
+    background: white;
+    border: 3px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.face-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-blue);
+}
+
+.face-card.selected {
+    border-color: var(--primary-blue);
+    background: linear-gradient(135deg, #e6f3ff 0%, #cce6ff 100%);
+}
+
+.face-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 15px;
+}
+
+.face-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.face-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* Pension number display */
+.pension-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.pension-group {
+    background: var(--primary-orange);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.pension-digit {
+    background: var(--primary-blue);
+    color: white;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 1.3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .time-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .face-shape-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 360px) {
+    .time-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .face-shape-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .time-card,
+    .face-card {
+        padding: 15px 10px;
+    }
+
+    .time-icon {
+        font-size: 2rem;
+    }
+
+    .face-icon {
+        width: 60px;
+        height: 60px;
+    }
+}

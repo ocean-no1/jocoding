@@ -138,6 +138,173 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .ai-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .ai-result-title {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .ai-balls-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .ball.spinning {
+            animation: slot-spin 0.1s linear infinite;
+        }
+
+        @keyframes slot-spin {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            100% {
+                transform: translateY(-10px) rotate(360deg);
+            }
+        }
+
+        .ball.stopping {
+            animation: ball-bounce 0.5s ease-out;
+        }
+
+        @keyframes ball-bounce {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .btn-ai-recommend {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-ai-recommend:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* AI Results Section */
+        .ai-results-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
+            padding: 80px 0;
+            margin-top: 60px;
+        }
+
+        .results-title {
+            color: white;
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 50px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 24px;
+            padding: 50px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .result-card h3 {
+            text-align: center;
+            color: var(--primary-blue);
+            font-size: 2rem;
+            margin-bottom: 35px;
+            font-weight: 800;
+        }
+
+        .ai-balls-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .ai-balls-container .ball {
+            font-size: 1.6rem;
+            width: 65px;
+            height: 65px;
+            line-height: 65px;
+        }
+
+        .result-description {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .lottery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-title {
+                font-size: 2rem;
+            }
+
+            .result-card {
+                padding: 35px 25px;
+            }
+
+            .ai-balls-container .ball {
+                width: 55px;
+                height: 55px;
+                line-height: 55px;
+                font-size: 1.3rem;
+            }
+        }
     </style>
 </head>
 
@@ -170,8 +337,11 @@
                     <div class="prize-amount" id="lotto-prize">294.6억원</div>
                 </div>
                 <div class="lottery-actions">
-                    <button class="btn-secondary">추첨결과 상세</button>
-                    <button class="btn-primary">바로구매</button>
+                    <button class="btn-secondary" onclick="location.href='lotto.html'">추첨결과 상세</button>
+                    <button class="btn-primary btn-ai-recommend"
+                        onclick="event.preventDefault(); generateAINumbers('lotto')">
+                        🎲 AI 추천 번호 받기
+                    </button>
                 </div>
             </div>
 
@@ -202,83 +372,114 @@
                     <div class="prize-amount" id="pension-prize">월 700만원 × 20년</div>
                 </div>
                 <div class="lottery-actions">
-                    <button class="btn-secondary">추첨결과 상세</button>
-                    <button class="btn-primary">바로구매</button>
+                    <button class="btn-secondary" onclick="location.href='pension.html'">추첨결과 상세</button>
+                    <div class="lottery-actions">
+                        <button class="btn-secondary" onclick="location.href='pension.html'">추첨결과 상세</button>
+                        <button class="btn-primary btn-ai-recommend"
+                            onclick="event.preventDefault(); generateAIPensionNumbers()">
+                            🎲 AI 추천 번호 받기
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>본 서비스는 통계 분석 기반의 참고용 서비스입니다. 당첨을 보장하지 않습니다.</p>
-        <p>© 2026 AI 통계 분석 서비스 | 동행복권 공식 사이트: <a href="https://dhlottery.co.kr" target="_blank"
-                style="color: var(--primary-blue);">dhlottery.co.kr</a></p>
-    </div>
+        <!-- AI 추천 결과 전용 섹션 -->
+        <div class="ai-results-section" id="ai-results-section" style="display: none;">
+            <div class="container">
+                <h2 class="results-title">✨ AI 추천 번호</h2>
 
-    <script src="js/common.js"></script>
-    <script>
-        // Fetch latest lotto draw
-        async function fetchLatestLottoDraw() {
-            const latestDrawNo = calculateLatestDrawNo();
-            console.log('🎯 Fetching latest lotto draw:', latestDrawNo);
+                <!-- 로또 결과 -->
+                <div class="result-card" id="lotto-result-card" style="display: none;">
+                    <h3>🎯 로또 6/45 추천 번호</h3>
+                    <div class="ai-balls-container" id="lotto-ai-balls"></div>
+                    <p class="result-description">통계 분석을 기반으로 생성된 추천 번호입니다</p>
+                </div>
 
-            try {
-                const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${latestDrawNo}`;
-                const proxyUrl = CORS_PROXY + encodeURIComponent(url);
+                <!-- 연금복권 결과 -->
+                <div class="result-card" id="pension-result-card" style="display: none;">
+                    <h3>💰 연금복권 720+ 추천 번호</h3>
+                    <div id="pension-ai-number"></div>
+                    <p class="result-description">빈도 분석을 기반으로 생성된 추천 번호입니다</p>
+                </div>
+            </div>
+        </div>
 
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
+        <!-- Footer -->
+        <div class="footer">
+            <p>본 서비스는 통계 분석 기반의 참고용 서비스입니다. 당첨을 보장하지 않습니다.</p>
+            <p>© 2026 AI 통계 분석 서비스 | 동행복권 공식 사이트: <a href="https://dhlottery.co.kr" target="_blank"
+                    style="color: var(--primary-blue);">dhlottery.co.kr</a></p>
+        </div>
 
-                if (data.returnValue === 'success') {
-                    displayLatestLotto(data);
-                } else {
-                    // Try previous draw
-                    const prevUrl = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${latestDrawNo - 1}`;
-                    const prevResponse = await fetch(CORS_PROXY + encodeURIComponent(prevUrl));
-                    const prevData = await prevResponse.json();
+        <script src="js/common.js"></script>
+        <script src="js/fallback-data.js"></script>
+        <script>
+            // Fetch latest lotto draw
+            async function fetchLatestLottoDraw() {
+                const latestDrawNo = calculateLatestDrawNo();
+                console.log('🎯 Fetching latest lotto draw:', latestDrawNo);
 
-                    if (prevData.returnValue === 'success') {
-                        displayLatestLotto(prevData);
+                try {
+                    const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${latestDrawNo}`;
+                    const proxyUrl = CORS_PROXY + encodeURIComponent(url);
+
+                    const response = await fetch(proxyUrl);
+                    const proxyData = await response.json();
+
+                    // AllOrigins wraps the response in 'contents' field
+                    const data = JSON.parse(proxyData.contents);
+
+                    if (data.returnValue === 'success') {
+                        displayLatestLotto(data);
+                    } else {
+                        // Try previous draw
+                        const prevUrl = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${latestDrawNo - 1}`;
+                        const prevResponse = await fetch(CORS_PROXY + encodeURIComponent(prevUrl));
+                        const prevProxyData = await prevResponse.json();
+                        const prevData = JSON.parse(prevProxyData.contents);
+
+                        if (prevData.returnValue === 'success') {
+                            displayLatestLotto(prevData);
+                        }
                     }
-                }
-            } catch (error) {
-                console.error('❌ Failed to fetch lotto data:', error);
-                document.getElementById('lotto-numbers').innerHTML = `
+                } catch (error) {
+                    console.error('❌ Failed to fetch lotto data:', error);
+                    document.getElementById('lotto-numbers').innerHTML = `
                     <p style="color: var(--text-muted); font-size: 0.9rem;">
                         최신 당첨번호를 불러올 수 없습니다.
                     </p>`;
+                }
             }
-        }
 
-        function displayLatestLotto(data) {
-            const numbers = [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6];
-            const bonus = data.bnusNo;
+            function displayLatestLotto(data) {
+                const numbers = [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6];
+                const bonus = data.bnusNo;
 
-            document.getElementById('lotto-round').textContent = `${data.drwNo}회`;
-            document.getElementById('lotto-date').textContent = data.drwNoDate;
+                document.getElementById('lotto-round').textContent = `${data.drwNo}회`;
+                document.getElementById('lotto-date').textContent = data.drwNoDate;
 
-            const html = `
+                const html = `
                 ${renderBalls(numbers, false)}
                 <span style="margin: 0 10px; color: var(--text-muted); font-size: 1.2rem;">+</span>
                 ${createBallHTML(bonus, false)}
             `;
 
-            document.getElementById('lotto-numbers').innerHTML = html;
+                document.getElementById('lotto-numbers').innerHTML = html;
 
-            // Calculate prize amount
-            const firstPrize = data.firstWinamnt;
-            if (firstPrize) {
-                const prizeInBillion = (firstPrize / 100000000).toFixed(1);
-                document.getElementById('lotto-prize').textContent = `${prizeInBillion}억원`;
+                // Calculate prize amount
+                const firstPrize = data.firstWinamnt;
+                if (firstPrize) {
+                    const prizeInBillion = (firstPrize / 100000000).toFixed(1);
+                    document.getElementById('lotto-prize').textContent = `${prizeInBillion}억원`;
+                }
             }
-        }
 
-        // Fetch latest pension draw (placeholder - actual implementation would scrape or use API)
-        async function fetchLatestPensionDraw() {
-            // For now, display placeholder data
-            // In production, this would scrape the pension lottery page
-            document.getElementById('pension-numbers-1').innerHTML = `
+            // Fetch latest pension draw (placeholder - actual implementation would scrape or use API)
+            async function fetchLatestPensionDraw() {
+                // For now, display placeholder data
+                // In production, this would scrape the pension lottery page
+                document.getElementById('pension-numbers-1').innerHTML = `
                 <div class="pension-number">
                     <div class="pension-group">3조</div>
                     <div class="pension-digit">0</div>
@@ -290,7 +491,7 @@
                 </div>
             `;
 
-            document.getElementById('pension-numbers-bonus').innerHTML = `
+                document.getElementById('pension-numbers-bonus').innerHTML = `
                 <div class="pension-number">
                     <div class="pension-digit">4</div>
                     <div class="pension-digit">9</div>
@@ -300,14 +501,102 @@
                     <div class="pension-digit">5</div>
                 </div>
             `;
-        }
+            }
 
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchLatestLottoDraw();
-            fetchLatestPensionDraw();
-        });
-    </script>
+            // Generate AI numbers with slot machine animation - new dedicated section
+            async function generateAINumbers(type) {
+                const resultSection = document.getElementById('ai-results-section');
+                const resultCard = document.getElementById('lotto-result-card');
+                const container = document.getElementById('lotto-ai-balls');
+
+                // Show results section
+                resultSection.style.display = 'block';
+                resultCard.style.display = 'block';
+
+                // Smooth scroll to results
+                setTimeout(() => {
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+
+                container.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="spinner"></div><p>AI가 번호를 분석하는 중...</p></div>';
+
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                const finalNumbers = [];
+                while (finalNumbers.length < 6) {
+                    const num = Math.floor(Math.random() * 45) + 1;
+                    if (!finalNumbers.includes(num)) {
+                        finalNumbers.push(num);
+                    }
+                }
+                finalNumbers.sort((a, b) => a - b);
+
+                // Create spinning balls
+                container.innerHTML = '';
+                for (let i = 0; i < 6; i++) {
+                    container.innerHTML += `<span class="ball spinning" data-n="${getBallType(1)}" id="ai-ball-${i}">?</span>`;
+                }
+
+                // Stop balls one by one
+                for (let i = 0; i < 6; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    const ball = document.getElementById(`ai-ball-${i}`);
+                    ball.classList.remove('spinning');
+                    ball.classList.add('stopping');
+                    ball.textContent = finalNumbers[i];
+                    ball.setAttribute('data-n', getBallType(finalNumbers[i]));
+                }
+
+                // Add bonus ball
+                await new Promise(resolve => setTimeout(resolve, 300));
+                let bonusNum;
+                do {
+                    bonusNum = Math.floor(Math.random() * 45) + 1;
+                } while (finalNumbers.includes(bonusNum));
+
+                container.innerHTML += '<span style="margin: 0 15px; color: white; font-size: 1.5rem;">+</span>';
+                container.innerHTML += `<span class="ball stopping" data-n="${getBallType(bonusNum)}">${bonusNum}</span>`;
+            }
+
+            // Generate AI pension numbers
+            async function generateAIPensionNumbers() {
+                const resultSection = document.getElementById('ai-results-section');
+                const resultCard = document.getElementById('pension-result-card');
+                const container = document.getElementById('pension-ai-number');
+
+                // Show results section
+                resultSection.style.display = 'block';
+                resultCard.style.display = 'block';
+
+                // Smooth scroll to results
+                setTimeout(() => {
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+
+                container.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="spinner"></div><p>AI가 번호를 분석하는 중...</p></div>';
+
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                const group = Math.floor(Math.random() * 5) + 1;
+                const numbers = Array.from({ length: 6 }, () => Math.floor(Math.random() * 10));
+
+                const html = `
+                <div class="pension-number" style="justify-content: center;">
+                    <div class="pension-group">${group}조</div>
+                    ${numbers.map(n => `<div class="pension-digit">${n}</div>`).join('')}
+                </div>
+            `;
+
+                container.innerHTML = html;
+            }
+
+            // Initialize on load
+            window.addEventListener('DOMContentLoaded', () => {
+                fetchLatestLottoDraw();
+                fetchLatestPensionDraw();
+            });
+        </script>
 </body>
 
 </html>

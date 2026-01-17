@@ -27,28 +27,29 @@
     box-sizing: border-box;
 }
 
+/* Layout with AdSense space */
 body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
     margin: 0;
     padding: 0;
+    background: var(--bg);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Header */
 .header {
-    background: linear-gradient(135deg, var(--primary-orange), var(--primary-blue));
-    padding: 20px;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
+    color: white;
+    padding: 30px 20px;
     text-align: center;
-    box-shadow: 0 2px 8px var(--shadow);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .header h1 {
-    color: white;
     margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 2.2rem;
+    font-weight: 800;
 }
 
 .back-button {
@@ -140,9 +141,11 @@ body {
         transform: scale(0) rotate(-180deg);
         opacity: 0;
     }
+
     70% {
         transform: scale(1.1) rotate(10deg);
     }
+
     100% {
         transform: scale(1) rotate(0deg);
         opacity: 1;
@@ -321,11 +324,11 @@ input[type="text"]:focus {
 input[type=range] {
     width: 100%;
     height: 8px;
-    background: linear-gradient(to right, 
-        var(--primary-orange) 0%, 
-        var(--primary-orange) 50%, 
-        var(--border) 50%, 
-        var(--border) 100%);
+    background: linear-gradient(to right,
+            var(--primary-orange) 0%,
+            var(--primary-orange) 50%,
+            var(--border) 50%,
+            var(--border) 100%);
     border-radius: 5px;
     outline: none;
     -webkit-appearance: none;
@@ -428,6 +431,7 @@ input[type=range]::-moz-range-progress {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }

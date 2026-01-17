@@ -4,24 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로또 인사이트 - 데이터 기반 예측기</title>
+    <title>로또 인사이트 PRO - 데이터 기반 예측기</title>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <style>
         :root {
-            --primary: #FF4500;
-            --bg: #121212;
-            --card: #1E1E1E;
-            --text: #E0E0E0;
+            --primary: #FF5F1F;
+            /* 더 강렬한 오렌지 */
+            --primary-dark: #D84315;
+            --bg: #0a0a0a;
+            /* 더 깊은 검정 */
+            --card-bg: #1A1A1A;
+            --text: #F0F0F0;
+            --text-muted: #A0A0A0;
+            /* 동행복권 색상 팔레트 (그라데이션용) */
+            --ball-1-start: #ffd200;
+            --ball-1-end: #fbc400;
+            --ball-2-start: #4fc3f7;
+            --ball-2-end: #29b6f6;
+            --ball-3-start: #ff8a80;
+            --ball-3-end: #ff5252;
+            --ball-4-start: #e0e0e0;
+            --ball-4-end: #bdbdbd;
+            --ball-5-start: #cddc39;
+            --ball-5-end: #afb42b;
         }
 
         body {
             background-color: var(--bg);
+            /* 배경에 은은한 빛 효과 추가 */
+            background-image: radial-gradient(circle at 50% 0%, #333333 0%, var(--bg) 70%);
             color: var(--text);
             font-family: 'Pretendard', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 30px 20px;
             margin: 0;
+            min-height: 100vh;
         }
 
         .container {
@@ -29,124 +49,237 @@
             width: 100%;
         }
 
-        /* 대시보드 스타일 */
+        /* 대시보드 카드 스타일 업그레이드 */
         .card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            /* 더 깊고 부드러운 그림자 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
         }
 
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             margin-top: 0;
+            margin-bottom: 20px;
             color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(255, 95, 31, 0.3);
         }
 
-        /* 공 스타일 (동행복권 색상 참조) */
+        /* ===== 3D 입체 공 스타일 핵심 ===== */
         .ball {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            font-weight: bold;
+            font-weight: 800;
+            font-size: 1.1rem;
             color: white;
-            margin: 5px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            margin: 6px;
+            /* 입체감을 위한 내부 그림자와 외부 광원 효과 */
+            box-shadow: inset -3px -3px 10px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
         }
 
+        /* 상단 하이라이트 (유광 효과) */
+        .ball::after {
+            content: '';
+            position: absolute;
+            top: 5%;
+            left: 10%;
+            width: 40%;
+            height: 40%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+            filter: blur(2px);
+        }
+
+        /* 공 등장 애니메이션 */
+        @keyframes popIn {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.1) rotate(10deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .ball.animate {
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* 색상별 그라데이션 및 네온 글로우 효과 */
         .ball[data-n="1"] {
-            background: #fbc400;
+            background: radial-gradient(circle at 30% 30%, var(--ball-1-start), var(--ball-1-end));
+            box-shadow: inset -3px -3px 10px rgba(0, 0, 0, 0.4), 0 0 20px var(--ball-1-end);
         }
 
-        /* 1-10 */
         .ball[data-n="2"] {
-            background: #69c8f2;
+            background: radial-gradient(circle at 30% 30%, var(--ball-2-start), var(--ball-2-end));
+            box-shadow: inset -3px -3px 10px rgba(0, 0, 0, 0.4), 0 0 20px var(--ball-2-end);
         }
 
-        /* 11-20 */
         .ball[data-n="3"] {
-            background: #ff7272;
+            background: radial-gradient(circle at 30% 30%, var(--ball-3-start), var(--ball-3-end));
+            box-shadow: inset -3px -3px 10px rgba(0, 0, 0, 0.4), 0 0 20px var(--ball-3-end);
         }
 
-        /* 21-30 */
         .ball[data-n="4"] {
-            background: #aaaaaa;
+            background: radial-gradient(circle at 30% 30%, var(--ball-4-start), var(--ball-4-end));
+            box-shadow: inset -3px -3px 10px rgba(0, 0, 0, 0.4), 0 0 20px var(--ball-4-end);
+            color: #333;
+            text-shadow: none;
         }
 
-        /* 31-40 */
         .ball[data-n="5"] {
-            background: #b0d840;
+            background: radial-gradient(circle at 30% 30%, var(--ball-5-start), var(--ball-5-end));
+            box-shadow: inset -3px -3px 10px rgba(0, 0, 0, 0.4), 0 0 20px var(--ball-5-end);
         }
 
-        /* 41-45 */
+        #last-draw {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
 
-        /* 컨트롤러 */
+        /* 컨트롤러 및 버튼 */
         .controls {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 25px;
         }
 
         button {
             flex: 1;
-            padding: 15px;
+            padding: 16px;
             border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
+            border-radius: 12px;
+            font-weight: 700;
             font-size: 1rem;
+            font-family: 'Pretendard', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:active {
+            transform: scale(0.97);
         }
 
         .btn-sim {
             background: #333;
             color: white;
+            border: 1px solid #444;
+        }
+
+        .btn-sim:hover {
+            background: #444;
         }
 
         .btn-run {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
+            box-shadow: 0 4px 15px rgba(255, 95, 31, 0.4);
         }
 
-        button:hover {
-            filter: brightness(1.2);
+        .btn-run:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 6px 20px rgba(255, 95, 31, 0.6);
         }
 
         /* 결과창 */
         #result-area {
-            text-align: center;
-            margin-top: 10px;
-            min-height: 60px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 15px 0;
+            min-height: 70px;
         }
 
         .stat-box {
             display: flex;
             justify-content: space-between;
             font-size: 0.9rem;
-            color: #888;
-            margin-top: 10px;
-            border-top: 1px solid #333;
-            padding-top: 10px;
+            color: var(--text-muted);
+            margin-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
         }
 
-        /* 슬라이더 (가중치) */
+        /* 슬라이더 커스텀 */
         .slider-group {
-            margin: 20px 0;
+            margin: 25px 0;
         }
 
         label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .accent-text {
+            color: var(--primary);
         }
 
         input[type=range] {
             width: 100%;
-            accent-color: var(--primary);
+            height: 6px;
+            background: #333;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 95, 31, 0.7);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .description {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+            line-height: 1.4;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -155,7 +288,7 @@
 
     <div class="container">
         <div class="card">
-            <h1>📊 지난주 분석 (1206회)</h1>
+            <h1>📊 지난주 분석 <small style="font-size:0.7em; color:var(--text-muted);">(1206회)</small></h1>
             <div id="last-draw">
                 <span class="ball" data-n="1">1</span>
                 <span class="ball" data-n="1">3</span>
@@ -163,116 +296,164 @@
                 <span class="ball" data-n="3">26</span>
                 <span class="ball" data-n="3">27</span>
                 <span class="ball" data-n="5">42</span>
-                +
+                <span style="margin: 0 5px; color:var(--text-muted);">+</span>
                 <span class="ball" data-n="3">23</span>
             </div>
             <div class="stat-box">
-                <span>홀짝 비율: 4:2</span>
-                <span>총합: 116</span>
+                <span>홀짝 비율: <strong style="color:white">4:2</strong></span>
+                <span>총합: <strong style="color:white">116</strong></span>
             </div>
         </div>
 
         <div class="card">
-            <h1>⚙️ 알고리즘 생성기</h1>
+            <h1>⚙️ 알고리즘 엔진 설정</h1>
             <div class="slider-group">
-                <label>🔥 최근 트렌드 반영률 (<span id="weight-val">50</span>%)</label>
-                <input type="range" id="weight-slider" min="0" max="100" value="50" oninput="updateLabel(this.value)">
-                <p style="font-size: 0.8rem; color:#666; margin-top:5px;">
-                    0% = 완전 무작위 (운) <br>
-                    100% = 최근 자주 나온 번호 위주 (데이터)
-                </p>
+                <label>
+                    <span>🔥 최근 트렌드 반영률</span>
+                    <span class="accent-text"><span id="weight-val">50</span>%</span>
+                </label>
+                <input type="range" id="weight-slider" min="0" max="100" value="50" oninput="updateLabel(this.value)"
+                    onchange="updateLabel(this.value)">
+                <div class="description">
+                    <strong>• 0% (완전 운):</strong> 모든 번호가 동일한 확률로 나옵니다.<br>
+                    <strong>• 100% (데이터):</strong> 최근 자주 나온 번호와 그 주변 번호 위주로 나옵니다.
+                </div>
             </div>
             <div class="controls">
-                <button class="btn-sim" onclick="simulateLoop()">⚡ 1년치 시뮬레이션</button>
-                <button class="btn-run" onclick="generateNumbers()">🎯 번호 생성</button>
+                <button class="btn-sim" onclick="simulateLoop()">⚡ 시뮬레이션 돌리기</button>
+                <button class="btn-run" onclick="generateNumbers()">🎯 AI 번호 생성</button>
             </div>
         </div>
 
-        <div class="card" id="output-card" style="display:none;">
-            <h1>🚀 예측 결과</h1>
+        <div class="card" id="output-card" style="display:none; border-color: var(--primary);">
+            <h1 style="justify-content: center;">🚀 예측 결과</h1>
             <div id="result-area"></div>
         </div>
     </div>
 
     <script>
-        // 동행복권 색상 매핑 로직
-        function getBallColor(n) {
-            if (n <= 10) return 1;
-            if (n <= 20) return 2;
-            if (n <= 30) return 3;
-            if (n <= 40) return 4;
-            return 5;
+        // ==========================================
+        //  유틸리티 함수
+        // ==========================================
+
+        // 번호에 따른 색상 타입 반환
+        function getBallType(n) {
+            if (n <= 10) return 1; // 노랑
+            if (n <= 20) return 2; // 파랑
+            if (n <= 30) return 3; // 빨강
+            if (n <= 40) return 4; // 회색
+            return 5; // 초록
         }
 
-        // 렌더링 헬퍼
-        function renderBalls(numbers) {
-            return numbers.map(n =>
-                `<span class="ball" data-n="${getBallColor(n)}">${n}</span>`
-            ).join('');
+        // 공 HTML 생성 헬퍼 (애니메이션 클래스 추가)
+        function createBallHTML(n, isAnimated = true) {
+            const animClass = isAnimated ? 'animate' : '';
+            // 애니메이션 지연 시간을 랜덤하게 주어 더 자연스럽게
+            const delay = isAnimated ? `style="animation-delay: ${Math.random() * 0.3}s"` : '';
+            return `<span class="ball ${animClass}" data-n="${getBallType(n)}" ${delay}>${n}</span>`;
         }
 
+        // 여러 공 렌더링
+        function renderBalls(numbers, isAnimated = true) {
+            return numbers.map(n => createBallHTML(n, isAnimated)).join('');
+        }
+
+        // 슬라이더 라벨 업데이트
         function updateLabel(val) {
             document.getElementById('weight-val').innerText = val;
         }
 
-        // 핵심 로직: 가중치 랜덤 생성
-        function generateNumbers() {
-            const weight = document.getElementById('weight-slider').value / 100;
-            const numbers = [];
-            const fullSet = Array.from({ length: 45 }, (_, i) => i + 1);
+        // ==========================================
+        //  핵심 로직
+        // ==========================================
 
-            // 1206회차 데이터 (최근 핫한 번호라고 가정)
+        // 번호 생성 알고리즘
+        function getGeneratedNumbers() {
+            const weight = document.getElementById('weight-slider').value / 100;
+            const numbers = new Set(); // 중복 방지를 위해 Set 사용
+
+            // 1206회차 데이터 (가정된 핫 데이터)
             const hotNumbers = [1, 3, 17, 26, 27, 42, 23];
 
-            while (numbers.length < 6) {
-                // 주머니에서 공을 뽑는 로직 (파인만 식 비유)
-                // weight가 높을수록 'hotNumbers'라는 자석이 강해짐
+            while (numbers.size < 6) {
                 let candidate;
 
+                // 가중치 로직: weight 확률로 핫한 번호 주변 탐색
                 if (Math.random() < weight) {
-                    // 핫한 번호 풀에서 뽑거나, 주변 번호(-1, +1)를 선택 (패턴 분석 흉내)
                     const base = hotNumbers[Math.floor(Math.random() * hotNumbers.length)];
-                    candidate = base + (Math.floor(Math.random() * 3) - 1); // -1, 0, +1 변주
+                    // -2 ~ +2 범위로 변주를 조금 더 줌
+                    const variance = Math.floor(Math.random() * 5) - 2;
+                    candidate = base + variance;
                 } else {
                     // 완전 랜덤
                     candidate = Math.floor(Math.random() * 45) + 1;
                 }
 
-                // 유효성 검사 (1~45 범위, 중복 제외)
-                if (candidate > 0 && candidate <= 45 && !numbers.includes(candidate)) {
-                    numbers.push(candidate);
+                // 유효성 검사 (1~45 범위)
+                if (candidate > 0 && candidate <= 45) {
+                    numbers.add(candidate);
                 }
             }
 
-            numbers.sort((a, b) => a - b);
-
-            const output = document.getElementById('result-area');
-            const card = document.getElementById('output-card');
-            card.style.display = 'block';
-            output.innerHTML = renderBalls(numbers);
+            // Set을 배열로 변환 후 정렬
+            return Array.from(numbers).sort((a, b) => a - b);
         }
 
-        // 도파민 루프: 빠른 시뮬레이션
+        // [메인 기능] 번호 생성 및 화면 표시
+        function generateNumbers() {
+            const outputCard = document.getElementById('output-card');
+            const outputArea = document.getElementById('result-area');
+
+            // 결과창 보여주기
+            outputCard.style.display = 'block';
+            // 부드러운 스크롤 이동
+            outputCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            const finalNumbers = getGeneratedNumbers();
+            // 애니메이션이 적용된 공 렌더링
+            outputArea.innerHTML = renderBalls(finalNumbers, true);
+        }
+
+        // [시뮬레이션] 슬롯머신 효과 루프
+        let simInterval;
         function simulateLoop() {
-            const output = document.getElementById('result-area');
-            const card = document.getElementById('output-card');
-            card.style.display = 'block';
+            const outputCard = document.getElementById('output-card');
+            const outputArea = document.getElementById('result-area');
+            const btnSim = document.querySelector('.btn-sim');
+
+            outputCard.style.display = 'block';
+            outputCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // 버튼 중복 클릭 방지
+            if (btnSim.disabled) return;
+            btnSim.disabled = true;
+            btnSim.innerHTML = "🔄 계산 중...";
+            outputArea.style.opacity = 0.5; // 계산 중임을 시각적으로 표현
 
             let count = 0;
-            output.innerHTML = "🔄 시뮬레이션 가동 중...";
+            const maxCount = 25; // 루프 횟수
 
-            // 100번 빠르게 숫자가 바뀌는 연출 (슬롯머신 효과)
-            const interval = setInterval(() => {
+            // 기존 인터벌이 있다면 제거
+            if (simInterval) clearInterval(simInterval);
+
+            simInterval = setInterval(() => {
+                // 임시 랜덤 번호 생성
                 const tempNums = Array.from({ length: 6 }, () => Math.floor(Math.random() * 45) + 1).sort((a, b) => a - b);
-                // 텍스트로만 빠르게 보여줌
-                output.innerHTML = `<div style="font-family:monospace; letter-spacing:3px;">${tempNums.join(' ')}</div>`;
+
+                // 텍스트 대신 실제 공 모양을 애니메이션 없이 빠르게 보여줌
+                outputArea.innerHTML = `<div style="transform: scale(0.9);">${renderBalls(tempNums, false)}</div>`;
+
                 count++;
 
-                if (count > 20) {
-                    clearInterval(interval);
-                    generateNumbers(); // 최종 결과
+                if (count >= maxCount) {
+                    clearInterval(simInterval);
+                    outputArea.style.opacity = 1;
+                    generateNumbers(); // 최종 결과 표시
+                    // 버튼 상태 복구
+                    btnSim.disabled = false;
+                    btnSim.innerHTML = "⚡ 시뮬레이션 돌리기";
                 }
-            }, 50);
+            }, 60); // 60ms 간격으로 빠르게 변경
         }
     </script>
 

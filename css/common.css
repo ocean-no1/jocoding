@@ -59,6 +59,8 @@ body {
     width: 100%;
     max-width: 1000px;
     margin: 0 auto;
+    /* CRITICAL: Center alignment */
+    padding: 0;
 }
 
 /* 12-Column Grid Container */
@@ -67,6 +69,9 @@ body {
     grid-template-columns: repeat(12, 1fr);
     gap: 20px;
     padding: 0 20px;
+    justify-content: center;
+    /* Center grid items */
+    align-items: start;
 }
 
 /* Column Utilities */
@@ -118,6 +123,20 @@ body {
     grid-column: span 12;
 }
 
+/* Full-width elements (detail tables, etc.) */
+.full-width {
+    grid-column: 1 / -1;
+    /* Span all columns */
+}
+
+/* Detail table full width */
+.stats-section,
+.analysis-section,
+.detail-table {
+    grid-column: span 12;
+    width: 100%;
+}
+
 /* Header */
 .header {
     background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
@@ -139,15 +158,17 @@ body {
     padding: 40px 0;
 }
 
-/* Lottery Cards - NO CLICK */
+/* Lottery Cards - ENLARGED for better presence */
 .lottery-card {
     background: white;
     border-radius: 20px;
-    padding: 45px;
+    padding: 50px;
+    /* Increased from 45px */
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
     cursor: default;
-    /* NOT pointer */
+    min-height: 500px;
+    /* Ensure minimum height */
 }
 
 .lottery-card:hover {
@@ -155,32 +176,35 @@ body {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
 }
 
-/* Lottery Grid */
+/* Lottery Grid - Better spacing */
 .lottery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+    /* Increased from 450px */
+    gap: 35px;
+    /* Increased from 30px */
     margin-bottom: 40px;
+    justify-content: center;
 }
 
-/* Logo - NO CLICK */
+/* Logo */
 .lottery-logo {
     text-align: center;
     margin-bottom: 25px;
     cursor: default;
-    /* NOT pointer */
 }
 
 .lottery-logo img {
-    height: 80px;
+    height: 90px;
+    /* Increased from 80px */
     cursor: default;
-    /* NOT pointer */
 }
 
 /* Lottery Info */
 .lottery-round {
     text-align: center;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    /* Increased from 1.3rem */
     font-weight: 700;
     color: var(--primary-blue);
     margin-bottom: 8px;
@@ -189,38 +213,44 @@ body {
 .lottery-date {
     text-align: center;
     color: var(--text-muted);
-    margin-bottom: 25px;
-    font-size: 1rem;
+    margin-bottom: 30px;
+    /* Increased from 25px */
+    font-size: 1.05rem;
+    /* Increased from 1rem */
 }
 
 /* Lottery Numbers Container */
 .lottery-numbers {
-    margin: 30px 0;
+    margin: 35px 0;
+    /* Increased from 30px */
 }
 
 .balls-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 18px;
+    /* Increased from 15px */
     flex-wrap: wrap;
     min-height: 100px;
 }
 
-/* Ball - ENLARGED to 70px */
+/* Ball - MAXIMUM SIZE for visibility */
 .ball {
-    width: 70px;
-    height: 70px;
+    width: 75px;
+    /* Increased from 70px */
+    height: 75px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 1.8rem;
+    font-size: 2rem;
+    /* Increased from 1.8rem */
     color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    /* Enhanced shadow */
     cursor: default;
-    /* NOT pointer */
 }
 
 .ball[data-n="1"] {
@@ -646,11 +676,25 @@ body {
 
     .main-content {
         grid-column: 1;
+        max-width: 100%;
+        padding: 0 20px;
     }
 
     .header,
     .footer {
         grid-column: 1;
+    }
+}
+
+@media (max-width: 1024px) {
+    .lottery-grid {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+        margin: 0 auto 40px;
+    }
+
+    .grid-container {
+        padding: 0 15px;
     }
 }
 
@@ -660,13 +704,16 @@ body {
     }
 
     .lottery-card {
-        padding: 30px;
+        padding: 35px;
+        /* Reduced for mobile */
+        min-height: auto;
     }
 
     .ball {
-        width: 55px;
-        height: 55px;
-        font-size: 1.4rem;
+        width: 60px;
+        /* Reduced for mobile */
+        height: 60px;
+        font-size: 1.6rem;
     }
 
     .lottery-actions {
@@ -676,5 +723,28 @@ body {
     .btn-primary,
     .btn-secondary {
         width: 100%;
+    }
+
+    /* Ensure centering on mobile */
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .lottery-card {
+        padding: 25px;
+    }
+
+    .ball {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+    }
+
+    .lottery-logo img {
+        height: 60px;
     }
 }

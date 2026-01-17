@@ -592,55 +592,80 @@ body {
     border-bottom: none;
 }
 
-/* Interview Banner */
-.interview-banner {
+/* AI Insights Banner - Optimized for AdSense */
+.insights-banner {
     background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
     border-radius: 24px;
-    padding: 50px 40px;
+    padding: 60px 50px;
+    /* Increased height for ad space */
     color: white;
     position: relative;
     overflow: hidden;
+    min-height: 280px;
+    /* Sufficient height for readability */
 }
 
-.interview-title {
+.insights-title {
     text-align: center;
     font-size: 2rem;
     font-weight: 800;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
-.interview-slider {
+.insights-slider {
     position: relative;
-    min-height: 120px;
+    min-height: 140px;
+    /* Increased for better spacing */
 }
 
-.interview-item {
+.insight-item {
     display: none;
-    text-align: center;
+    align-items: flex-start;
+    gap: 25px;
     animation: fadeIn 0.5s ease-in;
 }
 
-.interview-item.active {
-    display: block;
+.insight-item.active {
+    display: flex;
 }
 
-.interview-text {
-    font-size: 1.3rem;
+.insight-icon {
+    font-size: 3.5rem;
+    flex-shrink: 0;
+}
+
+.insight-content {
+    flex: 1;
+}
+
+.insight-text {
+    font-size: 1.4rem;
     font-weight: 600;
-    line-height: 1.6;
+    line-height: 1.7;
     margin-bottom: 15px;
 }
 
-.interview-author {
-    font-size: 1rem;
-    opacity: 0.9;
+.insight-source {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    font-style: italic;
 }
 
-.interview-dots {
+.insights-dots {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-top: 25px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.insights-disclaimer {
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin: 0;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .dot {

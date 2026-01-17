@@ -191,6 +191,7 @@
 
     <script src="js/common.js"></script>
     <script src="js/fallback-data.js"></script>
+    <script src="js/stats-data.js"></script>
     <script>
         // Calculate latest draw number
         function calculateLatestDrawNo() {
@@ -268,7 +269,7 @@
             document.getElementById('pension-numbers').innerHTML = html;
         }
 
-        // Generate AI numbers - SMOOTH SCROLL TO BOTTOM
+        // Generate AI numbers using S_score algorithm
         async function generateAINumbers(type) {
             const resultSection = document.getElementById('ai-results-section');
             const resultCard = document.getElementById('lotto-result-card');
@@ -283,18 +284,30 @@
                 resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
 
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>AI가 번호를 분석하는 중...</p></div>';
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>AI가 20년 빅데이터를 분석하는 중...</p></div>';
 
-            await new Promise(resolve => setTimeout(resolve, 800));
+            await new Promise(resolve => setTimeout(resolve, 1200));
 
-            const finalNumbers = [];
-            while (finalNumbers.length < 6) {
-                const num = Math.floor(Math.random() * 45) + 1;
-                if (!finalNumbers.includes(num)) {
-                    finalNumbers.push(num);
+            // Use S_score algorithm if data available
+            let finalNumbers;
+            const currentDraw = calculateLatestDrawNo();
+
+            if (typeof generateAIRecommendation === 'function') {
+                // S_score 기반 추천 (최근 5년 데이터 사용)
+                finalNumbers = generateAIRecommendation(5, currentDraw, 6);
+                console.log('✅ S_score 알고리즘 사용:', finalNumbers);
+            } else {
+                // Fallback: Random generation
+                finalNumbers = [];
+                while (finalNumbers.length < 6) {
+                    const num = Math.floor(Math.random() * 45) + 1;
+                    if (!finalNumbers.includes(num)) {
+                        finalNumbers.push(num);
+                    }
                 }
+                finalNumbers.sort((a, b) => a - b);
+                console.log('⚠️ 랜덤 생성 사용:', finalNumbers);
             }
-            finalNumbers.sort((a, b) => a - b);
 
             // Create spinning balls
             container.innerHTML = '';
@@ -313,12 +326,19 @@
                 ball.setAttribute('data-n', getBallType(finalNumbers[i]));
             }
 
-            // Add bonus ball
+            // Add bonus ball (also using S_score)
             await new Promise(resolve => setTimeout(resolve, 300));
             let bonusNum;
-            do {
-                bonusNum = Math.floor(Math.random() * 45) + 1;
-            } while (finalNumbers.includes(bonusNum));
+
+            if (typeof calculateAllScores === 'function') {
+                const scores = calculateAllScores(5, currentDraw);
+                const bonusCandidates = scores.slice(6, 15).map(s => s.number);
+                bonusNum = bonusCandidates[Math.floor(Math.random() * bonusCandidates.length)];
+            } else {
+                do {
+                    bonusNum = Math.floor(Math.random() * 45) + 1;
+                } while (finalNumbers.includes(bonusNum));
+            }
 
             container.innerHTML += '<span style="margin: 0 15px; color: var(--text-muted); font-size: 1.5rem;">+</span>';
             container.innerHTML += `<span class="ball stopping" data-n="${getBallType(bonusNum)}">${bonusNum}</span>`;

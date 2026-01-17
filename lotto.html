@@ -695,39 +695,51 @@
             });
         });
 
-        // Analyze statistics
+        // Analyze statistics using LOTTO_HISTORY data
         async function analyzeStatistics() {
             document.getElementById('stats-loading').style.display = 'block';
             document.getElementById('stats-result').style.display = 'none';
 
-            const weeksInPeriod = selectedYears * 52;
-            const startDrawNo = Math.max(1, currentDrawNo - weeksInPeriod);
-            const frequency = new Array(46).fill(0); // Index 0 unused, 1-45 for numbers
+            // Use stats-data.js if available
+            if (typeof calculateFrequency === 'function') {
+                const weeksInPeriod = selectedYears * 52;
+                const startDrawNo = Math.max(1, currentDrawNo - weeksInPeriod);
 
-            try {
-                // Sample every 10th draw to reduce API calls
-                const sampleRate = 10;
-                const promises = [];
+                // Calculate frequency from LOTTO_HISTORY
+                const frequency = calculateFrequency(startDrawNo, currentDrawNo);
 
-                for (let i = startDrawNo; i <= currentDrawNo; i += sampleRate) {
-                    promises.push(fetchDrawData(i));
-                }
-
-                const results = await Promise.all(promises);
-
-                results.forEach(data => {
-                    if (data && data.returnValue === 'success') {
-                        [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6].forEach(num => {
-                            frequency[num]++;
-                        });
-                    }
-                });
-
+                console.log(`✅ 통계 계산 완료: ${startDrawNo}회 ~ ${currentDrawNo}회 (${selectedYears}년)`);
                 displayStatistics(frequency);
-            } catch (error) {
-                console.error('Statistics analysis failed:', error);
-                document.getElementById('stats-loading').style.display = 'none';
-                alert('통계 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            } else {
+                // Fallback to API method
+                const weeksInPeriod = selectedYears * 52;
+                const startDrawNo = Math.max(1, currentDrawNo - weeksInPeriod);
+                const frequency = new Array(46).fill(0);
+
+                try {
+                    const sampleRate = 10;
+                    const promises = [];
+
+                    for (let i = startDrawNo; i <= currentDrawNo; i += sampleRate) {
+                        promises.push(fetchDrawData(i));
+                    }
+
+                    const results = await Promise.all(promises);
+
+                    results.forEach(data => {
+                        if (data && data.returnValue === 'success') {
+                            [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6].forEach(num => {
+                                frequency[num]++;
+                            });
+                        }
+                    });
+
+                    displayStatistics(frequency);
+                } catch (error) {
+                    console.error('Statistics analysis failed:', error);
+                    document.getElementById('stats-loading').style.display = 'none';
+                    alert('통계 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                }
             }
         }
 

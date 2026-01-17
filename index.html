@@ -9,6 +9,7 @@
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/skeleton.css">
     <style>
         /* AI Results Section */
         .ai-results-section {
@@ -307,11 +308,55 @@
             return diffWeeks + 1;
         }
 
-        // Fetch latest lotto draw with fallback
+        // Instant rendering from LocalStorage
+        function renderSkeletonBalls() {
+            return `
+                <div class="skeleton-balls-container">
+                    <span class="skeleton skeleton-ball"></span>
+                    <span class="skeleton skeleton-ball"></span>
+                    <span class="skeleton skeleton-ball"></span>
+                    <span class="skeleton skeleton-ball"></span>
+                    <span class="skeleton skeleton-ball"></span>
+                    <span class="skeleton skeleton-ball"></span>
+                    <span style="margin: 0 15px;">+</span>
+                    <span class="skeleton skeleton-ball"></span>
+                </div>
+            `;
+        }
+
+        function renderSkeletonPension() {
+            return `
+                <div class="skeleton-pension-container">
+                    <div class="skeleton skeleton-digit" style="width: 80px;"></div>
+                    <span class="skeleton skeleton-digit"></span>
+                    <span class="skeleton skeleton-digit"></span>
+                    <span class="skeleton skeleton-digit"></span>
+                    <span class="skeleton skeleton-digit"></span>
+                    <span class="skeleton skeleton-digit"></span>
+                    <span class="skeleton skeleton-digit"></span>
+                </div>
+            `;
+        }
+
+        // Fetch latest lotto draw with instant rendering
         async function fetchLatestLottoDraw() {
             const latestDrawNo = calculateLatestDrawNo();
             console.log('🎯 Fetching latest lotto draw:', latestDrawNo);
 
+            // Step 1: Instantly render from LocalStorage if available
+            try {
+                const cached = localStorage.getItem('latest_fallback_lotto');
+                if (cached) {
+                    const { data } = JSON.parse(cached);
+                    console.log('⚡ Instant render from LocalStorage');
+                    displayLatestLotto(data, false); // No animation for instant render
+                }
+            } catch (e) {
+                console.warn('No cached data, showing skeleton');
+                document.getElementById('lotto-numbers').innerHTML = renderSkeletonBalls();
+            }
+
+            // Step 2: Fetch fresh data from API
             try {
                 let data = await fetchLottoData(latestDrawNo);
 
@@ -321,21 +366,31 @@
                 }
 
                 if (data && data.returnValue === 'success') {
-                    displayLatestLotto(data);
+                    console.log('✅ Fresh data received, updating with fade-in');
+                    displayLatestLotto(data, true); // With fade-in animation
                 } else {
                     console.log('⚠️ Using fallback data');
-                    displayLatestLotto(getFallbackLottoData());
+                    displayLatestLotto(getFallbackLottoData(), true);
                 }
             } catch (error) {
                 console.error('❌ Failed to fetch lotto data:', error);
-                console.log('⚠️ Using fallback data due to error');
-                displayLatestLotto(getFallbackLottoData());
+                // Keep LocalStorage data if API fails
             }
         }
 
-        function displayLatestLotto(data) {
+        function displayLatestLotto(data, animate = false) {
             const numbers = [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6];
             const bonus = data.bnusNo;
+
+            // Update with animation class
+            const container = document.getElementById('lotto-numbers');
+            if (animate) {
+                container.classList.add('updating');
+                setTimeout(() => {
+                    container.classList.remove('updating');
+                    container.classList.add('fade-in');
+                }, 100);
+            }
 
             document.getElementById('lotto-round').textContent = `${data.drwNo}회`;
             document.getElementById('lotto-date').textContent = data.drwNoDate;
@@ -346,7 +401,7 @@
                 ${createBallHTML(bonus, false)}
             `;
 
-            document.getElementById('lotto-numbers').innerHTML = html;
+            container.innerHTML = html;
 
             const firstPrize = data.firstWinamnt;
             if (firstPrize) {
@@ -355,13 +410,27 @@
             }
         }
 
-        // Fetch pension draw
+        // Fetch pension draw with instant rendering
         async function fetchLatestPensionDraw() {
+            // Step 1: Instantly render from fallback
             const pensionData = getFallbackPensionData();
-            displayLatestPension(pensionData);
+            displayLatestPension(pensionData, false);
+
+            // Step 2: Could fetch fresh data here if API available
+            // For now, pension uses fallback only
         }
 
-        function displayLatestPension(data) {
+        function displayLatestPension(data, animate = false) {
+            const container = document.getElementById('pension-numbers');
+
+            if (animate) {
+                container.classList.add('updating');
+                setTimeout(() => {
+                    container.classList.remove('updating');
+                    container.classList.add('fade-in');
+                }, 100);
+            }
+
             document.getElementById('pension-round').textContent = `${data.round}회`;
             document.getElementById('pension-date').textContent = data.date;
 
@@ -370,7 +439,7 @@
                 ${data.numbers.map(n => `<div class="pension-digit">${n}</div>`).join('')}
             `;
 
-            document.getElementById('pension-numbers').innerHTML = html;
+            container.innerHTML = html;
         }
 
         // Generate AI numbers using S_score algorithm

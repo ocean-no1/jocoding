@@ -1,0 +1,157 @@
+/* Skeleton UI and Loading States */
+
+/* Skeleton shimmer effect */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg,
+            #f0f0f0 0px,
+            #e0e0e0 40px,
+            #f0f0f0 80px);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+    border-radius: 8px;
+}
+
+/* Skeleton ball */
+.skeleton-ball {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 9px;
+}
+
+/* Skeleton pension digit */
+.skeleton-digit {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    display: inline-block;
+    margin: 0 5px;
+}
+
+/* Skeleton text */
+.skeleton-text {
+    height: 20px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.skeleton-text.large {
+    height: 32px;
+    width: 60%;
+    margin: 0 auto;
+}
+
+.skeleton-text.medium {
+    height: 24px;
+    width: 40%;
+    margin: 0 auto;
+}
+
+.skeleton-text.small {
+    height: 16px;
+    width: 30%;
+    margin: 0 auto;
+}
+
+/* Skeleton table */
+.skeleton-table {
+    width: 100%;
+    min-height: 300px;
+    border-radius: 12px;
+}
+
+/* Grid stabilization - prevent layout shift */
+.lottery-card {
+    min-height: 550px;
+    /* Increased for stability */
+}
+
+.lottery-numbers {
+    min-height: 120px;
+    /* Reserve space for balls */
+}
+
+.balls-container {
+    min-height: 100px;
+}
+
+.pension-number {
+    min-height: 80px;
+    /* Reserve space for pension digits */
+}
+
+/* Fade-in animation for data updates */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Loading container */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    padding: 20px;
+}
+
+/* Skeleton balls container */
+.skeleton-balls-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    min-height: 100px;
+    padding: 20px 0;
+}
+
+/* Skeleton pension container */
+.skeleton-pension-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    min-height: 80px;
+    padding: 20px 0;
+}
+
+/* Prevent content jump */
+.stats-section,
+.analysis-section,
+.detail-table {
+    min-height: 400px;
+    /* Reserve space for detail content */
+}
+
+/* Smooth transition for content updates */
+.lottery-round,
+.lottery-date,
+.lottery-prize {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.updating {
+    opacity: 0.5;
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pension API Test</title>
+</head>
+
+<body>
+    <h2>연금복권 최신 당첨번호 테스트</h2>
+    <pre id="output">Loading...</pre>
+    <script>
+        const CORS_PROXY = 'https://corsproxy.io/?';
+        async function fetchPension() {
+            const latestDrawNo = 1; // placeholder, will try to get from API if possible
+            // Try common endpoint pattern for pension
+            const url = `https://www.dhlottery.co.kr/common.do?method=getWin720Number&drwNo=${latestDrawNo}`;
+            try {
+                const response = await fetch(CORS_PROXY + encodeURIComponent(url));
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                document.getElementById('output').textContent = 'Error: ' + e;
+            }
+        }
+        fetchPension();
+    </script>
+</body>
+
+</html>

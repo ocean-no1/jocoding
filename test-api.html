@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 연결 테스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background: #0066CC;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0052A3;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .info {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧪 동행복권 API 연결 테스트</h1>
+
+    <div class="test-box">
+        <h2>테스트 1: 직접 연결 (CORS 오류 예상)</h2>
+        <button onclick="testDirect()">직접 연결 테스트</button>
+        <div id="result1" class="result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>테스트 2: CORS 프록시 (corsproxy.io)</h2>
+        <button onclick="testCorsProxy()">CORS 프록시 테스트</button>
+        <div id="result2" class="result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>테스트 3: 대체 CORS 프록시 (allorigins)</h2>
+        <button onclick="testAllOrigins()">AllOrigins 테스트</button>
+        <div id="result3" class="result"></div>
+    </div>
+
+    <script>
+        function calculateLatestDrawNo() {
+            const startDate = new Date('2002-12-07');
+            const today = new Date();
+            const diffTime = today - startDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffWeeks = Math.floor(diffDays / 7);
+            return diffWeeks + 1;
+        }
+
+        async function testDirect() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.innerHTML = '<span class="info">테스트 중...</span>';
+
+            const drawNo = calculateLatestDrawNo();
+            const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${drawNo}`;
+
+            try {
+                resultDiv.innerHTML += `\n<span class="info">회차: ${drawNo}</span>`;
+                resultDiv.innerHTML += `\n<span class="info">URL: ${url}</span>\n`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                resultDiv.innerHTML += `\n<span class="success">✅ 성공!</span>`;
+                resultDiv.innerHTML += `\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                resultDiv.innerHTML += `\n<span class="error">❌ 실패: ${error.message}</span>`;
+                resultDiv.innerHTML += `\n<span class="error">예상대로 CORS 오류 발생</span>`;
+            }
+        }
+
+        async function testCorsProxy() {
+            const resultDiv = document.getElementById('result2');
+            resultDiv.innerHTML = '<span class="info">테스트 중...</span>';
+
+            const drawNo = calculateLatestDrawNo();
+            const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${drawNo}`;
+            const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+
+            try {
+                resultDiv.innerHTML += `\n<span class="info">회차: ${drawNo}</span>`;
+                resultDiv.innerHTML += `\n<span class="info">프록시 URL: ${proxyUrl}</span>\n`;
+
+                const response = await fetch(proxyUrl);
+                resultDiv.innerHTML += `\n<span class="info">응답 상태: ${response.status} ${response.statusText}</span>`;
+
+                const data = await response.json();
+
+                if (data.returnValue === 'success') {
+                    resultDiv.innerHTML += `\n<span class="success">✅ 성공!</span>`;
+                    resultDiv.innerHTML += `\n회차: ${data.drwNo}`;
+                    resultDiv.innerHTML += `\n날짜: ${data.drwNoDate}`;
+                    resultDiv.innerHTML += `\n당첨번호: ${data.drwtNo1}, ${data.drwtNo2}, ${data.drwtNo3}, ${data.drwtNo4}, ${data.drwtNo5}, ${data.drwtNo6}`;
+                    resultDiv.innerHTML += `\n보너스: ${data.bnusNo}`;
+                } else {
+                    resultDiv.innerHTML += `\n<span class="error">❌ API 응답 실패</span>`;
+                    resultDiv.innerHTML += `\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML += `\n<span class="error">❌ 실패: ${error.message}</span>`;
+                console.error('Error:', error);
+            }
+        }
+
+        async function testAllOrigins() {
+            const resultDiv = document.getElementById('result3');
+            resultDiv.innerHTML = '<span class="info">테스트 중...</span>';
+
+            const drawNo = calculateLatestDrawNo();
+            const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${drawNo}`;
+            const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+
+            try {
+                resultDiv.innerHTML += `\n<span class="info">회차: ${drawNo}</span>`;
+                resultDiv.innerHTML += `\n<span class="info">프록시 URL: ${proxyUrl}</span>\n`;
+
+                const response = await fetch(proxyUrl);
+                resultDiv.innerHTML += `\n<span class="info">응답 상태: ${response.status} ${response.statusText}</span>`;
+
+                const data = await response.json();
+
+                if (data.returnValue === 'success') {
+                    resultDiv.innerHTML += `\n<span class="success">✅ 성공!</span>`;
+                    resultDiv.innerHTML += `\n회차: ${data.drwNo}`;
+                    resultDiv.innerHTML += `\n날짜: ${data.drwNoDate}`;
+                    resultDiv.innerHTML += `\n당첨번호: ${data.drwtNo1}, ${data.drwtNo2}, ${data.drwtNo3}, ${data.drwtNo4}, ${data.drwtNo5}, ${data.drwtNo6}`;
+                    resultDiv.innerHTML += `\n보너스: ${data.bnusNo}`;
+                } else {
+                    resultDiv.innerHTML += `\n<span class="error">❌ API 응답 실패</span>`;
+                    resultDiv.innerHTML += `\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML += `\n<span class="error">❌ 실패: ${error.message}</span>`;
+                console.error('Error:', error);
+            }
+        }
+
+        // 페이지 로드 시 자동으로 모든 테스트 실행
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🧪 API 테스트 페이지 로드됨');
+            console.log('예상 회차:', calculateLatestDrawNo());
+        });
+    </script>
+</body>
+
+</html>

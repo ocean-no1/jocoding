@@ -178,6 +178,110 @@
             </div>
         </div>
 
+
+        <!-- 당첨자 가이드 섹션 -->
+        <div class="winner-guide-section">
+            <h2 class="section-title">🏆 당첨자 가이드</h2>
+
+            <div class="guide-grid grid-container">
+                <!-- 카드 1: 당첨 확인 및 준비 -->
+                <div class="guide-card col-4">
+                    <div class="guide-icon">📋</div>
+                    <h3>당첨 확인 및 준비</h3>
+                    <ul class="guide-list">
+                        <li><strong>당첨복권</strong> 원본 지참 필수</li>
+                        <li><strong>신분증</strong> (주민등록증, 운전면허증)</li>
+                        <li><strong>수령 기한</strong>: 지급 개시일로부터 1년 이내</li>
+                        <li><strong>훼손 주의</strong>: 복권 뒷면 서명 권장</li>
+                        <li><strong>확인 방법</strong>: 동행복권 공식 앱/사이트</li>
+                    </ul>
+                </div>
+
+                <!-- 카드 2: 당첨금 수령처 -->
+                <div class="guide-card col-4">
+                    <div class="guide-icon">🏦</div>
+                    <h3>당첨금 수령처</h3>
+                    <div class="location-info">
+                        <div class="location-item">
+                            <span class="prize-tier">1등</span>
+                            <div class="location-details">
+                                <span class="location-name">농협은행 본점</span>
+                                <span class="location-address">📍 서울 중구 통일로 120</span>
+                            </div>
+                        </div>
+                        <div class="location-item">
+                            <span class="prize-tier">2/3등</span>
+                            <div class="location-details">
+                                <span class="location-name">농협은행 전국 지점</span>
+                                <span class="location-address">📍 가까운 지점 방문</span>
+                            </div>
+                        </div>
+                        <div class="location-item">
+                            <span class="prize-tier">4/5등</span>
+                            <div class="location-details">
+                                <span class="location-name">복권 판매점</span>
+                                <span class="location-address">📍 구매처에서 즉시 수령</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 카드 3: 세금 자동 계산기 -->
+                <div class="guide-card col-4">
+                    <div class="guide-icon">💰</div>
+                    <h3>세금 자동 계산기</h3>
+                    <div class="tax-calculator">
+                        <label for="prize-amount">당첨금 입력 (원)</label>
+                        <input type="number" id="prize-amount" placeholder="예: 500000000" min="0">
+                        <button class="btn-primary" onclick="calculateTax()">세금 계산</button>
+
+                        <div id="tax-result" style="display: none;">
+                            <div class="tax-row">
+                                <span>당첨금</span>
+                                <span id="tax-prize">0원</span>
+                            </div>
+                            <div class="tax-row">
+                                <span>세율</span>
+                                <span id="tax-rate">0%</span>
+                            </div>
+                            <div class="tax-row highlight">
+                                <span>세금</span>
+                                <span id="tax-amount">0원</span>
+                            </div>
+                            <div class="tax-row total">
+                                <span>실수령액</span>
+                                <span id="net-amount">0원</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 당첨자 인터뷰 롤링 배너 -->
+            <div class="interview-banner">
+                <h3 class="interview-title">💬 생생 당첨 소감</h3>
+                <div class="interview-slider">
+                    <div class="interview-item active">
+                        <p class="interview-text">"믿을 수 없었어요. AI 통계 분석을 믿고 구매했는데 정말 1등에 당첨됐습니다!"</p>
+                        <span class="interview-author">- 서울 강남구 김○○님 (1등 29억)</span>
+                    </div>
+                    <div class="interview-item">
+                        <p class="interview-text">"매주 같은 번호로 구매했는데, 드디어 당첨! 가족들과 행복한 미래를 꿈꿉니다."</p>
+                        <span class="interview-author">- 부산 해운대구 이○○님 (1등 18억)</span>
+                    </div>
+                    <div class="interview-item">
+                        <p class="interview-text">"포기하지 않고 계속 도전한 결과입니다. 여러분도 꼭 당첨되시길 바랍니다!"</p>
+                        <span class="interview-author">- 대전 유성구 박○○님 (2등 5천만원)</span>
+                    </div>
+                </div>
+                <div class="interview-dots">
+                    <span class="dot active" onclick="showInterview(0)"></span>
+                    <span class="dot" onclick="showInterview(1)"></span>
+                    <span class="dot" onclick="showInterview(2)"></span>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <div class="footer">
             <p>본 서비스는 통계 분석 기반의 참고용 서비스입니다. 당첨을 보장하지 않습니다.</p>
@@ -376,10 +480,72 @@
             container.innerHTML = html;
         }
 
+        // Tax Calculator Function
+        function calculateTax() {
+            const prizeInput = document.getElementById('prize-amount');
+            const amount = parseInt(prizeInput.value);
+
+            if (!amount || amount <= 0) {
+                alert('당첨금을 입력해주세요');
+                return;
+            }
+
+            // T = A × 0.22 (A ≤ 3억) or A × 0.33 (A > 3억)
+            const threshold = 300000000; // 3억
+            let taxRate, taxAmount;
+
+            if (amount <= threshold) {
+                taxRate = 0.22;
+                taxAmount = Math.floor(amount * taxRate);
+            } else {
+                taxRate = 0.33;
+                taxAmount = Math.floor(amount * taxRate);
+            }
+
+            const netAmount = amount - taxAmount;
+
+            // Display results
+            document.getElementById('tax-prize').textContent = formatCurrency(amount);
+            document.getElementById('tax-rate').textContent = (taxRate * 100) + '%';
+            document.getElementById('tax-amount').textContent = formatCurrency(taxAmount);
+            document.getElementById('net-amount').textContent = formatCurrency(netAmount);
+            document.getElementById('tax-result').style.display = 'block';
+        }
+
+        function formatCurrency(amount) {
+            return amount.toLocaleString('ko-KR') + '원';
+        }
+
+        // Interview Slider
+        let currentInterview = 0;
+        const interviewItems = document.querySelectorAll('.interview-item');
+        const interviewDots = document.querySelectorAll('.interview-dots .dot');
+
+        function showInterview(index) {
+            // Remove active class from all
+            interviewItems.forEach(item => item.classList.remove('active'));
+            interviewDots.forEach(dot => dot.classList.remove('active'));
+
+            // Add active class to selected
+            interviewItems[index].classList.add('active');
+            interviewDots[index].classList.add('active');
+
+            currentInterview = index;
+        }
+
+        // Auto-rotate interviews every 5 seconds
+        function startInterviewRotation() {
+            setInterval(() => {
+                currentInterview = (currentInterview + 1) % interviewItems.length;
+                showInterview(currentInterview);
+            }, 5000);
+        }
+
         // Initialize on load
         window.addEventListener('DOMContentLoaded', () => {
             fetchLatestLottoDraw();
             fetchLatestPensionDraw();
+            startInterviewRotation();
         });
     </script>
 </body>

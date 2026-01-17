@@ -16,13 +16,14 @@
     box-sizing: border-box;
 }
 
-/* Main Layout with Ad Spaces */
+/* Main Layout with Ad Spaces - EMERGENCY FIX */
 body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
     background: var(--bg);
     min-height: 100vh;
     display: grid;
     grid-template-columns: 180px 1fr 180px;
+    /* 좌광고 / 본문 / 우광고 */
 }
 
 /* Ad Spaces */
@@ -53,14 +54,16 @@ body {
     white-space: pre;
 }
 
-/* Main Content Area */
+/* Main Content Area - FORCED CENTER POSITIONING */
 .main-content {
     grid-column: 2;
+    /* 무조건 중앙에 배치 */
     width: 100%;
     max-width: 1000px;
     margin: 0 auto;
-    /* CRITICAL: Center alignment */
-    padding: 0;
+    /* 내부 중앙 정렬 */
+    padding: 0 40px;
+    /* 여백 확보 */
 }
 
 /* 12-Column Grid Container */
@@ -68,9 +71,7 @@ body {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 20px;
-    padding: 0 20px;
     justify-content: center;
-    /* Center grid items */
     align-items: start;
 }
 
@@ -235,21 +236,19 @@ body {
     min-height: 100px;
 }
 
-/* Ball - MAXIMUM SIZE for visibility */
+/* Ball - OFFICIAL SIZE 70px */
 .ball {
-    width: 75px;
-    /* Increased from 70px */
-    height: 75px;
+    width: 70px;
+    /* 공식 사이트 규격 */
+    height: 70px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 2rem;
-    /* Increased from 1.8rem */
+    font-size: 1.8rem;
     color: white;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-    /* Enhanced shadow */
     cursor: default;
 }
 
@@ -273,6 +272,33 @@ body {
     background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
 }
 
+/* Slot machine animations */
+.ball.spinning {
+    animation: spin 0.3s linear infinite;
+}
+
+.ball.stopping {
+    animation: bounce 0.5s ease-out;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
 /* Prize Info */
 .lottery-prize {
     text-align: center;
@@ -294,7 +320,7 @@ body {
     color: var(--primary-orange);
 }
 
-/* Lottery Actions - ONLY BUTTONS CLICKABLE */
+/* Lottery Actions */
 .lottery-actions {
     display: flex;
     gap: 12px;
@@ -302,7 +328,7 @@ body {
     margin-top: 25px;
 }
 
-/* Buttons - ENLARGED */
+/* Buttons */
 .btn-primary,
 .btn-secondary {
     min-height: 56px;
@@ -338,7 +364,7 @@ body {
     color: white;
 }
 
-/* Pension Number Display */
+/* Pension Number Display - OFFICIAL SIZE 60px */
 .pension-number {
     display: flex;
     justify-content: center;
@@ -361,6 +387,7 @@ body {
     background: var(--primary-blue);
     color: white;
     width: 60px;
+    /* 공식 사이트 규격 */
     height: 60px;
     display: flex;
     align-items: center;

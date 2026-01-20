@@ -418,10 +418,37 @@
     </div>
 
     <script src="js/common.js"></script>
+    <script src="js/fallback-data.js"></script>
     <script>
         let selectedYears = 1;
         let selectedFaceShape = '';
         let selectedForehead = '';
+
+        // Load latest pension data from fallback
+        function loadLatestPensionData() {
+            if (typeof getFallbackPensionData === 'function') {
+                const data = getFallbackPensionData();
+                console.log('⚡ Instant render from fallback-data.js');
+
+                document.getElementById('current-draw-number').textContent = `${data.round}회`;
+                document.getElementById('current-draw-date').textContent = data.date.replace(/-/g, '.');
+
+                // Update main numbers display
+                const mainContainer = document.querySelector('.pension-number');
+                mainContainer.innerHTML = `
+                    <div class="pension-group">${data.group}조</div>
+                    ${data.numbers.map(n => `<div class="pension-digit">${n}</div>`).join('')}
+                `;
+
+                // Update bonus numbers display
+                const bonusContainers = document.querySelectorAll('.pension-number');
+                if (bonusContainers[1]) {
+                    bonusContainers[1].innerHTML = data.bonus.map(n =>
+                        `<div class="pension-digit">${n}</div>`
+                    ).join('');
+                }
+            }
+        }
 
         // Simulated pension lottery data (since there's no public API)
         // In production, this would scrape from the official website
@@ -626,6 +653,7 @@
 
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
+            loadLatestPensionData(); // Load latest pension data first
             analyzeStatistics();
         });
     </script>

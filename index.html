@@ -320,6 +320,7 @@
         <script src="js/common.js"></script>
         <script src="js/fallback-data.js"></script>
         <script src="js/stats-data.js"></script>
+        <script src="js/pension-recent-data.js"></script>
         <script>
             // Calculate latest draw number
             function calculateLatestDrawNo() {
@@ -724,8 +725,9 @@
             async function changePensionRound(direction) {
                 const newRound = currentPensionRound + direction;
 
-                // 최소 1회, 최대 298회 (임시)
-                if (newRound < 1 || newRound > 298) {
+                // 최신 4회차만 지원
+                const latestRound = 576;
+                if (newRound < latestRound - 3 || newRound > latestRound) {
                     return;
                 }
 
@@ -734,12 +736,17 @@
                 // 로딩 표시
                 document.getElementById('pension-numbers').innerHTML = renderSkeletonPension();
 
-                // 연금복권은 API가 없으므로 fallback만 표시
-                setTimeout(() => {
+                // pension-recent-data.js에서 데이터 가져오기
+                const data = (typeof getPensionRecentData === 'function')
+                    ? getPensionRecentData(newRound)
+                    : null;
+
+                if (data) {
+                    displayPension(data, true);
+                } else {
                     const fallback = getFallbackPensionData();
-                    fallback.round = newRound;
                     displayPension(fallback, true);
-                }, 500);
+                }
             }
 
             window.addEventListener('DOMContentLoaded', function () {

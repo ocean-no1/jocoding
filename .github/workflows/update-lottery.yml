@@ -1,0 +1,59 @@
+name: 로또 & 연금복권 자동 업데이트
+
+on:
+  schedule:
+    # 매주 토요일 21:30 KST (로또 추첨 후)
+    - cron: '30 12 * * 6'  # UTC 12:30 = KST 21:30
+    # 매주 목요일 21:00 KST (연금복권 추첨 후)
+    - cron: '0 12 * * 4'   # UTC 12:00 = KST 21:00
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  update-lottery-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 저장소 체크아웃
+      uses: actions/checkout@v3
+      
+    - name: Python 환경 설정
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: 의존성 설치
+      run: |
+        pip install requests beautifulsoup4
+        
+    - name: 로또 6/45 최신 데이터 업데이트
+      run: |
+        python3 scripts/update_latest_draw.py || echo "로또 업데이트 실패"
+        
+    - name: 연금복권 720+ 최신 데이터 업데이트
+      run: |
+        echo "298" | python3 scripts/update_pension_draw.py || echo "연금복권 업데이트 실패"
+        
+    - name: 변경사항 확인
+      id: check_changes
+      run: |
+        git diff --quiet js/fallback-data.js || echo "changed=true" >> $GITHUB_OUTPUT
+        
+    - name: Git 설정
+      if: steps.check_changes.outputs.changed == 'true'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "GitHub Actions Bot"
+        
+    - name: 변경사항 커밋 & 푸시
+      if: steps.check_changes.outputs.changed == 'true'
+      run: |
+        TIMESTAMP=$(date '+%Y-%m-%d %H:%M KST')
+        git add js/fallback-data.js
+        git commit -m "chore: 자동 업데이트 - $TIMESTAMP
+
+        - 로또 6/45 최신 회차 업데이트
+        - 연금복권 720+ 최신 회차 업데이트
+        - GitHub Actions 자동 실행"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

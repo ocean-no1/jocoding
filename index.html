@@ -448,13 +448,24 @@
 
             // Fetch pension draw with instant rendering
             async function fetchLatestPension() {
-                // Immediate display - no skeleton
-                console.log('📦 Displaying pension fallback data immediately');
-                const fallback = getFallbackPensionData();
-                displayPension(fallback, false);
+                // Immediate display from pension-recent-data.js
+                console.log('📦 Displaying pension data from pension-recent-data.js');
+
+                const latestRound = currentPensionRound;
+                const data = (typeof getPensionRecentData === 'function')
+                    ? getPensionRecentData(latestRound)
+                    : null;
+
+                if (data) {
+                    displayPension(data, false);
+                } else {
+                    // Fallback to FALLBACK_PENSION_DATA
+                    const fallback = getFallbackPensionData();
+                    displayPension(fallback, false);
+                }
 
                 // Note: Pension lottery doesn't have a reliable API
-                // We rely on manual updates via update_pension_draw.py script
+                // We rely on manual updates via update_pension_recent.py script
             }
 
             function displayPension(data, animate = false) {
@@ -686,7 +697,7 @@
             let currentLottoRound = calculateLatestDrawNo();
             let currentPensionRound = (typeof PENSION_RECENT_DATA !== 'undefined')
                 ? Math.max(...Object.keys(PENSION_RECENT_DATA).map(k => parseInt(k)))
-                : 576;
+                : 298;
 
             async function changeLottoRound(direction) {
                 const newRound = currentLottoRound + direction;

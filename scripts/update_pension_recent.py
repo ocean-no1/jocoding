@@ -24,24 +24,32 @@ def fetch_pension_round_from_naver(round_no):
         soup = BeautifulSoup(response.text, 'html.parser')
         text = soup.get_text()
         
-        # "3조 960211" 형태로 찾기
-        lottery_match = re.search(r'(\d+)조\s*(\d{6})', text)
-        if lottery_match:
-            group = int(lottery_match.group(1))
-            number_str = lottery_match.group(2)
-            numbers = [int(d) for d in number_str]
-            
-            # 날짜 계산 (298회 = 2026-01-15 기준)
-            base_date = datetime(2026, 1, 15)
-            date = (base_date - timedelta(weeks=(298 - round_no))).strftime('%Y-%m-%d')
-            
-            return {
-                'round': round_no,
-                'date': date,
-                'group': group,
-                'numbers': numbers,
-                'bonus': [0, 0, 0, 0, 0, 0]  # 보너스는 별도 크롤링 필요
-            }
+        # "3조 960211" 형태로 모든 패턴 찾기
+        all_matches = re.findall(r'(\d+)조\s*(\d{6})', text)
+        
+        if not all_matches:
+            return None
+        
+        # 빈도수 기반으로 가장 많이 등장하는 번호 선택 (광고/오류 제거)
+        from collections import Counter
+        match_counts = Counter(all_matches)
+        most_common = match_counts.most_common(1)[0][0]
+        
+        group = int(most_common[0])
+        number_str = most_common[1]
+        numbers = [int(d) for d in number_str]
+        
+        # 날짜 계산 (298회 = 2026-01-15 기준)
+        base_date = datetime(2026, 1, 15)
+        date = (base_date - timedelta(weeks=(298 - round_no))).strftime('%Y-%m-%d')
+        
+        return {
+            'round': round_no,
+            'date': date,
+            'group': group,
+            'numbers': numbers,
+            'bonus': [0, 0, 0, 0, 0, 0]  # 보너스는 별도 크롤링 필요
+        }
         
         return None
         

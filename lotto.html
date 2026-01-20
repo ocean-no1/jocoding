@@ -633,35 +633,47 @@
 
         // Fetch latest draw
         async function fetchLatestDraw() {
-            const latestDrawNo = calculateLatestDrawNo();
-            currentDrawNo = latestDrawNo;
-
             try {
+                const latestDrawNo = calculateLatestDrawNo();
+                currentDrawNo = latestDrawNo;
+
+                // Step 1: Immediately display fallback data from stats-data.js
+                if (typeof LOTTO_HISTORY !== 'undefined' && LOTTO_HISTORY[latestDrawNo]) {
+                    const histData = LOTTO_HISTORY[latestDrawNo];
+                    const fallbackData = {
+                        drwNo: latestDrawNo,
+                        drwNoDate: histData.date,
+                        drwtNo1: histData.numbers[0],
+                        drwtNo2: histData.numbers[1],
+                        drwtNo3: histData.numbers[2],
+                        drwtNo4: histData.numbers[3],
+                        drwtNo5: histData.numbers[4],
+                        drwtNo6: histData.numbers[5],
+                        bnusNo: histData.bonus,
+                        returnValue: 'success'
+                    };
+                    console.log('⚡ Instant render from LOTTO_HISTORY');
+                    displayCurrentDraw(fallbackData);
+                }
+
+                // Step 2: Try to fetch fresh data with 2s timeout (background update)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000);
+
                 const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${latestDrawNo}`;
-                const proxyUrl = CORS_PROXY + encodeURIComponent(url);
+                const response = await fetch(url, { signal: controller.signal }).catch(() => null);
+                clearTimeout(timeoutId);
 
-                const response = await fetch(proxyUrl);
-                const proxyData = await response.json();
-                const data = JSON.parse(proxyData.contents);
-
-                if (data.returnValue === 'success') {
-                    displayCurrentDraw(data);
-                } else {
-                    // Try previous draw
-                    const prevUrl = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${latestDrawNo - 1}`;
-                    const prevResponse = await fetch(CORS_PROXY + encodeURIComponent(prevUrl));
-                    const prevProxyData = await prevResponse.json();
-                    const prevData = JSON.parse(prevProxyData.contents);
-
-                    if (prevData.returnValue === 'success') {
-                        currentDrawNo = latestDrawNo - 1;
-                        displayCurrentDraw(prevData);
+                if (response && response.ok) {
+                    const data = await response.json();
+                    if (data.returnValue === 'success') {
+                        console.log('✅ Fresh data received');
+                        displayCurrentDraw(data);
                     }
                 }
             } catch (error) {
-                console.error('Failed to fetch draw:', error);
-                document.getElementById('current-draw-balls').innerHTML =
-                    '<p style="color: var(--text-muted);">최신 당첨번호를 불러올 수 없습니다.</p>';
+                console.log('📦 Using fallback data only');
+                // Fallback already displayed in step 1
             }
         }
 

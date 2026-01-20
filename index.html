@@ -445,16 +445,17 @@
             }
 
             // Fetch pension draw with instant rendering
-            async function fetchLatestPensionDraw() {
-                // Step 1: Instantly render from fallback
-                const pensionData = getFallbackPensionData();
-                displayLatestPension(pensionData, false);
+            async function fetchLatestPension() {
+                // Immediate display - no skeleton
+                console.log('📦 Displaying pension fallback data immediately');
+                const fallback = getFallbackPensionData();
+                displayPension(fallback, false);
 
-                // Step 2: Could fetch fresh data here if API available
-                // For now, pension uses fallback only
+                // Note: Pension lottery doesn't have a reliable API
+                // We rely on manual updates via update_pension_draw.py script
             }
 
-            function displayLatestPension(data, animate = false) {
+            function displayPension(data, animate = false) {
                 const container = document.getElementById('pension-numbers');
 
                 if (animate) {

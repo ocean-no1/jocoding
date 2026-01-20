@@ -1,5 +1,5 @@
 // Fallback data for when API calls fail
-// Updated: 2026-01-20 (실제 공식 당첨번호 반영)
+// Updated: 2026-01-21 (실제 공식 당첨번호 반영)
 const FALLBACK_LOTTO_DATA = {
     drwNo: 1207,
     drwNoDate: "2026-01-17",

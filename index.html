@@ -373,15 +373,26 @@
                         const { data } = JSON.parse(cached);
                         console.log('⚡ Instant render from LocalStorage');
                         displayLatestLotto(data, false); // No animation for instant render
+                    } else {
+                        // No cache - show fallback immediately instead of skeleton
+                        console.log('📦 No cache - using fallback data immediately');
+                        displayLatestLotto(getFallbackLottoData(), false);
                     }
                 } catch (e) {
-                    console.warn('No cached data, showing skeleton');
-                    document.getElementById('lotto-numbers').innerHTML = renderSkeletonBalls();
+                    console.warn('Using hardcoded fallback');
+                    displayLatestLotto(getFallbackLottoData(), false);
                 }
 
-                // Step 2: Fetch fresh data from API
+                // Step 2: Fetch fresh data from API with 2s timeout
                 try {
-                    let data = await fetchLottoData(latestDrawNo);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2초 타임아웃
+
+                    let data = await fetch(`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${latestDrawNo}`, {
+                        signal: controller.signal
+                    }).then(res => res.json()).catch(() => null);
+
+                    clearTimeout(timeoutId);
 
                     if (!data) {
                         console.log('Trying previous draw...');

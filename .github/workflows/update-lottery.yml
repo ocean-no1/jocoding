@@ -29,9 +29,9 @@ jobs:
       run: |
         python3 scripts/update_latest_draw.py || echo "로또 업데이트 실패"
         
-    - name: 연금복권 720+ 최신 데이터 업데이트
+    - name: 연금복권 720+ 최신 데이터 업데이트 (네이버 크롤링)
       run: |
-        echo "298" | python3 scripts/update_pension_draw.py || echo "연금복권 업데이트 실패"
+        python3 scripts/update_pension_naver.py || echo "연금복권 업데이트 실패"
         
     - name: 변경사항 확인
       id: check_changes

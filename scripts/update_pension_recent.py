@@ -31,13 +31,9 @@ def fetch_pension_round_from_naver(round_no):
             number_str = lottery_match.group(2)
             numbers = [int(d) for d in number_str]
             
-            # 날짜 찾기
-            date_match = re.search(r'(\d{4})\.(\d{1,2})\.(\d{1,2})', text)
-            if date_match:
-                year, month, day = date_match.groups()
-                date = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
-            else:
-                date = (datetime.now() - timedelta(weeks=(298 - round_no))).strftime('%Y-%m-%d')
+            # 날짜 계산 (298회 = 2026-01-15 기준)
+            base_date = datetime(2026, 1, 15)
+            date = (base_date - timedelta(weeks=(298 - round_no))).strftime('%Y-%m-%d')
             
             return {
                 'round': round_no,
@@ -59,7 +55,7 @@ def main():
     print("=" * 60)
     
     # 최신 회차 계산
-    start_date = datetime(2015, 1, 8)  # 1회차 추첨일
+    start_date = datetime(2020, 5, 7)  # 연금복권 720+ 1회차 추첨일
     today = datetime.now()
     weeks = (today - start_date).days // 7
     latest_round = weeks + 1

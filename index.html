@@ -689,8 +689,12 @@
             async function changeLottoRound(direction) {
                 const newRound = currentLottoRound + direction;
 
-                // 최소 1회, 최대 최신 회차
-                if (newRound < 1 || newRound > calculateLatestDrawNo()) {
+                // 최신 4회차만 지원 (lotto-recent-data.js에서 동적으로)
+                const latestRound = (typeof LOTTO_RECENT_DATA !== 'undefined')
+                    ? Math.max(...Object.keys(LOTTO_RECENT_DATA).map(k => parseInt(k)))
+                    : calculateLatestDrawNo();
+
+                if (newRound < latestRound - 3 || newRound > latestRound) {
                     return;
                 }
 
@@ -699,24 +703,27 @@
                 // 로딩 표시
                 document.getElementById('lotto-numbers').innerHTML = renderSkeletonBalls();
 
-                // LOTTO_HISTORY에서 데이터 가져오기
-                if (typeof LOTTO_HISTORY !== 'undefined' && LOTTO_HISTORY[newRound]) {
-                    const histData = LOTTO_HISTORY[newRound];
-                    const data = {
-                        drwNo: newRound,
-                        drwNoDate: histData.date,
-                        drwtNo1: histData.numbers[0],
-                        drwtNo2: histData.numbers[1],
-                        drwtNo3: histData.numbers[2],
-                        drwtNo4: histData.numbers[3],
-                        drwtNo5: histData.numbers[4],
-                        drwtNo6: histData.numbers[5],
-                        bnusNo: histData.bonus,
-                        firstWinamnt: histData.prize || 30000000000,  // 실제 당첨금 사용
-                        firstPrzwnerCo: histData.winners || 10,
+                // lotto-recent-data.js에서 데이터 가져오기
+                const data = (typeof getLottoRecentData === 'function')
+                    ? getLottoRecentData(newRound)
+                    : null;
+
+                if (data) {
+                    const lottoData = {
+                        drwNo: data.round,
+                        drwNoDate: data.date,
+                        drwtNo1: data.numbers[0],
+                        drwtNo2: data.numbers[1],
+                        drwtNo3: data.numbers[2],
+                        drwtNo4: data.numbers[3],
+                        drwtNo5: data.numbers[4],
+                        drwtNo6: data.numbers[5],
+                        bnusNo: data.bonus,
+                        firstWinamnt: data.prize,
+                        firstPrzwnerCo: data.winners,
                         returnValue: 'success'
                     };
-                    displayLatestLotto(data, true);
+                    displayLatestLotto(lottoData, true);
                 } else {
                     document.getElementById('lotto-numbers').innerHTML =
                         '<p style="color: var(--text-muted);">해당 회차 데이터를 찾을 수 없습니다.</p>';

@@ -20,24 +20,27 @@ def extract_lotto_history():
             # 1207: { date: "2026-01-17", ... } 형태
             
             rounds = {}
+            current_round = None
+            
             for line in history_str.split('\n'):
                 round_match = re.search(r'(\d+):\s*\{', line)
                 if round_match:
                     current_round = round_match.group(1)
                     rounds[current_round] = {'numbers': [], 'bonus': 0, 'date': ''}
                 
-                date_match = re.search(r'date:\s*"([^"]+)"', line)
-                if date_match and current_round:
-                    rounds[current_round]['date'] = date_match.group(1)
-                
-                numbers_match = re.search(r'numbers:\s*\[([^\]]+)\]', line)
-                if numbers_match and current_round:
-                    nums = [int(n.strip()) for n in numbers_match.group(1).split(',')]
-                    rounds[current_round]['numbers'] = nums
-                
-                bonus_match = re.search(r'bonus:\s*(\d+)', line)
-                if bonus_match and current_round:
-                    rounds[current_round]['bonus'] = int(bonus_match.group(1))
+                if current_round:
+                    date_match = re.search(r'date:\s*["\']([^"\']+)["\']', line)
+                    if date_match:
+                        rounds[current_round]['date'] = date_match.group(1)
+                    
+                    numbers_match = re.search(r'numbers:\s*\[([^\]]+)\]', line)
+                    if numbers_match:
+                        nums = [int(n.strip()) for n in numbers_match.group(1).split(',')]
+                        rounds[current_round]['numbers'] = nums
+                    
+                    bonus_match = re.search(r'bonus:\s*(\d+)', line)
+                    if bonus_match:
+                        rounds[current_round]['bonus'] = int(bonus_match.group(1))
             
             return rounds
         

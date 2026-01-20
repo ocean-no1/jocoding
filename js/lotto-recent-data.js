@@ -1,9 +1,9 @@
 // 로또 6/45 최신 4회차 데이터
-// 자동 생성: 2026-01-21 02:28
+// 자동 생성: 2026-01-21 02:36
 const LOTTO_RECENT_DATA = {
     "1204": {
         "round": 1204,
-        "date": "",
+        "date": "2025-12-27",
         "numbers": [
             8,
             16,
@@ -18,7 +18,7 @@ const LOTTO_RECENT_DATA = {
     },
     "1205": {
         "round": 1205,
-        "date": "",
+        "date": "2026-01-03",
         "numbers": [
             1,
             4,
@@ -33,7 +33,7 @@ const LOTTO_RECENT_DATA = {
     },
     "1206": {
         "round": 1206,
-        "date": "",
+        "date": "2026-01-10",
         "numbers": [
             1,
             3,
@@ -48,7 +48,7 @@ const LOTTO_RECENT_DATA = {
     },
     "1207": {
         "round": 1207,
-        "date": "",
+        "date": "2026-01-17",
         "numbers": [
             10,
             22,

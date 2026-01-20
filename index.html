@@ -684,7 +684,9 @@
             // Initialize on load
             // 회차 변경 함수
             let currentLottoRound = calculateLatestDrawNo();
-            let currentPensionRound = 298;
+            let currentPensionRound = (typeof PENSION_RECENT_DATA !== 'undefined')
+                ? Math.max(...Object.keys(PENSION_RECENT_DATA).map(k => parseInt(k)))
+                : 576;
 
             async function changeLottoRound(direction) {
                 const newRound = currentLottoRound + direction;

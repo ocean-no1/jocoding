@@ -12,19 +12,32 @@ import re
 from datetime import datetime
 
 def fetch_latest_draw():
-    """최신 회차 번호 가져오기"""
-    # 현재 날짜 기준으로 예상 회차 계산 (2002-12-07부터 매주 토요일)
-    from datetime import datetime, timedelta
+    """최신 회차 번호 가져오기 (User-Agent 헤더 포함)"""
+    from datetime import datetime
     start_date = datetime(2002, 12, 7)
     today = datetime.now()
     weeks = (today - start_date).days // 7
     estimated_draw = weeks + 1
     
+    # 브라우저 헤더 추가 (API 차단 방지)
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Referer': 'https://www.dhlottery.co.kr/'
+    }
+    
     # 최신 3개 회차 시도
     for draw_no in range(estimated_draw, estimated_draw - 3, -1):
         try:
             url = f"https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo={draw_no}"
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, headers=headers, timeout=10)
+            
+            # JSON 파싱 전에 응답 확인
+            if response.status_code != 200:
+                print(f"⚠️ Draw {draw_no}: HTTP {response.status_code}")
+                continue
+                
             data = response.json()
             
             if data.get('returnValue') == 'success':
@@ -41,8 +54,14 @@ def fetch_latest_draw():
                     'firstWinamnt': data.get('firstWinamnt', 0),
                     'firstPrzwnerCo': data.get('firstPrzwnerCo', 0)
                 }
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Draw {draw_no} network error: {e}")
+            continue
+        except json.JSONDecodeError as e:
+            print(f"❌ Draw {draw_no} JSON parse error: {e}")
+            continue
         except Exception as e:
-            print(f"❌ Draw {draw_no} failed: {e}")
+            print(f"❌ Draw {draw_no} unexpected error: {e}")
             continue
     
     return None

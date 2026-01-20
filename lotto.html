@@ -637,10 +637,18 @@
                 const latestDrawNo = calculateLatestDrawNo();
                 currentDrawNo = latestDrawNo;
 
-                // Step 1: Immediately display fallback data from stats-data.js
-                if (typeof LOTTO_HISTORY !== 'undefined' && LOTTO_HISTORY[latestDrawNo]) {
+                // Step 1: Immediately display fallback data
+                const fallbackData = (typeof getFallbackLottoData === 'function')
+                    ? getFallbackLottoData()
+                    : null;
+
+                if (fallbackData) {
+                    console.log('⚡ Instant render from fallback-data.js');
+                    displayCurrentDraw(fallbackData);
+                } else if (typeof LOTTO_HISTORY !== 'undefined' && LOTTO_HISTORY[latestDrawNo]) {
+                    // Fallback to LOTTO_HISTORY
                     const histData = LOTTO_HISTORY[latestDrawNo];
-                    const fallbackData = {
+                    const data = {
                         drwNo: latestDrawNo,
                         drwNoDate: histData.date,
                         drwtNo1: histData.numbers[0],
@@ -653,7 +661,7 @@
                         returnValue: 'success'
                     };
                     console.log('⚡ Instant render from LOTTO_HISTORY');
-                    displayCurrentDraw(fallbackData);
+                    displayCurrentDraw(data);
                 }
 
                 // Step 2: Try to fetch fresh data with 2s timeout (background update)

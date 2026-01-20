@@ -27,20 +27,23 @@ jobs:
         
     - name: 로또 6/45 최신 데이터 업데이트 (네이버 크롤링)
       run: |
+        cd 1주차
         python3 scripts/update_lotto_naver.py || python3 scripts/update_latest_draw.py || echo "로또 업데이트 실패"
         
     - name: 연금복권 720+ 최신 데이터 업데이트 (네이버 크롤링)
       run: |
+        cd 1주차
         python3 scripts/update_pension_naver.py || echo "연금복권 업데이트 실패"
         
     - name: 연금복권 최신 4회차 데이터 업데이트
       run: |
+        cd 1주차
         python3 scripts/update_pension_recent.py || echo "연금복권 4회차 업데이트 실패"
         
     - name: 변경사항 확인
       id: check_changes
       run: |
-        git diff --quiet js/fallback-data.js js/pension-recent-data.js || echo "changed=true" >> $GITHUB_OUTPUT
+        git diff --quiet 1주차/js/fallback-data.js 1주차/js/pension-recent-data.js || echo "changed=true" >> $GITHUB_OUTPUT
         
     - name: Git 설정
       if: steps.check_changes.outputs.changed == 'true'
@@ -52,7 +55,7 @@ jobs:
       if: steps.check_changes.outputs.changed == 'true'
       run: |
         TIMESTAMP=$(date '+%Y-%m-%d %H:%M KST')
-        git add js/fallback-data.js js/pension-recent-data.js
+        git add 1주차/js/fallback-data.js 1주차/js/pension-recent-data.js
         git commit -m "chore: 자동 업데이트 - $TIMESTAMP
 
         - 로또 6/45 최신 회차 업데이트

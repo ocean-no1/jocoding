@@ -34,6 +34,41 @@
     margin-bottom: 12px;
 }
 
+.lottery-round-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.nav-arrow {
+    background: transparent;
+    border: none;
+    color: var(--primary-blue);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: all 0.3s;
+    opacity: 0.6;
+}
+
+.nav-arrow:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.nav-arrow:active {
+    transform: scale(1.1);
+}
+
+.lottery-round {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin: 0;
+}
+
 .time-label {
     font-size: 1.2rem;
     font-weight: 700;

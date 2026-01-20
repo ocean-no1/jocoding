@@ -891,6 +891,61 @@
             return Array.from(numbers).sort((a, b) => a - b);
         }
 
+        // Time card selection for fortune telling
+        let selectedBirthTime = '';
+        document.querySelectorAll('.time-card').forEach(card => {
+            card.addEventListener('click', function () {
+                document.querySelectorAll('.time-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedBirthTime = this.dataset.time;
+            });
+        });
+
+        // Override generateFortuneNumbers to use selected time
+        const originalGenerateFortuneNumbers = generateFortuneNumbers;
+        generateFortuneNumbers = function () {
+            const birthDate = document.getElementById('birth-date').value;
+
+            if (!birthDate || !selectedBirthTime) {
+                alert('생년월일과 태어난 시간을 모두 입력해주세요.');
+                return;
+            }
+
+            const date = new Date(birthDate);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            // Simple fortune algorithm based on birth data
+            const seed = year + month * 100 + day * 10000 + selectedBirthTime.charCodeAt(0);
+            const numbers = generateLuckyNumbers(seed, 6);
+
+            const elements = ['금(金)', '목(木)', '수(水)', '화(火)', '토(土)'];
+            const element = elements[year % 5];
+
+            document.getElementById('fortune-description').innerHTML = `
+                <strong>오행:</strong> ${element}<br>
+                <strong>해석:</strong> ${year}년생은 ${element} 기운이 강합니다. 
+                ${month}월 ${day}일생은 ${getFortuneMessage(month, day)}
+                ${selectedBirthTime === 'dawn' ? '새벽' : selectedBirthTime === 'morning' ? '아침' : selectedBirthTime === 'noon' ? '점심' : selectedBirthTime === 'afternoon' ? '오후' : selectedBirthTime === 'evening' ? '저녁' : '밤'} 시간대는 ${getTimeFortune(selectedBirthTime)} 행운의 번호를 추천합니다.
+            `;
+
+            document.getElementById('fortune-numbers').innerHTML = renderBalls(numbers, false);
+            document.getElementById('fortune-result').classList.add('show');
+        };
+
+        function getTimeFortune(timeKey) {
+            const fortunes = {
+                'dawn': '밤의 고요함 속에서',
+                'morning': '새벽의 맑은 기운으로',
+                'noon': '한낮의 왕성한 에너지로',
+                'afternoon': '오후의 활력으로',
+                'evening': '저녁의 안정된 기운으로',
+                'night': '밤의 깊은 사색으로'
+            };
+            return fortunes[timeKey] || '맑은 기운으로';
+        }
+
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             fetchLatestDraw();

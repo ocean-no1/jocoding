@@ -19,8 +19,8 @@ const FALLBACK_PENSION_DATA = {
     round: 298,
     date: "2026-01-15",
     group: 3,
-    numbers: [0, 9, 6, 0, 2, 1],
-    bonus: [4, 9, 2, 8, 4, 5]
+    numbers: [9, 6, 0, 2, 1, 1],  // 실제 공식 당첨번호: 960211
+    bonus: [4, 9, 2, 8, 4, 5]     // 보너스 각조: 492845
 };
 
 // Get fallback data - check LocalStorage first for latest successful fetch

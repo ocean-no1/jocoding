@@ -417,8 +417,9 @@
                 style="color: var(--primary-blue);">dhlottery.co.kr</a></p>
     </div>
 
-    <script src="js/common.js"></script>
-    <script src="js/fallback-data.js"></script>
+    <script src="js/utils.js?v=20260121"></script>
+    <script src="js/common.js?v=20260121"></script>
+    <script src="js/fallback-data.js?v=20260121"></script>
     <script>
         let selectedYears = 1;
         let selectedFaceShape = '';
@@ -428,7 +429,7 @@
         function loadLatestPensionData() {
             if (typeof getFallbackPensionData === 'function') {
                 const data = getFallbackPensionData();
-                console.log('⚡ Instant render from fallback-data.js');
+                logger.log('⚡ Instant render from fallback-data.js');
 
                 document.getElementById('current-draw-number').textContent = `${data.round}회`;
                 document.getElementById('current-draw-date').textContent = data.date.replace(/-/g, '.');

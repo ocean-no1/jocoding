@@ -620,11 +620,12 @@
                 style="color: var(--primary-blue);">dhlottery.co.kr</a></p>
     </div>
 
-    <script src="js/common.js"></script>
-    <script src="js/fallback-data.js"></script>
-    <script src="js/stats-data.js"></script>
-    <script src="js/face-reading-control.js"></script>
-    <script src="js/lotto-enhanced.js"></script>
+    <script src="js/utils.js?v=20260121"></script>
+    <script src="js/common.js?v=20260121"></script>
+    <script src="js/fallback-data.js?v=20260121"></script>
+    <script src="js/stats-data.js?v=20260121"></script>
+    <script src="js/face-reading-control.js?v=20260121"></script>
+    <script src="js/lotto-enhanced.js?v=20260121"></script>
     <script>
         let currentDrawNo = 0;
         let selectedYears = 5;
@@ -643,7 +644,7 @@
                     : null;
 
                 if (fallbackData) {
-                    console.log('⚡ Instant render from fallback-data.js');
+                    logger.log('⚡ Instant render from fallback-data.js');
                     displayCurrentDraw(fallbackData);
                 } else if (typeof LOTTO_HISTORY !== 'undefined' && LOTTO_HISTORY[latestDrawNo]) {
                     // Fallback to LOTTO_HISTORY
@@ -660,7 +661,7 @@
                         bnusNo: histData.bonus,
                         returnValue: 'success'
                     };
-                    console.log('⚡ Instant render from LOTTO_HISTORY');
+                    logger.log('⚡ Instant render from LOTTO_HISTORY');
                     displayCurrentDraw(data);
                 }
 
@@ -675,12 +676,12 @@
                 if (response && response.ok) {
                     const data = await response.json();
                     if (data.returnValue === 'success') {
-                        console.log('✅ Fresh data received');
+                        logger.log('✅ Fresh data received');
                         displayCurrentDraw(data);
                     }
                 }
             } catch (error) {
-                console.log('📦 Using fallback data only');
+                logger.log('📦 Using fallback data only');
                 // Fallback already displayed in step 1
             }
         }
@@ -730,7 +731,7 @@
                 // Calculate frequency from LOTTO_HISTORY
                 const frequency = calculateFrequency(startDrawNo, currentDrawNo);
 
-                console.log(`✅ 통계 계산 완료: ${startDrawNo}회 ~ ${currentDrawNo}회 (${selectedYears}년)`);
+                logger.log(`✅ 통계 계산 완료: ${startDrawNo}회 ~ ${currentDrawNo}회 (${selectedYears}년)`);
                 displayStatistics(frequency);
             } else {
                 // Fallback to API method

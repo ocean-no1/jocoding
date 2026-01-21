@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482753613081557"
+        crossorigin="anonymous"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자주 묻는 질문 (FAQ) - 동행복권 AI 통계 분석</title>
+    <meta name="description" content="동행복권 AI 통계 분석 서비스에 대한 자주 묻는 질문과 답변을 확인하세요.">
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .faq-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px 20px;
+        }
+
+        .faq-hero {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 24px;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .faq-hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .faq-item {
+            background: white;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .faq-question {
+            padding: 25px 30px;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe5f1 100%);
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #c2185b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .faq-question:hover {
+            background: linear-gradient(135deg, #ffd9ee 0%, #ffcce5 100%);
+        }
+
+        .faq-question::after {
+            content: '▼';
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active::after {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-answer.active {
+            padding: 25px 30px;
+            max-height: 1000px;
+        }
+
+        .faq-answer p {
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .faq-answer ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .faq-answer li {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .faq-answer strong {
+            color: var(--primary-blue);
+        }
+
+        .category {
+            margin-bottom: 40px;
+        }
+
+        .category h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #c2185b;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #f093fb;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin: 40px auto;
+            padding: 14px 32px;
+            background: #f093fb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #f5576c;
+            transform: translateY(-2px);
+        }
+
+        .button-container {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>자주 묻는 질문</h1>
+    </div>
+
+    <div class="faq-container">
+        <div class="faq-hero">
+            <h1>❓ 자주 묻는 질문 (FAQ)</h1>
+            <p>궁금한 사항을 빠르게 확인하세요</p>
+        </div>
+
+        <!-- 서비스 관련 -->
+        <div class="category">
+            <h2>🔧 서비스 관련</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q1. 이 서비스는 무료인가요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        네, <strong>완전 무료</strong>입니다. 회원가입도 필요 없고, 모든 기능을 제한 없이 사용하실 수 있습니다.
+                        서비스 운영을 위한 최소한의 광고(Google AdSense)만 표시되며, 이는 서버 유지비와 개발비를 충당하는 데 사용됩니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q2. 개인정보를 수집하나요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        <strong>아니요</strong>. 우리 서비스는 회원가입이 없으며, 이름, 이메일, 전화번호 등 어떠한 개인정보도 수집하지 않습니다.
+                        쿠키는 Google AdSense가 광고 타겟팅을 위해 사용할 수 있으나, 이는 익명 데이터이며
+                        브라우저 설정에서 쿠키를 차단하실 수 있습니다.
+                    </p>
+                    <p>
+                        자세한 내용은 <a href="privacy.html"
+                            style="color: var(--primary-blue); font-weight: 600;">개인정보처리방침</a>을 확인하세요.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q3. 모바일에서도 사용할 수 있나요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        네, 모든 기능이 <strong>PC, 태블릿, 스마트폰</strong>에서 완벽하게 작동하도록 반응형으로 제작되었습니다.
+                        언제 어디서나 편리하게 이용하세요!
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q4. 동행복권 공식 서비스인가요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        <strong>아니요</strong>. 본 서비스는 동행복권과 공식적인 제휴 관계가 없는 <strong>독립 서비스</strong>입니다.
+                        동행복권 공식 API와 웹사이트에서 제공하는 공개 데이터를 활용하여 통계 분석 서비스를 제공합니다.
+                    </p>
+                    <p>
+                        복권 구매는 반드시 <a href="https://dhlottery.co.kr" target="_blank"
+                            style="color: var(--primary-blue); font-weight: 600;">동행복권 공식 사이트</a>나
+                        가까운 복권 판매점을 이용하세요.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI 추천 관련 -->
+        <div class="category">
+            <h2>🤖 AI 추천 관련</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q5. AI 추천 번호는 어떻게 만들어지나요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        우리의 <strong>S-Score(Statistical Score) 알고리즘</strong>은 다음 요소를 종합적으로 분석합니다:
+                    </p>
+                    <ul>
+                        <li><strong>출현 빈도</strong>: 역대 당첨번호에서 각 숫자가 나온 횟수</li>
+                        <li><strong>최근 트렌드</strong>: 최근 회차에 더 높은 가중치 부여</li>
+                        <li><strong>간격 분석</strong>: 번호 사이의 평균 간격과 표준편차</li>
+                        <li><strong>조합 분석</strong>: 함께 나온 번호들의 상관관계</li>
+                    </ul>
+                    <p>
+                        이러한 통계적 분석을 통해 "무작위"보다는 조금 더 "의미 있는" 번호를 추천합니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q6. AI 추천 번호를 사용하면 당첨 확률이 높아지나요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        <strong>아니요</strong>. 복권은 완전히 무작위로 추첨되기 때문에,
+                        어떤 번호를 선택하든 <strong>당첨 확률은 동일</strong>합니다.
+                    </p>
+                    <p>
+                        AI 추천은 통계적 패턴을 바탕으로 "재미있는" 선택지를 제공하는 것이며,
+                        당첨을 보장하거나 확률을 높이는 것이 아닙니다.
+                        오락과 의사결정의 즐거움을 더하는 도구로 활용하세요.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q7. 데이터는 어디서 가져오나요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        모든 당첨번호 데이터는 <strong>동행복권 공식 API</strong> 및 <strong>네이버 검색 결과</strong>에서 수집합니다.
+                        (공식 사이트가 일시적으로 차단될 경우 네이버를 보조 데이터 소스로 사용합니다)
+                    </p>
+                    <p>
+                        매주 추첨 후 GitHub Actions를 통해 자동으로 최신 데이터를 업데이트하며,
+                        1회차부터 최신 회차까지의 전체 데이터를 보유하고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 당첨 및 수령 관련 -->
+        <div class="category">
+            <h2>💰 당첨 및 수령 관련</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q8. 복권에 당첨되면 어떻게 해야 하나요?
+                </div>
+                <div class="faq-answer">
+                    <p><strong>1단계: 복권 확인 및 보관</strong></p>
+                    <ul>
+                        <li>복권 뒷면에 즉시 서명 (도난 방지)</li>
+                        <li>복권을 훼손하지 않도록 안전한 곳에 보관</li>
+                        <li>당첨 사실을 함부로 공개하지 않기</li>
+                    </ul>
+                    <p><strong>2단계: 수령 장소 방문</strong></p>
+                    <ul>
+                        <li><strong>1등</strong>: 농협은행 본점 (서울 중구, 예약 필수)</li>
+                        <li><strong>2~3등</strong>: 전국 농협은행 지점</li>
+                        <li><strong>4~5등</strong>: 복권 판매점</li>
+                    </ul>
+                    <p><strong>3단계: 필요 서류 지참</strong></p>
+                    <ul>
+                        <li>당첨 복권 원본</li>
+                        <li>신분증 (주민등록증, 운전면허증, 여권)</li>
+                    </ul>
+                    <p>
+                        자세한 내용은 <a href="guide.html" style="color: var(--primary-blue); font-weight: 600;">복권 가이드</a>를
+                        참고하세요.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q9. 당첨금에서 세금은 얼마나 떼나요?
+                </div>
+                <div class="faq-answer">
+                    <p>당첨금액에 따라 세율이 다릅니다:</p>
+                    <ul>
+                        <li><strong>5만원 이하</strong>: 세금 없음</li>
+                        <li><strong>3억원 이하</strong>: 22% (소득세 20% + 지방소득세 2%)</li>
+                        <li><strong>3억원 초과</strong>: 33% (소득세 30% + 지방소득세 3%)</li>
+                    </ul>
+                    <p>
+                        예를 들어 10억원에 당첨되면 세금 3억 3천만원을 제외한 <strong>6억 7천만원</strong>을 실제로 받게 됩니다.
+                    </p>
+                    <p>
+                        본 사이트의 <strong>세금 계산기</strong>를 사용하면 실수령액을 쉽게 계산할 수 있습니다!
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q10. 복권을 잃어버렸는데 당첨금을 받을 수 있나요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        <strong>불가능합니다</strong>. 복권은 <strong>무기명 유가증권</strong>이므로,
+                        복권 원본이 없으면 당첨금을 받을 수 없습니다.
+                    </p>
+                    <p>
+                        따라서 복권을 구매한 후에는:
+                    </p>
+                    <ul>
+                        <li>뒷면에 즉시 서명하기</li>
+                        <li>사진 찍어두기 (추가 안전 장치)</li>
+                        <li>안전한 곳에 보관하기</li>
+                        <li>절대 물에 젖거나 훼손되지 않도록 주의</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 기술 및 문제 해결 -->
+        <div class="category">
+            <h2>🛠️ 기술 및 문제 해결</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q11. 최신 당첨번호가 업데이트되지 않았어요
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        당첨번호는 <strong>매주 추첨 후 자동으로 업데이트</strong>됩니다:
+                    </p>
+                    <ul>
+                        <li><strong>로또 6/45</strong>: 매주 토요일 밤 추첨 후 1시간 이내</li>
+                        <li><strong>연금복권 720+</strong>: 매주 목요일 저녁 추첨 후 1시간 이내</li>
+                    </ul>
+                    <p>
+                        만약 업데이트가 지연된다면:
+                    </p>
+                    <ul>
+                        <li>브라우저 캐시 삭제 후 새로고침 (Ctrl + Shift + R)</li>
+                        <li>공식 사이트 점검 또는 네트워크 문제일 수 있음</li>
+                        <li>24시간 이상 지연 시 <a href="https://github.com/ocean-no1/jocoding/issues" target="_blank"
+                                style="color: var(--primary-blue); font-weight: 600;">GitHub Issues</a>로 문의</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q12. 페이지가 제대로 표시되지 않아요
+                </div>
+                <div class="faq-answer">
+                    <p>다음 방법을 시도해보세요:</p>
+                    <ul>
+                        <li><strong>캐시 삭제</strong>: Ctrl + Shift + R (강력 새로고침)</li>
+                        <li><strong>브라우저 업데이트</strong>: 최신 버전의 Chrome, Edge, Safari 사용 권장</li>
+                        <li><strong>애드블록 확인</strong>: 일부 광고 차단 프로그램이 페이지를 방해할 수 있음</li>
+                        <li><strong>JavaScript 활성화</strong>: 브라우저 설정에서 JavaScript가 켜져 있는지 확인</li>
+                    </ul>
+                    <p>
+                        그래도 해결되지 않으면 <a href="https://github.com/ocean-no1/jocoding/issues" target="_blank"
+                            style="color: var(--primary-blue); font-weight: 600;">GitHub Issues</a>에
+                        브라우저 종류, 기기 정보와 함께 문의해주세요.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q13. 버그를 발견했어요. 어디에 신고하나요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        버그 리포트는 언제나 환영합니다! 🙏
+                    </p>
+                    <p>
+                        <a href="https://github.com/ocean-no1/jocoding/issues" target="_blank"
+                            style="color: var(--primary-blue); font-weight: 600;">
+                            GitHub Issues
+                        </a>에 다음 정보와 함께 등록해주세요:
+                    </p>
+                    <ul>
+                        <li>발생한 문제 상세 설명</li>
+                        <li>재현 방법 (어떤 순서로 조작했는지)</li>
+                        <li>사용 중인 브라우저 및 기기 정보</li>
+                        <li>가능하다면 스크린샷</li>
+                    </ul>
+                    <p>
+                        빠른 시일 내에 확인하고 수정하겠습니다!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 기타 -->
+        <div class="category">
+            <h2>💬 기타</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q14. 새로운 기능을 제안하고 싶어요
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        기능 제안은 항상 환영합니다! 🎉
+                    </p>
+                    <p>
+                        <a href="https://github.com/ocean-no1/jocoding/issues" target="_blank"
+                            style="color: var(--primary-blue); font-weight: 600;">
+                            GitHub Issues
+                        </a>에 "[기능 제안]" 태그와 함께 다음 내용을 적어주세요:
+                    </p>
+                    <ul>
+                        <li>어떤 기능을 원하시는지</li>
+                        <li>왜 필요한지 (어떤 문제를 해결하는지)</li>
+                        <li>어떻게 작동하면 좋을지</li>
+                    </ul>
+                    <p>
+                        모든 제안을 검토하며, 유용하다고 판단되면 우선순위에 따라 개발하겠습니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Q15. 이 서비스를 만든 사람은 누구인가요?
+                </div>
+                <div class="faq-answer">
+                    <p>
+                        본 서비스는 통계와 데이터 분석에 관심이 많은 개인 개발자가
+                        "복권을 더 재미있게 즐길 수 있는 방법"을 고민하다가 만들게 되었습니다.
+                    </p>
+                    <p>
+                        자세한 내용은 <a href="about.html" style="color: var(--primary-blue); font-weight: 600;">서비스 소개</a>
+                        페이지를 참고하세요.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <a href="index.html" class="back-button">← 메인으로 돌아가기</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>⚠️ 면책 조항:</strong> 본 서비스는 통계 분석 기반의 <strong>참고용 서비스</strong>입니다. 제공되는 모든 정보(AI 추천 번호, 통계 데이터 등)는
+            <strong>당첨을 보장하지 않으며</strong>, 복권 구매 및 그로 인한 결과에 대한 책임은 전적으로 이용자 본인에게 있습니다. 본 서비스는 동행복권과 공식 제휴 관계가 없는 독립
+            서비스입니다.</p>
+        <p>
+            <a href="privacy.html" style="color: white; text-decoration: underline;">개인정보처리방침</a> |
+            <a href="about.html" style="color: white; text-decoration: underline;">서비스 소개</a> |
+            <a href="guide.html" style="color: white; text-decoration: underline;">복권 가이드</a> |
+            <a href="faq.html" style="color: white; text-decoration: underline;">FAQ</a> |
+            <a href="https://github.com/ocean-no1/jocoding/issues" target="_blank"
+                style="color: white; text-decoration: underline;">문의하기</a>
+        </p>
+        <p>© 2026 AI 통계 분석 서비스 | 동행복권 공식 사이트: <a href="https://dhlottery.co.kr" target="_blank">dhlottery.co.kr</a>
+        </p>
+    </div>
+
+    <script>
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const allQuestions = document.querySelectorAll('.faq-question');
+            const allAnswers = document.querySelectorAll('.faq-answer');
+
+            // Close all other FAQs
+            allQuestions.forEach(q => {
+                if (q !== element) {
+                    q.classList.remove('active');
+                }
+            });
+            allAnswers.forEach(a => {
+                if (a !== answer) {
+                    a.classList.remove('active');
+                }
+            });
+
+            // Toggle current FAQ
+            element.classList.toggle('active');
+            answer.classList.toggle('active');
+        }
+    </script>
+</body>
+
+</html>

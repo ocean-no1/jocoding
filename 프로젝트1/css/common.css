@@ -58,8 +58,8 @@ body {
 
 /* Main Content Area - FORCED CENTER POSITIONING */
 .main-content {
-    grid-column: 2;
-    /* 무조건 중앙에 배치 */
+    
+    
     width: 100%;
     max-width: 1000px;
     margin: 0 auto;

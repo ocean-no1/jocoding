@@ -317,6 +317,7 @@
         <!-- Right Ad Space -->
         <div class="ad-space-right"></div>
 
+        <script src="js/utils.js"></script>
         <script src="js/common.js"></script>
         <script src="js/fallback-data.js"></script>
         <script src="js/stats-data.js"></script>
@@ -366,22 +367,22 @@
             // Fetch latest lotto draw with instant rendering
             async function fetchLatestLottoDraw() {
                 const latestDrawNo = calculateLatestDrawNo();
-                console.log('🎯 Fetching latest lotto draw:', latestDrawNo);
+                logger.log('🎯 Fetching latest lotto draw:', latestDrawNo);
 
                 // Step 1: Instantly render from LocalStorage if available
                 try {
                     const cached = localStorage.getItem('latest_fallback_lotto');
                     if (cached) {
                         const { data } = JSON.parse(cached);
-                        console.log('⚡ Instant render from LocalStorage');
+                        logger.log('⚡ Instant render from LocalStorage');
                         displayLatestLotto(data, false); // No animation for instant render
                     } else {
                         // No cache - show fallback immediately instead of skeleton
-                        console.log('📦 No cache - using fallback data immediately');
+                        logger.log('📦 No cache - using fallback data immediately');
                         displayLatestLotto(getFallbackLottoData(), false);
                     }
                 } catch (e) {
-                    console.warn('Using hardcoded fallback');
+                    logger.warn('Using hardcoded fallback');
                     displayLatestLotto(getFallbackLottoData(), false);
                 }
 
@@ -402,10 +403,10 @@
                     }
 
                     if (data && data.returnValue === 'success') {
-                        console.log('✅ Fresh data received, updating with fade-in');
+                        logger.log('✅ Fresh data received, updating with fade-in');
                         displayLatestLotto(data, true); // With fade-in animation
                     } else {
-                        console.log('⚠️ Using fallback data');
+                        logger.log('⚠️ Using fallback data');
                         displayLatestLotto(getFallbackLottoData(), true);
                     }
                 } catch (error) {
@@ -449,7 +450,7 @@
             // Fetch pension draw with instant rendering
             async function fetchLatestPension() {
                 // Immediate display from pension-recent-data.js
-                console.log('📦 Displaying pension data from pension-recent-data.js');
+                logger.log('📦 Displaying pension data from pension-recent-data.js');
 
                 const latestRound = currentPensionRound;
                 const data = (typeof getPensionRecentData === 'function')
@@ -516,7 +517,7 @@
                 if (typeof generateAIRecommendation === 'function') {
                     // S_score 기반 추천 (최근 5년 데이터 사용)
                     finalNumbers = generateAIRecommendation(5, currentDraw, 6);
-                    console.log('✅ S_score 알고리즘 사용:', finalNumbers);
+                    logger.log('✅ S_score 알고리즘 사용:', finalNumbers);
                 } else {
                     // Fallback: Random generation
                     finalNumbers = [];
@@ -527,7 +528,7 @@
                         }
                     }
                     finalNumbers.sort((a, b) => a - b);
-                    console.log('⚠️ 랜덤 생성 사용:', finalNumbers);
+                    logger.log('⚠️ 랜덤 생성 사용:', finalNumbers);
                 }
 
                 // Create spinning balls

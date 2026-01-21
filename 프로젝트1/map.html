@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482753613081557"
+        crossorigin="anonymous"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주변 명당 찾기 - 1등 판매점 지도</title>
+    <meta name="description" content="내 주변의 로또 1등 당첨 판매점을 지도에서 찾아보세요.">
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="css/common.css">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_APP_KEY"></script>
+    <style>
+        .map-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .map-header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin: 0;
+        }
+
+        .search-box {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            z-index: 100;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            width: 320px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-orange);
+        }
+
+        .my-location-btn {
+            position: absolute;
+            bottom: 120px;
+            right: 20px;
+            z-index: 100;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .my-location-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .store-info-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            min-width: 350px;
+            display: none;
+        }
+
+        .store-info-box.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(-50%);
+                opacity: 1;
+            }
+        }
+
+        .store-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+        }
+
+        .store-address {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .store-wins {
+            display: flex;
+            gap: 15px;
+            margin-top: 12px;
+        }
+
+        .win-badge {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .win-badge.first {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: white;
+        }
+
+        .win-badge.second {
+            background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+            color: white;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .legend-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+        }
+
+        .legend-marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .marker-gold {
+            background: #FFD700;
+        }
+
+        .marker-silver {
+            background: #C0C0C0;
+        }
+
+        .marker-normal {
+            background: #4A90E2;
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                width: calc(100% - 40px);
+                left: 20px;
+                right: 20px;
+            }
+
+            .store-info-box {
+                min-width: auto;
+                width: calc(100% - 40px);
+            }
+
+            .map-header h1 {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="map-container">
+        <a href="index.html" class="back-button">← 메인으로</a>
+
+        <div class="map-header">
+            <h1>🗺️ 주변 명당 찾기</h1>
+        </div>
+
+        <div class="search-box">
+            <input type="text" class="search-input" id="search-input" placeholder="지역명 입력 (예: 강남구, 삼성동)">
+            <button class="search-btn" onclick="searchLocation()">검색</button>
+        </div>
+
+        <button class="my-location-btn" onclick="goToMyLocation()" title="내 위치로 이동">
+            📍
+        </button>
+
+        <div class="legend">
+            <div class="legend-title">범례</div>
+            <div class="legend-item">
+                <div class="legend-marker marker-gold"></div>
+                <span>1등 당첨점 (3회 이상)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-marker marker-silver"></div>
+                <span>1등 당첨점 (1-2회)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-marker marker-normal"></div>
+                <span>일반 판매점</span>
+            </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="store-info-box" id="store-info">
+            <button class="close-btn" onclick="closeStoreInfo()">✕</button>
+            <div class="store-name" id="store-name">판매점 이름</div>
+            <div class="store-address" id="store-address">주소</div>
+            <div class="store-wins" id="store-wins">
+                <div class="win-badge first">1등 3회</div>
+                <div class="win-badge second">2등 7회</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock 데이터 - 실제로는 서버나 DB에서 가져와야 함
+        const storeData = [
+            {
+                name: "삼성대박복권방",
+                address: "서울 강남구 봉은사로74길 13 101호",
+                lat: 37.5089,
+                lng: 127.0533,
+                first: 3,
+                second: 7
+            },
+            {
+                name: "행운로또",
+                address: "서울 강남구 테헤란로 152",
+                lat: 37.5015,
+                lng: 127.0397,
+                first: 2,
+                second: 5
+            },
+            {
+                name: "당첨의 신",
+                address: "서울 강남구 역삼동 825-21",
+                lat: 37.5003,
+                lng: 127.0363,
+                first: 1,
+                second: 3
+            },
+            {
+                name: "대박로또복권",
+                address: "서울 서초구 강남대로 373",
+                lat: 37.4923,
+                lng: 127.0152,
+                first: 4,
+                second: 8
+            },
+            {
+                name: "황금손복권",
+                address: "서울 송파구 올림픽로35다길 42",
+                lat: 37.5144,
+                lng: 127.1060,
+                first: 2,
+                second: 4
+            },
+            {
+                name: "럭키세븐",
+                address: "서울 마포구 월드컵북로 396",
+                lat: 37.5573,
+                lng: 126.9154,
+                first: 1,
+                second: 2
+            },
+            {
+                name: "꿈나래복권",
+                address: "서울 영등포구 영등포로 156",
+                lat: 37.5164,
+                lng: 126.9078,
+                first: 0,
+                second: 1
+            }
+        ];
+
+        let map;
+        let markers = [];
+
+        // 지도 초기화 (Kakao API 키 필요)
+        function initMap() {
+            // Kakao API가 로드되지 않았을 경우를 대비한 폴백
+            if (typeof kakao === 'undefined') {
+                alert('지도 API를 불러오는 중입니다. Kakao Map API 키가 필요합니다.');
+                // 간단한 HTML 지도로 대체
+                showSimpleMap();
+                return;
+            }
+
+            const container = document.getElementById('map');
+            const options = {
+                center: new kakao.maps.LatLng(37.5089, 127.0533), // 서울 강남
+                level: 5
+            };
+
+            map = new kakao.maps.Map(container, options);
+
+            // 판매점 마커 표시
+            displayStores();
+        }
+
+        // 간단한 HTML 지도 (API 대체용)
+        function showSimpleMap() {
+            document.getElementById('map').innerHTML = `
+                <div style="display: flex; flex-wrap: wrap; padding: 20px; gap: 15px; overflow-y: auto;">
+                    ${storeData.map(store => `
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: calc(50% - 10px); min-width: 280px;" onclick='showStoreInfo(${JSON.stringify(store)})'>
+                            <div style="font-size: 1.2rem; font-weight: 700; color: #1E3A8A; margin-bottom: 8px;">${store.name}</div>
+                            <div style="font-size: 0.9rem; color: #64748B; margin-bottom: 12px;">${store.address}</div>
+                            <div style="display: flex; gap: 10px;">
+                                ${store.first > 0 ? `<span style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">1등 ${store.first}회</span>` : ''}
+                                ${store.second > 0 ? `<span style="background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%); color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">2등 ${store.second}회</span>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function displayStores() {
+            storeData.forEach(store => {
+                const markerPosition = new kakao.maps.LatLng(store.lat, store.lng);
+
+                // 당첨 횟수에 따라 마커 색상 결정
+                let markerImage;
+                if (store.first >= 3) {
+                    // 금색 마커 (1등 3회 이상)
+                    markerImage = createMarkerImage('#FFD700');
+                } else if (store.first >= 1) {
+                    // 은색 마커 (1등 1-2회)
+                    markerImage = createMarkerImage('#C0C0C0');
+                } else {
+                    // 일반 마커
+                    markerImage = createMarkerImage('#4A90E2');
+                }
+
+                const marker = new kakao.maps.Marker({
+                    position: markerPosition,
+                    image: markerImage
+                });
+
+                marker.setMap(map);
+
+                // 마커 클릭 이벤트
+                kakao.maps.event.addListener(marker, 'click', function () {
+                    showStoreInfoOnMap(store);
+                });
+
+                markers.push(marker);
+            });
+        }
+
+        function createMarkerImage(color) {
+            const imageSrc = `data:image/svg+xml,%3Csvg width='30' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15 0C6.7 0 0 6.7 0 15c0 11.25 15 25 15 25s15-13.75 15-25c0-8.3-6.7-15-15-15z' fill='${encodeURIComponent(color)}'/%3E%3Ccircle cx='15' cy='15' r='8' fill='white'/%3E%3C/svg%3E`;
+            const imageSize = new kakao.maps.Size(30, 40);
+            const imageOption = { offset: new kakao.maps.Point(15, 40) };
+
+            return new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+        }
+
+        function showStoreInfoOnMap(store) {
+            document.getElementById('store-name').textContent = store.name;
+            document.getElementById('store-address').textContent = store.address;
+
+            let winsHTML = '';
+            if (store.first > 0) {
+                winsHTML += `<div class="win-badge first">1등 ${store.first}회</div>`;
+            }
+            if (store.second > 0) {
+                winsHTML += `<div class="win-badge second">2등 ${store.second}회</div>`;
+            }
+            if (store.first === 0 && store.second === 0) {
+                winsHTML = '<div style="color: #64748B;">당첨 이력 집계 중</div>';
+            }
+
+            document.getElementById('store-wins').innerHTML = winsHTML;
+            document.getElementById('store-info').classList.add('active');
+        }
+
+        function showStoreInfo(store) {
+            showStoreInfoOnMap(store);
+        }
+
+        function closeStoreInfo() {
+            document.getElementById('store-info').classList.remove('active');
+        }
+
+        function searchLocation() {
+            const query = document.getElementById('search-input').value;
+            if (!query) {
+                alert('검색할 지역명을 입력하세요.');
+                return;
+            }
+            alert(`"${query}" 검색 기능은 Kakao Map API 연동 후 작동합니다.`);
+        }
+
+        function goToMyLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+
+                    if (typeof kakao !== 'undefined' && map) {
+                        const moveLatLon = new kakao.maps.LatLng(lat, lng);
+                        map.setCenter(moveLatLon);
+                    } else {
+                        alert(`내 위치: ${lat.toFixed(4)}, ${lng.toFixed(4)}\n지도 API 연동 후 위치 이동이 가능합니다.`);
+                    }
+                }, () => {
+                    alert('위치 정보를 가져올 수 없습니다.');
+                });
+            } else {
+                alert('이 브라우저는 위치 서비스를 지원하지 않습니다.');
+            }
+        }
+
+        // 페이지 로드 시 지도 초기화
+        window.onload = function () {
+            initMap();
+        };
+    </script>
+
+    <div class="footer" style="position: relative; margin-top: 0;">
+        <p><strong>⚠️ 면책 조항:</strong> 판매점 당첨 정보는 참고용이며, 당첨을 보장하지 않습니다.</p>
+        <p>
+            <a href="privacy.html" style="color: white; text-decoration: underline;">개인정보처리방침</a> |
+            <a href="about.html" style="color: white; text-decoration: underline;">서비스 소개</a> |
+            <a href="https://github.com/ocean-no1/jocoding/issues" target="_blank"
+                style="color: white; text-decoration: underline;">문의하기</a>
+        </p>
+        <p>© 2026 AI 통계 분석 서비스</p>
+    </div>
+</body>
+
+</html>

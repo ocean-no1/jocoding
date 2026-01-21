@@ -12,7 +12,9 @@
     <link rel="stylesheet" as="style" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="css/common.css">
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_APP_KEY"></script>
+    <!-- Kakao Map API with services library for address search -->
+    <script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_APP_KEY&libraries=services,clusterer"></script>
     <style>
         .map-container {
             width: 100%;
@@ -498,7 +500,24 @@
                 alert('검색할 지역명을 입력하세요.');
                 return;
             }
-            alert(`"${query}" 검색 기능은 Kakao Map API 연동 후 작동합니다.`);
+
+            if (typeof kakao === 'undefined' || !map) {
+                alert(`"${query}" 검색 기능은 Kakao Map API 연동 후 작동합니다.`);
+                return;
+            }
+
+            // Kakao 주소-좌표 변환 서비스 사용
+            const geocoder = new kakao.maps.services.Geocoder();
+
+            geocoder.addressSearch(query, function (result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                    map.setCenter(coords);
+                    map.setLevel(5); // 줌 레벨 조정
+                } else {
+                    alert('주소를 찾을 수 없습니다. 다른 검색어를 입력해주세요.');
+                }
+            });
         }
 
         function goToMyLocation() {

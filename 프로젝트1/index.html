@@ -750,7 +750,7 @@
                 // 최신 4회차만 지원 (pension-recent-data.js에서 동적으로)
                 const latestRound = (typeof PENSION_RECENT_DATA !== 'undefined')
                     ? Math.max(...Object.keys(PENSION_RECENT_DATA).map(k => parseInt(k)))
-                    : 576;
+                    : 298;
                 if (newRound < latestRound - 3 || newRound > latestRound) {
                     return;
                 }

@@ -26,7 +26,9 @@ body {
     /* 좌광고 / 본문 / 우광고 */
 }
 
-/* Ad Spaces */
+
+/* Ad Spaces - Removed (Auto Ads used instead) */
+/*
 .ad-space-left,
 .ad-space-right {
     background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
@@ -53,6 +55,7 @@ body {
     content: 'Ad Space\A180×600';
     white-space: pre;
 }
+*/
 
 /* Main Content Area - FORCED CENTER POSITIONING */
 .main-content {

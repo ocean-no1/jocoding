@@ -1,6 +1,12 @@
 name: 로또 & 연금복권 자동 업데이트
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - '프로젝트1/**'  # 프로젝트1 폴더 내 파일 변경 시에만 실행
+      - '.github/workflows/update-lottery.yml'  # 워크플로우 자체 수정 시에도 실행
   schedule:
     # 매주 토요일 21:30 KST (로또 추첨 후)
     - cron: '30 12 * * 6'  # UTC 12:30 = KST 21:30

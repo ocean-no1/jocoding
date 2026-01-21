@@ -16,14 +16,13 @@
     box-sizing: border-box;
 }
 
-/* Main Layout with Ad Spaces - EMERGENCY FIX */
+/* Main Layout - Clean and Simple */
 body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
     background: var(--bg);
     min-height: 100vh;
-    display: grid;
-    grid-template-columns: 180px 1fr 180px;
-    /* 좌광고 / 본문 / 우광고 */
+    padding: 0;
+    margin: 0;
 }
 
 

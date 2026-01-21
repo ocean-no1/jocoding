@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482753613081557"
+        crossorigin="anonymous"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 번호 저장 & 당첨 확인</title>
+    <meta name="description" content="구매한 로또 번호를 저장하고 자동으로 당첨 여부를 확인하세요.">
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .mynumbers-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .add-number-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .number-input-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .number-input {
+            padding: 12px;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .bonus-label {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .saved-numbers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .saved-number-card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .saved-number-card.winner {
+            border: 3px solid #FFD700;
+            background: linear-gradient(135deg, #fffbea 0%, #fff9e6 100%);
+        }
+
+        .round-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .saved-balls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .saved-ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .result-badge {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .result-badge.win-1 {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: white;
+        }
+
+        .result-badge.win-2 {
+            background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+            color: white;
+        }
+
+        .result-badge.win-3 {
+            background: linear-gradient(135deg, #CD7F32 0%, #B8860B 100%);
+            color: white;
+        }
+
+        .result-badge.win-4,
+        .result-badge.win-5 {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: white;
+        }
+
+        .result-badge.no-win {
+            background: #F1F5F9;
+            color: var(--text-muted);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            color: #EF4444;
+            transform: scale(1.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .number-input-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <div class="header">
+            <h1><a href="index.html" style="color: inherit; text-decoration: none;">🎯 동행복권 AI 통계 분석</a></h1>
+        </div>
+
+        <div class="mynumbers-container">
+            <div class="page-header">
+                <h1>💾 내 번호 저장 & 당첨 확인</h1>
+                <p>구매한 번호를 저장하고 자동으로 당첨 여부를 확인하세요</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('lotto')">로또 6/45</button>
+                <button class="tab" onclick="switchTab('pension')">연금복권 720+</button>
+            </div>
+
+            <!-- 로또 탭 -->
+            <div id="lotto-tab" class="tab-content active">
+                <div class="add-number-card">
+                    <h3 style="margin-bottom: 20px;">🎲 새 번호 추가</h3>
+                    <div class="form-group">
+                        <label class="form-label">회차</label>
+                        <input type="number" id="lotto-round" class="form-input" placeholder="예: 1207" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">번호 (1~45)</label>
+                        <div class="number-input-grid">
+                            <input type="number" class="number-input lotto-number" min="1" max="45" placeholder="01">
+                            <input type="number" class="number-input lotto-number" min="1" max="45" placeholder="02">
+                            <input type="number" class="number-input lotto-number" min="1" max="45" placeholder="03">
+                            <input type="number" class="number-input lotto-number" min="1" max="45" placeholder="04">
+                            <input type="number" class="number-input lotto-number" min="1" max="45" placeholder="05">
+                            <input type="number" class="number-input lotto-number" min="1" max="45" placeholder="06">
+                        </div>
+                    </div>
+                    <button class="btn-save" onclick="saveLottoNumber()">저장하기</button>
+                </div>
+
+                <h3 style="margin-bottom: 20px;">📋 저장된 번호</h3>
+                <div id="lotto-saved-list" class="saved-numbers-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>저장된 번호가 없습니다</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 연금복권 탭 -->
+            <div id="pension-tab" class="tab-content">
+                <div class="add-number-card">
+                    <h3 style="margin-bottom: 20px;">🎲 새 번호 추가</h3>
+                    <div class="form-group">
+                        <label class="form-label">회차</label>
+                        <input type="number" id="pension-round" class="form-input" placeholder="예: 298" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">조 (1~5)</label>
+                        <input type="number" id="pension-group" class="form-input" min="1" max="5" placeholder="3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">6자리 숫자</label>
+                        <input type="text" id="pension-number" class="form-input" maxlength="6" placeholder="123456">
+                    </div>
+                    <button class="btn-save" onclick="savePensionNumber()">저장하기</button>
+                </div>
+
+                <h3 style="margin-bottom: 20px;">📋 저장된 번호</h3>
+                <div id="pension-saved-list" class="saved-numbers-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>저장된 번호가 없습니다</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>⚠️ 면책 조항:</strong> 번호 저장 기능은 참고용이며, 당첨을 보장하지 않습니다.</p>
+        <p>
+            <a href="privacy.html" style="color: white; text-decoration: underline;">개인정보처리방침</a> |
+            <a href="about.html" style="color: white; text-decoration: underline;">서비스 소개</a> |
+            <a href="https://github.com/ocean-no1/jocoding/issues" target="_blank"
+                style="color: white; text-decoration: underline;">문의하기</a>
+        </p>
+        <p>© 2026 AI 통계 분석 서비스</p>
+    </div>
+
+    <script src="js/fallback-data.js"></script>
+    <script src="js/pension-recent-data.js"></script>
+    <script>
+        // 탭 전환
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(`${tab}-tab`).classList.add('active');
+        }
+
+        // 로또 번호 저장
+        function saveLottoNumber() {
+            const round = document.getElementById('lotto-round').value;
+            const numberInputs = document.querySelectorAll('.lotto-number');
+            const numbers = Array.from(numberInputs).map(input => parseInt(input.value));
+
+            if (!round || numbers.some(n => !n || n < 1 || n > 45)) {
+                alert('회차와 모든 번호(1~45)를 올바르게 입력하세요.');
+                return;
+            }
+
+            if (new Set(numbers).size !== 6) {
+                alert('중복되지 않은 6개의 번호를 입력하세요.');
+                return;
+            }
+
+            const savedNumbers = JSON.parse(localStorage.getItem('lottoNumbers') || '[]');
+            savedNumbers.push({
+                round: parseInt(round),
+                numbers: numbers.sort((a, b) => a - b),
+                savedAt: new Date().toISOString()
+            });
+
+            localStorage.setItem('lottoNumbers', JSON.stringify(savedNumbers));
+
+            // 입력 초기화
+            document.getElementById('lotto-round').value = '';
+            numberInputs.forEach(input => input.value = '');
+
+            loadLottoNumbers();
+            alert('번호가 저장되었습니다!');
+        }
+
+        // 연금복권 번호 저장
+        function savePensionNumber() {
+            const round = document.getElementById('pension-round').value;
+            const group = document.getElementById('pension-group').value;
+            const number = document.getElementById('pension-number').value;
+
+            if (!round || !group || !number || number.length !== 6) {
+                alert('회차, 조(1~5), 6자리 숫자를 올바르게 입력하세요.');
+                return;
+            }
+
+            const savedNumbers = JSON.parse(localStorage.getItem('pensionNumbers') || '[]');
+            savedNumbers.push({
+                round: parseInt(round),
+                group: parseInt(group),
+                number: number,
+                savedAt: new Date().toISOString()
+            });
+
+            localStorage.setItem('pensionNumbers', JSON.stringify(savedNumbers));
+
+            // 입력 초기화
+            document.getElementById('pension-round').value = '';
+            document.getElementById('pension-group').value = '';
+            document.getElementById('pension-number').value = '';
+
+            loadPensionNumbers();
+            alert('번호가 저장되었습니다!');
+        }
+
+        // 로또 번호 불러오기 및 당첨 확인
+        function loadLottoNumbers() {
+            const savedNumbers = JSON.parse(localStorage.getItem('lottoNumbers') || '[]');
+            const container = document.getElementById('lotto-saved-list');
+
+            if (savedNumbers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>저장된 번호가 없습니다</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = savedNumbers.map((item, index) => {
+                const result = checkLottoWin(item.round, item.numbers);
+                const isWinner = result.rank > 0;
+
+                return `
+                    <div class="saved-number-card ${isWinner ? 'winner' : ''}">
+                        <button class="delete-btn" onclick="deleteLottoNumber(${index})">🗑️</button>
+                        <div class="round-badge">${item.round}회</div>
+                        <div class="saved-balls">
+                            ${item.numbers.map(n => `
+                                <div class="saved-ball" style="background: ${getBallColor(n)}">
+                                    ${n}
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${result.html}
+                    </div>
+                `;
+            }).reverse().join('');
+        }
+
+        // 연금복권 번호 불러오기
+        function loadPensionNumbers() {
+            const savedNumbers = JSON.parse(localStorage.getItem('pensionNumbers') || '[]');
+            const container = document.getElementById('pension-saved-list');
+
+            if (savedNumbers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>저장된 번호가 없습니다</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = savedNumbers.map((item, index) => {
+                const result = checkPensionWin(item.round, item.group, item.number);
+                const isWinner = result.rank > 0;
+
+                return `
+                    <div class="saved-number-card ${isWinner ? 'winner' : ''}">
+                        <button class="delete-btn" onclick="deletePensionNumber(${index})">🗑️</button>
+                        <div class="round-badge">${item.round}회</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; margin: 15px 0;">
+                            ${item.group}조 ${item.number}
+                        </div>
+                        ${result.html}
+                    </div>
+                `;
+            }).reverse().join('');
+        }
+
+        // 로또 당첨 확인
+        function checkLottoWin(round, numbers) {
+            const winningData = fallbackData.find(d => d.drwNo === round);
+
+            if (!winningData) {
+                return {
+                    rank: 0,
+                    html: '<div class="result-badge no-win">추첨 전 또는 데이터 없음</div>'
+                };
+            }
+
+            const winNumbers = [
+                winningData.drwtNo1,
+                winningData.drwtNo2,
+                winningData.drwtNo3,
+                winningData.drwtNo4,
+                winningData.drwtNo5,
+                winningData.drwtNo6
+            ];
+            const bonusNumber = winningData.bnusNo;
+
+            const matchCount = numbers.filter(n => winNumbers.includes(n)).length;
+            const hasBonus = numbers.includes(bonusNumber);
+
+            let rank = 0;
+            let rankText = '';
+            let prizeText = '';
+
+            if (matchCount === 6) {
+                rank = 1;
+                rankText = '🎉 1등 당첨!';
+                prizeText = `당첨금: ${(winningData.firstWinamnt / 100000000).toFixed(1)}억원`;
+            } else if (matchCount === 5 && hasBonus) {
+                rank = 2;
+                rankText = '🎊 2등 당첨!';
+                prizeText = `당첨금: 약 ${(winningData.firstWinamnt / 10 / 10000000).toFixed(0)}천만원`;
+            } else if (matchCount === 5) {
+                rank = 3;
+                rankText = '🎁 3등 당첨!';
+                prizeText = '당첨금: 약 150만원';
+            } else if (matchCount === 4) {
+                rank = 4;
+                rankText = '✨ 4등 당첨!';
+                prizeText = '당첨금: 5만원';
+            } else if (matchCount === 3) {
+                rank = 5;
+                rankText = '👍 5등 당첨!';
+                prizeText = '당첨금: 5천원';
+            } else {
+                return {
+                    rank: 0,
+                    html: `<div class="result-badge no-win">미당첨 (${matchCount}개 일치)</div>`
+                };
+            }
+
+            return {
+                rank,
+                html: `
+                    <div class="result-badge win-${rank}">
+                        ${rankText}
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.95rem; color: var(--text-muted);">
+                        ${prizeText}
+                    </div>
+                `
+            };
+        }
+
+        // 연금복권 당첨 확인
+        function checkPensionWin(round, group, number) {
+            const winningData = pensionRecentData[round];
+
+            if (!winningData) {
+                return {
+                    rank: 0,
+                    html: '<div class="result-badge no-win">추첨 전 또는 데이터 없음</div>'
+                };
+            }
+
+            const winGroup = parseInt(winningData.group.replace('조', ''));
+            const winNumber = winningData.number;
+
+            if (group === winGroup && number === winNumber) {
+                return {
+                    rank: 1,
+                    html: `
+                        <div class="result-badge win-1">
+                            🎉 1등 당첨!
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.95rem; color: var(--text-muted);">
+                            월 700만원 × 20년
+                        </div>
+                    `
+                };
+            }
+
+            // 간단한 등수 체크 (실제로는 더 복잡한 로직 필요)
+            let matchCount = 0;
+            for (let i = 0; i < 6; i++) {
+                if (number[i] === winNumber[i]) matchCount++;
+            }
+
+            if (matchCount >= 5) {
+                return {
+                    rank: 2,
+                    html: `<div class="result-badge win-2">2등급 당첨 가능성</div>`
+                };
+            }
+
+            return {
+                rank: 0,
+                html: '<div class="result-badge no-win">미당첨</div>'
+            };
+        }
+
+        // 번호 삭제
+        function deleteLottoNumber(index) {
+            if (!confirm('이 번호를 삭제하시겠습니까?')) return;
+
+            const savedNumbers = JSON.parse(localStorage.getItem('lottoNumbers') || '[]');
+            savedNumbers.splice(savedNumbers.length - 1 - index, 1);
+            localStorage.setItem('lottoNumbers', JSON.stringify(savedNumbers));
+            loadLottoNumbers();
+        }
+
+        function deletePensionNumber(index) {
+            if (!confirm('이 번호를 삭제하시겠습니까?')) return;
+
+            const savedNumbers = JSON.parse(localStorage.getItem('pensionNumbers') || '[]');
+            savedNumbers.splice(savedNumbers.length - 1 - index, 1);
+            localStorage.setItem('pensionNumbers', JSON.stringify(savedNumbers));
+            loadPensionNumbers();
+        }
+
+        // 로또 번호 색상
+        function getBallColor(num) {
+            if (num <= 10) return '#FBC400';
+            if (num <= 20) return '#69C8F2';
+            if (num <= 30) return '#FF7272';
+            if (num <= 40) return '#AAA';
+            return '#B0D840';
+        }
+
+        // 페이지 로드 시 데이터 불러오기
+        window.onload = function () {
+            loadLottoNumbers();
+            loadPensionNumbers();
+        };
+    </script>
+</body>
+
+</html>

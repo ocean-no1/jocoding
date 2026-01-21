@@ -115,6 +115,9 @@
                         <button class="nav-arrow" onclick="changeLottoRound(1)" title="다음 회차">▶</button>
                     </div>
                     <div class="lottery-date" id="lotto-date">2026.01.18</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;" id="lotto-update-time">
+                        최신 4회차 자동 업데이트
+                    </div>
                     <div class="lottery-numbers">
                         <div class="balls-container" id="lotto-numbers">
                             <div class="loading">
@@ -146,6 +149,10 @@
                         <button class="nav-arrow" onclick="changePensionRound(1)" title="다음 회차">▶</button>
                     </div>
                     <div class="lottery-date" id="pension-date">2026.01.16</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;"
+                        id="pension-update-time">
+                        최신 4회차 (295-298회)
+                    </div>
                     <div class="lottery-numbers">
                         <div class="pension-number" id="pension-numbers">
                             <div class="loading">
@@ -317,12 +324,12 @@
         <!-- Right Ad Space -->
         <div class="ad-space-right"></div>
 
-        <script src="js/utils.js"></script>
-        <script src="js/common.js"></script>
-        <script src="js/fallback-data.js"></script>
-        <script src="js/stats-data.js"></script>
-        <script src="js/lotto-recent-data.js"></script>
-        <script src="js/pension-recent-data.js"></script>
+        <script src="js/utils.js?v=20260121"></script>
+        <script src="js/common.js?v=20260121"></script>
+        <script src="js/fallback-data.js?v=20260121"></script>
+        <script src="js/stats-data.js?v=20260121"></script>
+        <script src="js/lotto-recent-data.js?v=20260121"></script>
+        <script src="js/pension-recent-data.js?v=20260121"></script>
         <script>
             // Calculate latest draw number
             function calculateLatestDrawNo() {
@@ -740,7 +747,10 @@
                     displayLatestLotto(lottoData, true);
                 } else {
                     document.getElementById('lotto-numbers').innerHTML =
-                        '<p style="color: var(--text-muted);">해당 회차 데이터를 찾을 수 없습니다.</p>';
+                        '<div style="padding: 20px; text-align: center;">' +
+                        '<p style="color: var(--text-muted); margin-bottom: 8px;">📭 해당 회차 데이터가 아직 준비되지 않았습니다.</p>' +
+                        '<p style="font-size: 0.85rem; color: var(--text-muted);">최신 회차는 자동으로 업데이트됩니다.</p>' +
+                        '</div>';
                 }
             }
 
@@ -777,7 +787,33 @@
                 fetchLatestLottoDraw();
                 fetchLatestPension();
                 updateInsights();
+                updateDataInfo();
             });
+
+            // Update data info display
+            function updateDataInfo() {
+                // Update pension info
+                if (typeof PENSION_RECENT_DATA !== 'undefined') {
+                    const rounds = Object.keys(PENSION_RECENT_DATA).map(k => parseInt(k)).sort((a, b) => a - b);
+                    const minRound = rounds[0];
+                    const maxRound = rounds[rounds.length - 1];
+                    const pensionInfo = document.getElementById('pension-update-time');
+                    if (pensionInfo) {
+                        pensionInfo.textContent = `최신 ${rounds.length}회차 (${minRound}-${maxRound}회)`;
+                    }
+                }
+
+                // Update lotto info
+                if (typeof LOTTO_RECENT_DATA !== 'undefined') {
+                    const rounds = Object.keys(LOTTO_RECENT_DATA).map(k => parseInt(k)).sort((a, b) => a - b);
+                    const minRound = rounds[0];
+                    const maxRound = rounds[rounds.length - 1];
+                    const lottoInfo = document.getElementById('lotto-update-time');
+                    if (lottoInfo) {
+                        lottoInfo.textContent = `최신 ${rounds.length}회차 (${minRound}-${maxRound}회)`;
+                    }
+                }
+            }
         </script>
 </body>
 

@@ -8,6 +8,7 @@
     <link rel="stylesheet" as="style" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/cards.css">
     <style>
         .back-button {
             display: inline-flex;
@@ -420,34 +421,102 @@
     <script src="js/utils.js?v=20260121"></script>
     <script src="js/common.js?v=20260121"></script>
     <script src="js/fallback-data.js?v=20260121"></script>
+    <script src="js/pension-recent-data.js?v=20260121"></script>
     <script>
         let selectedYears = 1;
         let selectedFaceShape = '';
         let selectedForehead = '';
 
-        // Load latest pension data from fallback
+        // Load latest pension data with navigation support
+        let currentPensionRound = 298; // Default, will be updated from data
+
         function loadLatestPensionData() {
-            if (typeof getFallbackPensionData === 'function') {
-                const data = getFallbackPensionData();
-                logger.log('⚡ Instant render from fallback-data.js');
+            // Determine the latest available round from PENSION_RECENT_DATA
+            if (typeof PENSION_RECENT_DATA !== 'undefined') {
+                const rounds = Object.keys(PENSION_RECENT_DATA).map(k => parseInt(k));
+                currentPensionRound = Math.max(...rounds);
+            }
 
-                document.getElementById('current-draw-number').textContent = `${data.round}회`;
-                document.getElementById('current-draw-date').textContent = data.date.replace(/-/g, '.');
+            updatePensionDisplay(currentPensionRound);
+        }
 
-                // Update main numbers display
-                const mainContainer = document.querySelector('.pension-number');
-                mainContainer.innerHTML = `
-                    <div class="pension-group">${data.group}조</div>
-                    ${data.numbers.map(n => `<div class="pension-digit">${n}</div>`).join('')}
-                `;
+        function updatePensionDisplay(round) {
+            let data = null;
 
-                // Update bonus numbers display
-                const bonusContainers = document.querySelectorAll('.pension-number');
-                if (bonusContainers[1]) {
-                    bonusContainers[1].innerHTML = data.bonus.map(n =>
+            // Try enabling navigation buttons based on available data
+            const rounds = (typeof PENSION_RECENT_DATA !== 'undefined')
+                ? Object.keys(PENSION_RECENT_DATA).map(k => parseInt(k))
+                : [];
+            const maxRound = Math.max(...rounds, 298);
+            const minRound = Math.min(...rounds, 298);
+
+            // Try to get data from PENSION_RECENT_DATA first
+            if (typeof getPensionRecentData === 'function') {
+                data = getPensionRecentData(round);
+            }
+
+            // Fallback if not found (only for default round)
+            if (!data && round === 298 && typeof getFallbackPensionData === 'function') {
+                data = getFallbackPensionData();
+            }
+
+            if (!data) return;
+
+            logger.log(`⚡ Displaying Pension Round ${round}`);
+
+            // Update Navigation Buttons & Title
+            const prevBtn = `<button class="nav-arrow" onclick="changePensionRound(-1)" ${round <= minRound ? 'disabled style="opacity:0.3; cursor:default;"' : ''}>◀</button>`;
+            const nextBtn = `<button class="nav-arrow" onclick="changePensionRound(1)" ${round >= maxRound ? 'disabled style="opacity:0.3; cursor:default;"' : ''}>▶</button>`;
+
+            document.getElementById('current-draw-number').innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                    ${prevBtn}
+                    <span>${data.round}회</span>
+                    ${nextBtn}
+                </div>
+            `;
+            document.getElementById('current-draw-date').textContent = data.date.replace(/-/g, '.');
+
+            // Update main numbers display
+            const mainContainer = document.querySelector('.pension-number');
+            mainContainer.innerHTML = `
+                <div class="pension-group">${data.group}조</div>
+                ${data.numbers.map(n => `<div class="pension-digit">${n}</div>`).join('')}
+            `;
+
+            // Update bonus numbers display (Hide if all zeros)
+            // The second .pension-number div is for bonus
+            const allPensionNumbers = document.querySelectorAll('.pension-number');
+            const bonusContainer = allPensionNumbers[1];
+            const bonusLabel = document.querySelectorAll('.pension-section-label')[1]; // "보너스 번호" label
+
+            if (bonusContainer && bonusLabel) {
+                const isAllZero = data.bonus && data.bonus.every(n => n === 0);
+                if (isAllZero) {
+                    bonusContainer.style.display = 'none';
+                    bonusLabel.style.display = 'none';
+                } else {
+                    bonusContainer.style.display = 'flex';
+                    bonusLabel.style.display = 'block';
+                    bonusContainer.innerHTML = data.bonus.map(n =>
                         `<div class="pension-digit">${n}</div>`
                     ).join('');
                 }
+            }
+        }
+
+        function changePensionRound(direction) {
+            const rounds = (typeof PENSION_RECENT_DATA !== 'undefined')
+                ? Object.keys(PENSION_RECENT_DATA).map(k => parseInt(k))
+                : [298];
+            const maxRound = Math.max(...rounds, 298);
+            const minRound = Math.min(...rounds, 298); // Assuming we have continuous data or at least the min
+
+            const newRound = currentPensionRound + direction;
+
+            if (newRound >= minRound && newRound <= maxRound) {
+                currentPensionRound = newRound;
+                updatePensionDisplay(newRound);
             }
         }
 

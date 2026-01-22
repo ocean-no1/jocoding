@@ -373,6 +373,18 @@
                 opacity: 1;
             }
         }
+
+        @keyframes highlight-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 8px 40px rgba(102, 126, 234, 0.4);
+            }
+        }
     </style>
 </head>
 
@@ -628,7 +640,7 @@
 
         <div class="grid-container" style="gap: 30px;">
             <!-- 1. 연속 미출현 번호 통계 -->
-            <div class="col-6">
+            <div class="col-6" id="missing">
                 <div
                     style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
                     <h3
@@ -655,7 +667,7 @@
             </div>
 
             <!-- 2. 홀수·짝수 출현 통계 -->
-            <div class="col-6">
+            <div class="col-6" id="oddeven">
                 <div
                     style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
                     <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
@@ -690,7 +702,7 @@
             </div>
 
             <!-- 3. 연속 번호 출현 통계 -->
-            <div class="col-6">
+            <div class="col-6" id="consecutive">
                 <div
                     style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
                     <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
@@ -724,7 +736,7 @@
             </div>
 
             <!-- 4. 번호합 분포 통계 -->
-            <div class="col-6">
+            <div class="col-6" id="sum">
                 <div
                     style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
                     <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
@@ -759,7 +771,7 @@
             </div>
 
             <!-- 5. 구간별 출현 통계 -->
-            <div class="col-12">
+            <div class="col-12" id="range">
                 <div
                     style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
                     <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
@@ -1186,7 +1198,7 @@
 
         // 페이지 로드 시 미출현 번호 표시
         function loadMissingNumbers() {
-            if (!fallbackData || fall backData.length === 0) {
+            if (!fallbackData || fallbackData.length === 0) {
                 setTimeout(loadMissingNumbers, 500);
                 return;
             }
@@ -1403,6 +1415,18 @@
             setTimeout(() => analyzeStatistics(), 1000);
             // Load missing numbers for interactive tool
             setTimeout(() => loadMissingNumbers(), 1500);
+
+            // Smooth scroll to anchor if present in URL
+            if (window.location.hash) {
+                setTimeout(() => {
+                    const element = document.querySelector(window.location.hash);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Highlight the section briefly
+                        element.style.animation = 'highlight-pulse 2s ease-in-out';
+                    }
+                }, 500);
+            }
         });
     </script>
 </body>

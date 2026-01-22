@@ -625,3 +625,12 @@ function displayGeneratorResult(elementId, numbers, description) {
         </div>
     `;
 }
+
+// Expose functions to global scope to ensure access from HTML
+window.generateFromMissing = generateFromMissing;
+window.generateFromOddEven = generateFromOddEven;
+window.generateWithConsecutive = generateWithConsecutive;
+window.generateBySum = generateBySum;
+window.generateByRange = generateByRange;
+// initRoadview is already global but for safety
+window.initRoadview = initRoadview;

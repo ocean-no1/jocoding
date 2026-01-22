@@ -634,3 +634,4 @@ window.generateBySum = generateBySum;
 window.generateByRange = generateByRange;
 // initRoadview is already global but for safety
 window.initRoadview = initRoadview;
+window.loadMissingNumbers = loadMissingNumbers;

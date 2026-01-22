@@ -4,21 +4,21 @@
 <head>
     <!-- Microsoft Clarity -->
     <script type="text/javascript">
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
         })(window, document, "clarity", "script", "v5iipvten3");
     </script>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VZLKFEGD77"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-      gtag('config', 'G-VZLKFEGD77');
+        gtag('config', 'G-VZLKFEGD77');
     </script>
 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482753613081557"
@@ -32,11 +32,11 @@
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <!-- Kakao Map API -->
     <script type="text/javascript"
-        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=8c78a44cbc45fec0aa35705516f1a082&libraries=services,clusterer,roadview"></script>
+        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=8c78a44cbc45fec0aa35705516f1a082&libraries=services,clusterer"></script>
 
     <!-- Utility Scripts -->
-    <script src="js/utils.js?v=20260122_fix2"></script>
-    <script src="js/lotto-enhanced.js?v=20260122_fix2"></script>
+    <script src="js/utils.js?v=20260122_fix3"></script>
+    <script src="js/lotto-enhanced.js?v=20260122_fix3"></script>
     <style>
         .map-container {
             width: 100%;
@@ -285,7 +285,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 200;
+            z-index: 9999;
             display: none;
         }
 

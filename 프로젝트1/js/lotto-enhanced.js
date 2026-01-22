@@ -312,12 +312,6 @@ function initRoadview(lat, lng) {
     }
 
     const roadviewContainer = document.getElementById('roadview');
-
-    // 로드뷰 객체가 없으면 최초 1회 생성
-    if (!roadviewObject) {
-        roadviewObject = new kakao.maps.Roadview(roadviewContainer);
-    }
-
     const roadviewClient = new kakao.maps.RoadviewClient();
     const position = new kakao.maps.LatLng(lat, lng);
 
@@ -326,16 +320,19 @@ function initRoadview(lat, lng) {
         if (panoId === null) {
             alert('해당 위치 근처에 로드뷰 정보가 없습니다.');
         } else {
-            // 컨테이너를 먼저 표시 (렌더링을 위해 필수)
+            // 1. 컨테이너를 먼저 표시 (필수: display:none 상태에서는 렌더링 안됨)
             roadviewContainer.style.display = 'block';
 
-            // 닫기 버튼 표시
+            // 2. 닫기 버튼 표시
             const closeBtn = document.getElementById('roadview-close');
             if (closeBtn) closeBtn.style.display = 'block';
 
-            // PanoId 설정하여 뷰어 실행
-            // setPanoId는 비동기적으로 로드뷰를 갱신합니다.
-            // 컨테이너가 visible 상태여야 정상적으로 캔버스 크기가 잡힙니다.
+            // 3. 로드뷰 객체 생성 (컨테이너가 보일 때 생성해야 함)
+            if (!roadviewObject) {
+                roadviewObject = new kakao.maps.Roadview(roadviewContainer);
+            }
+
+            // 4. PanoId 설정
             roadviewObject.setPanoId(panoId, position);
 
             console.log('로드뷰 실행:', lat, lng);

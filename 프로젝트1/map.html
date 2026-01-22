@@ -305,6 +305,91 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
+        /* Custom Zoom Control */
+        .zoom-control {
+            position: absolute;
+            bottom: 190px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .zoom-btn {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1F2937;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Click Coordinate Result */
+        .click-result {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1F2937;
+            display: none;
+            /* Initially hidden */
+        }
+
+        .zoom-control {
+            position: absolute;
+            bottom: 190px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .zoom-btn {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1F2937;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: scale(1.1);
+        }
+
         .roadview-close-btn:hover {
             background: var(--primary-blue);
             color: white;
@@ -326,6 +411,79 @@
                 font-size: 1.1rem;
             }
         }
+
+        /* Custom Overlay Style */
+        .custom-overlay {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            min-width: 260px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .custom-overlay::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top: 10px solid white;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+        }
+
+        .overlay-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: none;
+            background: none;
+            color: #94A3B8;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .overlay-close:hover {
+            color: #1F2937;
+        }
+
+        .overlay-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1E3A8A;
+            margin-bottom: 5px;
+            padding-right: 20px;
+        }
+
+        .overlay-addr {
+            font-size: 0.85rem;
+            color: #64748B;
+            margin-bottom: 12px;
+        }
+
+        .overlay-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .overlay-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-decoration: none;
+            border: none;
+        }
     </style>
 </head>
 
@@ -346,6 +504,22 @@
         <button class="my-location-btn" onclick="goToMyLocation()" title="내 위치로 이동">
             📍
         </button>
+
+        <!-- Custom Zoom Controls -->
+        <div class="zoom-control">
+            <button class="zoom-btn" onclick="zoomIn()" title="확대">+</button>
+            <button class="zoom-btn" onclick="zoomOut()" title="축소">-</button>
+        </div>
+
+        <!-- Click Coordinate & Zoom Level Display -->
+        <div id="clickResult" class="click-result">
+            지도를 클릭하거나 확대/축소해보세요
+        </div>
+
+        <div class="zoom-control">
+            <button class="zoom-btn" onclick="zoomIn()" title="확대">+</button>
+            <button class="zoom-btn" onclick="zoomOut()" title="축소">-</button>
+        </div>
 
         <div class="legend">
             <div class="legend-title">범례</div>
@@ -510,11 +684,56 @@
 
                 // 판매점 마커 표시
                 displayStores();
+
+                // === 2. 클릭 이벤트 등록 ===
+                // 지도를 클릭한 위치에 표출할 마커입니다
+                const clickMarker = new kakao.maps.Marker({
+                    position: map.getCenter()
+                });
+                clickMarker.setMap(map);
+                clickMarker.setVisible(false); // 초기에는 숨김
+
+                kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+                    // 클릭한 위도, 경도 정보를 가져옵니다 
+                    const latlng = mouseEvent.latLng;
+
+                    // 마커 위치를 클릭한 위치로 옮깁니다
+                    clickMarker.setPosition(latlng);
+                    clickMarker.setVisible(true);
+
+                    const message = '클릭한 위치: 위도 ' + latlng.getLat().toFixed(6) + ', 경도 ' + latlng.getLng().toFixed(6);
+
+                    const resultDiv = document.getElementById('clickResult');
+                    resultDiv.innerHTML = message;
+                    resultDiv.style.display = 'block';
+                });
+
+                // === 3. 줌 변경 이벤트 등록 ===
+                kakao.maps.event.addListener(map, 'zoom_changed', function () {
+                    const level = map.getLevel();
+                    const message = '현재 지도 레벨은 ' + level + ' 입니다';
+
+                    const resultDiv = document.getElementById('clickResult');
+                    resultDiv.innerHTML = message;
+                    resultDiv.style.display = 'block';
+                });
+
             } catch (error) {
                 console.error('Map initialization error:', error);
                 alert('지도 초기화 중 오류가 발생했습니다: ' + error.message);
                 showSimpleMap();
             }
+        }
+
+        // Custom Zoom Functions
+        function zoomIn() {
+            const level = map.getLevel();
+            map.setLevel(level - 1, { animate: true });
+        }
+
+        function zoomOut() {
+            const level = map.getLevel();
+            map.setLevel(level + 1, { animate: true });
         }
 
         // 간단한 HTML 지도 (API 대체용)
@@ -621,8 +840,15 @@
             return new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
         }
 
-        // 현재 열려있는 인포윈도우를 저장할 변수
-        let currentInfoWindow = null;
+        // 현재 열려있는 커스텀 오버레이를 저장할 변수
+        let currentOverlay = null;
+
+        function closeOverlay() {
+            if (currentOverlay) {
+                currentOverlay.setMap(null);
+                currentOverlay = null;
+            }
+        }
 
         function showStoreInfoOnMap(store) {
             // 하단 패널 업데이트 (기존 기능 유지)
@@ -643,58 +869,42 @@
             document.getElementById('store-wins').innerHTML = winsHTML;
             document.getElementById('store-info').classList.add('active');
 
-            // === 팝업 (InfoWindow) 기능 추가 ===
+            // === 커스텀 오버레이 기능 추가 ===
 
-            // 기존 인포윈도우가 있다면 닫기
-            if (currentInfoWindow) {
-                currentInfoWindow.close();
-            }
+            // 기존 오버레이 닫기
+            closeOverlay();
 
-            // 인포윈도우 내용 (로드뷰, 길찾기 링크 포함)
-            const iwContent = `
-                <div style="padding:15px; min-width:220px;">
-                    <h4 style="margin:0 0 5px 0; font-size:16px; font-weight:bold; color:#1E3A8A;">${store.name}</h4>
-                    <div style="font-size:12px; color:#555; margin-bottom:10px;">${store.address}</div>
-                    <div style="display:flex; justify-content:space-between; font-size:12px;">
-                        <button onclick="showRoadview(${store.lat}, ${store.lng})" style="
-                            text-decoration:none; 
-                            background:#FEE500; 
-                            color:#191919; 
-                            padding:5px 10px; 
-                            border:none;
-                            border-radius:4px; 
-                            font-weight:bold;
-                            cursor:pointer;
-                            display:flex; align-items:center; gap:3px;">
-                            📷 로드뷰 보기
+            // 커스텀 오버레이 컨텐츠 HTML
+            const content = `
+                <div class="custom-overlay">
+                    <button class="overlay-close" onclick="closeOverlay()">✕</button>
+                    <div class="overlay-title">${store.name}</div>
+                    <div class="overlay-addr">${store.address}</div>
+                    <div class="overlay-buttons">
+                        <button onclick="showRoadview(${store.lat}, ${store.lng})" class="overlay-btn" style="background:#FEE500; color:#191919;">
+                            📷 로드뷰
                         </button>
-                        <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" style="
-                            text-decoration:none; 
-                            background:#3B82F6; 
-                            color:white; 
-                            padding:5px 10px; 
-                            border-radius:4px; 
-                            font-weight:bold;
-                            display:flex; align-items:center; gap:3px;">
+                        <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" class="overlay-btn" style="background:#3B82F6; color:white;">
                             🚗 길찾기
                         </a>
                     </div>
                 </div>
             `;
 
-            // 인포윈도우 위치 (마커보다 살짝 위)
-            const iwPosition = new kakao.maps.LatLng(store.lat, store.lng);
+            // 오버레이 위치
+            const position = new kakao.maps.LatLng(store.lat, store.lng);
 
-            // 인포윈도우 생성
-            const infowindow = new kakao.maps.InfoWindow({
-                position: iwPosition,
-                content: iwContent,
-                removable: true // 닫기 버튼 표시
+            // 커스텀 오버레이 생성
+            const customOverlay = new kakao.maps.CustomOverlay({
+                position: position,
+                content: content,
+                yAnchor: 1.15, // 마커보다 약간 위쪽에 표시
+                zIndex: 100
             });
 
-            // 지도에 열기
-            infowindow.open(map);
-            currentInfoWindow = infowindow;
+            // 지도에 표시
+            customOverlay.setMap(map);
+            currentOverlay = customOverlay;
 
             // === 하단 패널 버튼 업데이트 ===
             const actionsHTML = `

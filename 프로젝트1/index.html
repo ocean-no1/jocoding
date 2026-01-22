@@ -563,21 +563,86 @@
                 let finalNumbers;
                 const currentDraw = calculateLatestDrawNo();
 
+                // Get user filter preferences
+                const excludeBirthdays = document.getElementById('exclude-birthdays')?.checked || false;
+                const excludeNumbersInput = document.getElementById('exclude-numbers')?.value || '';
+                const includeNumbersInput = document.getElementById('include-numbers')?.value || '';
+
+                // Parse exclude numbers
+                const excludeNumbers = excludeNumbersInput
+                    .split(',')
+                    .map(n => parseInt(n.trim()))
+                    .filter(n => n >= 1 && n <= 45);
+
+                // Add birthday numbers to exclude if checked
+                if (excludeBirthdays) {
+                    for (let i = 1; i <= 31; i++) {
+                        if (!excludeNumbers.includes(i)) {
+                            excludeNumbers.push(i);
+                        }
+                    }
+                }
+
+                // Parse include numbers (max 5)
+                const includeNumbers = includeNumbersInput
+                    .split(',')
+                    .map(n => parseInt(n.trim()))
+                    .filter(n => n >= 1 && n <= 45)
+                    .slice(0, 5);
+
+                // Check for conflicts
+                const conflicts = includeNumbers.filter(n => excludeNumbers.includes(n));
+                if (conflicts.length > 0) {
+                    container.innerHTML = `<div style="color: #EF4444; padding: 20px; text-align: center;">⚠️ ${conflicts.join(', ')}번은 제외 목록에도 포함되어 있습니다.</div>`;
+                    return;
+                }
+
+                if (includeNumbers.length > 5) {
+                    container.innerHTML = '<div style="color: #EF4444; padding: 20px; text-align: center;">⚠️ 포함 번호는 최대 5개까지만 가능합니다.</div>';
+                    return;
+                }
+
                 if (typeof generateAIRecommendation === 'function') {
                     // S_score 기반 추천 (최근 5년 데이터 사용)
-                    finalNumbers = generateAIRecommendation(5, currentDraw, 6);
-                    logger.log('✅ S_score 알고리즘 사용:', finalNumbers);
-                } else {
-                    // Fallback: Random generation
-                    finalNumbers = [];
-                    while (finalNumbers.length < 6) {
-                        const num = Math.floor(Math.random() * 45) + 1;
-                        if (!finalNumbers.includes(num)) {
+                    const candidates = generateAIRecommendation(5, currentDraw, 45);
+
+                    // Start with include numbers
+                    finalNumbers = [...includeNumbers];
+
+                    // Fill remaining slots with S_score candidates (excluding filters)
+                    for (let num of candidates) {
+                        if (finalNumbers.length >= 6) break;
+                        if (!finalNumbers.includes(num) && !excludeNumbers.includes(num)) {
                             finalNumbers.push(num);
                         }
                     }
+
+                    // If still not enough, fill with random valid numbers
+                    let attempts = 0;
+                    while (finalNumbers.length < 6 && attempts < 1000) {
+                        const num = Math.floor(Math.random() * 45) + 1;
+                        if (!finalNumbers.includes(num) && !excludeNumbers.includes(num)) {
+                            finalNumbers.push(num);
+                        }
+                        attempts++;
+                    }
+
                     finalNumbers.sort((a, b) => a - b);
-                    logger.log('⚠️ 랜덤 생성 사용:', finalNumbers);
+                    logger.log('✅ S_score + 필터 적용:', finalNumbers, { includeNumbers, excludeNumbers });
+                } else {
+                    // Fallback: Random generation with filters
+                    finalNumbers = [...includeNumbers];
+
+                    let attempts = 0;
+                    while (finalNumbers.length < 6 && attempts < 1000) {
+                        const num = Math.floor(Math.random() * 45) + 1;
+                        if (!finalNumbers.includes(num) && !excludeNumbers.includes(num)) {
+                            finalNumbers.push(num);
+                        }
+                        attempts++;
+                    }
+                    finalNumbers.sort((a, b) => a - b);
+                    logger.log('⚠️ 랜덤 생성 + 필터 적용:', finalNumbers, { includeNumbers, excludeNumbers });
                 }
 
                 // Create spinning balls

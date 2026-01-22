@@ -1315,218 +1315,23 @@
             return fortunes[timeKey] || '맑은 기운으로';
         }
 
-        // === 고급 통계 분석 인터랙티브 도구 함수들 ===
 
-        // 페이지 로드 시 미출현 번호 표시
-        function loadMissingNumbers() {
-            if (!fallbackData || fallbackData.length === 0) {
-                setTimeout(loadMissingNumbers, 500);
-                return;
-            }
 
-            const lastRound = fallbackData[0].drwNo;
-            const missingData = [];
-            for (let num = 1; num <= 45; num++) {
-                let lastAppeared = 0;
-                for (let i = 0; i < fallbackData.length; i++) {
-                    const data = fallbackData[i];
-                    const numbers = [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6];
-                    if (numbers.includes(num)) {
-                        lastAppeared = data.drwNo;
-                        break;
-                    }
-                }
-                missingData.push({ number: num, rounds: lastAppeared ? lastRound - lastAppeared : lastRound });
-            }
-            missingData.sort((a, b) => b.rounds - a.rounds);
-
-            document.getElementById('missingNumbersList').innerHTML = missingData.slice(0, 10).map((item, idx) => `
-                <div style="background: ${idx < 3 ? '#FEE2E2' : '#F8FAFC'}; border: 2px solid ${idx < 3 ? '#EF4444' : '#E2E8F0'}; border-radius: 12px; padding: 15px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-blue);">${item.number}</div>
-                    <div style="font-size: 0.85rem; font-weight: 600; color: ${idx < 3 ? '#EF4444' : 'var(--primary-orange)'}; margin-top: 5px;">${item.rounds}회</div>
-                </div>
-            `).join('');
-
-            window.missingNumbersData = missingData;
-        }
-
-        // 1. 미출현 번호로 조합 생성
-        function generateFromMissing() {
-            if (!window.missingNumbersData) return;
-
-            const topMissing = window.missingNumbersData.slice(0, 15);
-            const selected = [];
-            while (selected.length < 6) {
-                const idx = Math.floor(Math.random() * topMissing.length);
-                if (!selected.includes(topMissing[idx].number)) {
-                    selected.push(topMissing[idx].number);
-                }
-            }
-            selected.sort((a, b) => a - b);
-
-            displayResult('missingResult', selected, `미출현 TOP 15 중에서 랜덤 선택`);
-        }
-
-        // 2. 홀짝 비율로 조합 생성
-        function generateFromOddEven() {
-            const ratio = document.getElementById('oddEvenRatio').value.split('-');
-            const oddCount = parseInt(ratio[0]);
-            const evenCount = parseInt(ratio[1]);
-
-            const allOdds = [];
-            const allEvens = [];
-            for (let i = 1; i <= 45; i++) {
-                if (i % 2 === 1) allOdds.push(i);
-                else allEvens.push(i);
-            }
-
-            const selected = [];
-
-            // 홀수 선택
-            const shuffledOdds = allOdds.sort(() => 0.5 - Math.random());
-            for (let i = 0; i < oddCount; i++) {
-                selected.push(shuffledOdds[i]);
-            }
-
-            // 짝수 선택
-            const shuffledEvens = allEvens.sort(() => 0.5 - Math.random());
-            for (let i = 0; i < evenCount; i++) {
-                selected.push(shuffledEvens[i]);
-            }
-
-            selected.sort((a, b) => a - b);
-            displayResult('oddEvenResult', selected, `홀수 ${oddCount}개, 짝수 ${evenCount}개`);
-        }
-
-        //  3. 연속 번호 포함 조합 생성
-        function generateWithConsecutive() {
-            const consCount = parseInt(document.getElementById('consecutiveCount').value);
-            const selected = [];
-
-            if (consCount > 0) {
-                // 연속 번호 시작점 선택
-                const startNum = Math.floor(Math.random() * (46 - consCount)) + 1;
-                for (let i = 0; i < consCount; i++) {
-                    selected.push(startNum + i);
-                }
-
-                // 나머지 번호는 랜덤
-                while (selected.length < 6) {
-                    const num = Math.floor(Math.random() * 45) + 1;
-                    if (!selected.includes(num)) {
-                        selected.push(num);
-                    }
-                }
-            } else {
-                // 연속 없음 - 완전 랜덤하되 연속 피하기
-                while (selected.length < 6) {
-                    const num = Math.floor(Math.random() * 45) + 1;
-                    if (!selected.includes(num) && !selected.includes(num - 1) && !selected.includes(num + 1)) {
-                        selected.push(num);
-                    }
-                }
-            }
-
-            selected.sort((a, b) => a - b);
-            displayResult('consecutiveResult', selected, consCount > 0 ? `${consCount}개 연속 번호 포함` : '연속 번호 없음');
-        }
-
-        // 4. 번호합 범위로 조합 생성
-        function generateBySum() {
-            const range = document.getElementById('sumRange').value.split('-');
-            const minSum = parseInt(range[0]);
-            const maxSum = parseInt(range[1]);
-
-            let attempts = 0;
-            let selected = [];
-
-            while (attempts < 10000) {
-                selected = [];
-                while (selected.length < 6) {
-                    const num = Math.floor(Math.random() * 45) + 1;
-                    if (!selected.includes(num)) {
-                        selected.push(num);
-                    }
-                }
-
-                const sum = selected.reduce((a, b) => a + b, 0);
-                if (sum >= minSum && sum <= maxSum) {
-                    break;
-                }
-                attempts++;
-            }
-
-            selected.sort((a, b) => a - b);
-            const actualSum = selected.reduce((a, b) => a + b, 0);
-            displayResult('sumResult', selected, `합계: ${actualSum} (목표: ${minSum}~${maxSum})`);
-        }
-
-        // 5. 구간별로 조합 생성
-        function generateByRange() {
-            const counts = [
-                parseInt(document.getElementById('range1').value),
-                parseInt(document.getElementById('range2').value),
-                parseInt(document.getElementById('range3').value),
-                parseInt(document.getElementById('range4').value),
-                parseInt(document.getElementById('range5').value)
-            ];
-
-            const total = counts.reduce((a, b) => a + b, 0);
-            if (total !== 6) {
-                alert('총 6개가 되도록 조정해주세요!');
-                document.getElementById('rangeTotal').textContent = `총 ${total}개 (6개 필요)`;
-                document.getElementById('rangeTotal').style.color = '#EF4444';
-                return;
-            }
-
-            const selected = [];
-            const ranges = [[1, 10], [11, 20], [21, 30], [31, 40], [41, 45]];
-
-            for (let i = 0; i < 5; i++) {
-                const needed = counts[i];
-                const [min, max] = ranges[i];
-                const available = [];
-                for (let n = min; n <= max; n++) {
-                    available.push(n);
-                }
-
-                const shuffled = available.sort(() => 0.5 - Math.random());
-                for (let j = 0; j < needed; j++) {
-                    selected.push(shuffled[j]);
-                }
-            }
-
-            selected.sort((a, b) => a - b);
-            displayResult('rangeResult', selected, `각 구간: ${counts.join('-')}`);
-        }
-
-        // 결과 표시 공통 함수
-        function displayResult(elementId, numbers, desc) {
-            const html = `
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 12px; text-align: center;">
-                    <div style="color: white; font-weight: 600; margin-bottom: 15px;">${desc}</div>
-                    <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                        ${numbers.map(num => {
-                const color = getBallColor(num);
-                return `<div style="width: 50px; height: 50px; border-radius: 50%; background: ${color}; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">${num}</div>`;
-            }).join('')}
-                    </div>
-                </div>
-            `;
-            document.getElementById(elementId).innerHTML = html;
-        }
-
-        // 구간별 입력 변경 시 총합 업데이트
+        // 구간별 입력 변경 시 총합 업데이트 (Using inline listener for simplicity or move to js)
         ['range1', 'range2', 'range3', 'range4', 'range5'].forEach(id => {
-            document.getElementById(id)?.addEventListener('input', () => {
-                const total = [1, 2, 3, 4, 5].reduce((sum, i) => {
-                    const val = parseInt(document.getElementById(`range${i}`).value) || 0;
-                    return sum + val;
-                }, 0);
-                const elem = document.getElementById('rangeTotal');
-                elem.textContent = `총 ${total}개`;
-                elem.style.color = total === 6 ? 'var(--primary-blue)' : '#EF4444';
-            });
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => {
+                    const total = [1, 2, 3, 4, 5].reduce((sum, i) => {
+                        return sum + (parseInt(document.getElementById(`range${i}`).value) || 0);
+                    }, 0);
+                    const totalEl = document.getElementById('rangeTotal');
+                    if (totalEl) {
+                        totalEl.textContent = `총 ${total}개`;
+                        totalEl.style.color = total === 6 ? 'var(--primary-blue)' : '#EF4444';
+                    }
+                });
+            }
         });
 
         // === 탭 전환 함수 ===

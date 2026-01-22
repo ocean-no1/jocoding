@@ -132,6 +132,39 @@
                         <div class="prize-label">1등 당첨금</div>
                         <div class="prize-amount" id="lotto-prize">294.6억원</div>
                     </div>
+
+                    <!-- 번호 필터 옵션 -->
+                    <div style="background: #F8FAFC; padding: 20px; border-radius: 12px; margin: 15px 0;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <input type="checkbox" id="exclude-birthdays"
+                                style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="exclude-birthdays" style="cursor: pointer; font-weight: 600;">생일 번호 (1~31)
+                                제외</label>
+                        </div>
+                        <details style="margin-top: 10px;">
+                            <summary
+                                style="cursor: pointer; font-weight: 600; color: var(--primary-blue); user-select: none;">
+                                🎯 고급 옵션</summary>
+                            <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">제외할 번호:</label>
+                                    <input type="text" id="exclude-numbers" placeholder="예: 7,13,21"
+                                        style="width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">쉼표(,)로
+                                        구분해서 입력</div>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">반드시 포함할
+                                        번호:</label>
+                                    <input type="text" id="include-numbers" placeholder="예: 7,13"
+                                        style="width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">최대 5개까지
+                                        입력 가능</div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
                     <div class="lottery-actions">
                         <button class="btn-secondary" onclick="location.href='lotto.html'">📊 나만의 번호 분석</button>
                         <button class="btn-primary" onclick="generateAINumbers('lotto')">

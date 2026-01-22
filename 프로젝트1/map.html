@@ -294,16 +294,28 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            z-index: 201;
-            padding: 12px 20px;
-            background: white;
-            border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
+            z-index: 9999;
+            /* Ensure it's on top of everything */
+            padding: 15px 25px;
+            /* Larger touch target */
+            background: #EF4444;
+            /* Red for clear "Exit" action */
+            border: none;
+            color: white;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .roadview-close-btn:hover {
+            background: #DC2626;
+            transform: scale(1.05);
         }
 
         /* Custom Zoom Control */
@@ -914,36 +926,17 @@
                 initBoundsListener();
 
                 // === 2. 클릭 이벤트 등록 ===
-                // 지도를 클릭한 위치에 표출할 마커입니다
-                const clickMarker = new kakao.maps.Marker({
-                    position: map.getCenter()
-                });
-                clickMarker.setMap(map);
-                clickMarker.setVisible(false); // 초기에는 숨김
+                // Click marker removed
 
                 kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
-                    const latlng = mouseEvent.latLng;
-
-                    // 로드뷰 모드일 경우
+                    // 로드뷰 모드일 경우에만 작동
                     if (isRoadviewMode) {
+                        const latlng = mouseEvent.latLng;
                         if (roadviewMarker) {
                             roadviewMarker.setPosition(latlng);
                         }
                         showRoadview(latlng.getLat(), latlng.getLng());
-                        return;
                     }
-
-                    // 클릭한 위도, 경도 정보를 가져옵니다 
-
-                    // 마커 위치를 클릭한 위치로 옮깁니다
-                    clickMarker.setPosition(latlng);
-                    clickMarker.setVisible(true);
-
-                    const message = '클릭한 위치: 위도 ' + latlng.getLat().toFixed(6) + ', 경도 ' + latlng.getLng().toFixed(6);
-
-                    const resultDiv = document.getElementById('clickResult');
-                    resultDiv.innerHTML = message;
-                    resultDiv.style.display = 'block';
                 });
 
                 // === 3. 줌 변경 이벤트 등록 ===
@@ -1167,6 +1160,9 @@
                         <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" class="overlay-btn" style="background:#3B82F6; color:white;">
                             🚗 길찾기
                         </a>
+                        <button onclick="processShare('${store.name}', '${store.address}', ${store.first})" class="overlay-btn" style="background:#10B981; color:white;">
+                            📤 공유
+                        </button>
                     </div>
                 </div>
             `;
@@ -1196,6 +1192,9 @@
                         🚗 길찾기
                     </a>
                 </div>
+                <button onclick="processShare('${store.name}', '${store.address}', ${store.first})" style="width: 100%; padding: 12px; background: #10B981; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem; margin-bottom: 8px;">
+                     📤 친구에게 매장 정보 공유하기
+                </button>
                 <div style="text-align: center;">
                     <a href="https://map.kakao.com/link/roadview/${store.lat},${store.lng}" target="_blank" style="color: #64748B; font-size: 0.85rem; text-decoration: underline; cursor: pointer;">
                         🌏 카카오맵에서 로드뷰 크게 보기 (새창)
@@ -1267,9 +1266,9 @@
             places.slice(0, 5).forEach(place => {
                 const item = document.createElement('li');
                 item.innerHTML = `
-                    <div class="search-item-title">${place.place_name}</div>
-                    <div class="search-item-addr">${place.address_name}</div>
-                `;
+            <div class="search-item-title">${place.place_name}</div>
+                <div class="search-item-addr">${place.address_name}</div>
+        `;
                 item.onclick = () => {
                     const coords = new kakao.maps.LatLng(place.y, place.x);
                     map.setCenter(coords);
@@ -1348,10 +1347,10 @@
                         // 커스텀 오버레이 추가 (이름이 있을 경우)
                         if (name) {
                             const content = `
-                                <div class="custom-overlay" style="min-width:auto; padding:10px 15px; box-shadow:0 4px 12px rgba(0,0,0,0.3); border:1px solid #ddd;">
-                                    <div class="overlay-title" style="margin:0; font-size:1rem; color:#1E3A8A;">${name}</div>
-                                </div>
-                            `;
+            <div class="custom-overlay" style="min-width:auto; padding:10px 15px; box-shadow:0 4px 12px rgba(0,0,0,0.3); border:1px solid #ddd;">
+                <div class="overlay-title" style="margin:0; font-size:1rem; color:#1E3A8A;">${name}</div>
+            </div>
+            `;
 
                             const rvCustomOverlay = new kakao.maps.CustomOverlay({
                                 position: position,
@@ -1726,13 +1725,13 @@
                     const ne = bounds.getNorthEast();
 
                     const message = `
-                        <div style="font-size:0.8rem; line-height:1.4;">
-                            <span style="color:#2563EB;">중심:</span> ${center.getLat().toFixed(4)}, ${center.getLng().toFixed(4)}<br>
-                            <span style="color:#666; font-size:0.75rem;">
-                            영역: (${sw.getLat().toFixed(3)}, ${sw.getLng().toFixed(3)}) ~ <br>
-                                  (${ne.getLat().toFixed(3)}, ${ne.getLng().toFixed(3)})
-                            </span>
-                        </div>
+            < div style = "font-size:0.8rem; line-height:1.4;" >
+                <span style="color:#2563EB;">중심:</span> ${center.getLat().toFixed(4)}, ${center.getLng().toFixed(4)} <br>
+                    <span style="color:#666; font-size:0.75rem;">
+                        영역: (${sw.getLat().toFixed(3)}, ${sw.getLng().toFixed(3)}) ~ <br>
+                            (${ne.getLat().toFixed(3)}, ${ne.getLng().toFixed(3)})
+                    </span>
+                </div>
                     `;
                     resultDiv.innerHTML = message;
                 });

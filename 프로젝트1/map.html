@@ -394,6 +394,7 @@
                 <div class="win-badge first">1등 3회</div>
                 <div class="win-badge second">2등 7회</div>
             </div>
+            <div id="store-actions" style="margin-top: 15px;"></div>
         </div>
     </div>
 
@@ -676,8 +677,22 @@
             infowindow.open(map);
             currentInfoWindow = infowindow;
 
-            // 지도 중심 이동 (선택사항, 모바일에서 유용)
-            // map.panTo(iwPosition);
+            // === 하단 패널 버튼 업데이트 ===
+            const actionsHTML = `
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="showRoadview(${store.lat}, ${store.lng})" style="flex: 1; padding: 12px; background: #FEE500; color: #191919; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem;">
+                        📷 로드뷰
+                    </button>
+                    <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" style="flex: 1; padding: 12px; background: #3B82F6; color: white; border: none; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem;">
+                        🚗 길찾기
+                    </a>
+                </div>
+            `;
+            document.getElementById('store-actions').innerHTML = actionsHTML;
+
+            // 지도 중심 이동 및 줌인 (사용자 요청: 줌인 기능)
+            map.panTo(iwPosition);
+            map.setLevel(2, { animate: true });
         }
 
         function showStoreInfo(store) {

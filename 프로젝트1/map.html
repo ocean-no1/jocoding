@@ -470,14 +470,14 @@
             storeData.forEach(store => {
                 const markerPosition = new kakao.maps.LatLng(store.lat, store.lng);
 
-                // 당첨 횟수에 따라 풍선 색상 결정 (호갱노노 스타일)
+                // 당첨 횟수에 따라 풍선 색상 결정 (금융/재화 테마)
                 let balloonColor, textColor = 'white';
                 if (store.first >= 3) {
-                    balloonColor = '#EF4444'; // 빨강 (3회 이상)
+                    balloonColor = '#FFD700'; // 금색 (3회 이상 - 대박!)
                 } else if (store.first >= 1) {
-                    balloonColor = '#3B82F6'; // 파랑 (1-2회)
+                    balloonColor = '#C0C0C0'; // 은색 (1-2회 - 준명당)
                 } else {
-                    balloonColor = '#94A3B8'; // 회색 (일반)
+                    balloonColor = '#A0A0A0'; // 회색 (일반)
                 }
 
                 // 호갱노노 스타일 풍선 HTML

@@ -698,12 +698,17 @@
 
             // === 하단 패널 버튼 업데이트 ===
             const actionsHTML = `
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
                     <button onclick="showRoadview(${store.lat}, ${store.lng})" style="flex: 1; padding: 12px; background: #FEE500; color: #191919; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem;">
                         📷 로드뷰
                     </button>
                     <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" style="flex: 1; padding: 12px; background: #3B82F6; color: white; border: none; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem;">
                         🚗 길찾기
+                    </a>
+                </div>
+                <div style="text-align: center;">
+                    <a href="https://map.kakao.com/link/roadview/${store.lat},${store.lng}" target="_blank" style="color: #64748B; font-size: 0.85rem; text-decoration: underline; cursor: pointer;">
+                        🌏 카카오맵에서 로드뷰 크게 보기 (새창)
                     </a>
                 </div>
             `;

@@ -400,437 +400,483 @@
             🏠 홈으로
         </button>
 
-        <!-- Current Draw Section -->
-        <div class="section">
-            <div class="current-draw">
-                <div class="draw-number" id="current-draw-number">최신 회차 로딩 중...</div>
-                <div class="draw-date" id="current-draw-date"></div>
-                <div class="balls-container" id="current-draw-balls">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>최신 당첨번호를 불러오는 중...</p>
-                    </div>
-                </div>
-                <div style="margin-top: 15px;">
-                    <div class="prize-label">1등 당첨금</div>
-                    <div class="prize-amount" id="current-prize">-</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Statistical Analysis Section -->
-        <div class="section">
-            <div class="section-title">📊 연도별 통계 분석</div>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">
-                선택한 기간 동안의 당첨번호 빈도를 분석하여 가장 많이 나온 번호를 추천합니다.
-            </p>
-
-            <div class="period-buttons">
-                <button class="period-btn active" data-years="5">최근 5년</button>
-                <button class="period-btn" data-years="10">최근 10년</button>
-                <button class="period-btn" data-years="15">최근 15년</button>
-                <button class="period-btn" data-years="20">최근 20년</button>
-            </div>
-
-            <div id="stats-loading" class="loading" style="display: none;">
-                <div class="spinner"></div>
-                <p>통계 데이터를 분석하는 중...</p>
-            </div>
-
-            <div id="stats-result" style="display: none;">
-                <h3 style="margin-bottom: 15px; color: var(--text);">📈 번호별 출현 빈도</h3>
-                <div class="stats-grid" id="stats-grid"></div>
-
-                <h3 style="margin-top: 30px; margin-bottom: 15px; color: var(--text);">✨ AI 추천 번호</h3>
-                <div class="recommended-numbers" id="recommended-numbers"></div>
-            </div>
-        </div>
-
-        <!-- Fortune Section -->
-        <div class="section fortune-section">
-            <div class="section-title">🔮 사주팔자 행운의 번호</div>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">
-                생년월일과 시간을 입력하면 사주팔자를 기반으로 행운의 번호를 추천해드립니다.
-            </p>
-
-            <div class="fortune-input-group">
-                <label>생년월일</label>
-                <input type="date" id="birth-date" max="2026-01-18">
-            </div>
-
-            <div class="fortune-input-group">
-                <label>태어난 시간</label>
-                <div class="time-cards" id="time-selection">
-                    <div class="time-card" data-time="dawn">
-                        <div class="time-icon">🌙</div>
-                        <div class="time-label">새벽</div>
-                        <div class="time-range">23:00-05:00</div>
-                    </div>
-                    <div class="time-card" data-time="morning">
-                        <div class="time-icon">🌅</div>
-                        <div class="time-label">아침</div>
-                        <div class="time-range">05:00-09:00</div>
-                    </div>
-                    <div class="time-card" data-time="noon">
-                        <div class="time-icon">☀️</div>
-                        <div class="time-label">점심</div>
-                        <div class="time-range">09:00-13:00</div>
-                    </div>
-                    <div class="time-card" data-time="afternoon">
-                        <div class="time-icon">🌤️</div>
-                        <div class="time-label">오후</div>
-                        <div class="time-range">13:00-17:00</div>
-                    </div>
-                    <div class="time-card" data-time="evening">
-                        <div class="time-icon">🌆</div>
-                        <div class="time-label">저녁</div>
-                        <div class="time-range">17:00-21:00</div>
-                    </div>
-                    <div class="time-card" data-time="night">
-                        <div class="time-icon">🌃</div>
-                        <div class="time-label">밤</div>
-                        <div class="time-range">21:00-23:00</div>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn-primary" onclick="generateFortuneNumbers()" style="width: 100%;">
-                행운의 번호 생성하기
+        <!-- Tab Navigation -->
+        <div class="tab-navigation"
+            style="margin: 30px 0; background: white; border-radius: 16px; padding: 8px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); display: flex; gap: 8px;">
+            <button class="tab-btn active" onclick="switchTab('winning')"
+                style="flex: 1; padding: 15px 20px; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s;">
+                📊 당첨 정보
             </button>
-
-            <div class="fortune-result" id="fortune-result">
-                <div class="fortune-description" id="fortune-description"></div>
-                <div class="recommended-numbers" id="fortune-numbers"></div>
-            </div>
+            <button class="tab-btn" onclick="switchTab('stats')"
+                style="flex: 1; padding: 15px 20px; border: none; background: #F8FAFC; color: var(--text-secondary); border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s;">
+                📈 통계 분석
+            </button>
+            <button class="tab-btn" onclick="switchTab('generate')"
+                style="flex: 1; padding: 15px 20px; border: none; background: #F8FAFC; color: var(--text-secondary); border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s;">
+                🎲 번호 생성
+            </button>
         </div>
 
-        <!-- Face Reading Section -->
-        <div class="section face-reading-section">
-            <div class="section-title">👤 관상 분석 행운의 번호</div>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">
-                얼굴 특징을 단계별로 선택하면 AI가 관상학 기반으로 행운의 번호를 추천해드립니다.
+        <!-- Tab 1: 당첨 정보 -->
+        <div id="winning-tab" class="tab-pane active">
+            <!-- Current Draw Section -->
+            <div class="section">
+                <div class="current-draw">
+                    <div class="draw-number" id="current-draw-number">최신 회차 로딩 중...</div>
+                    <div class="draw-date" id="current-draw-date"></div>
+                    <div class="balls-container" id="current-draw-balls">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>최신 당첨번호를 불러오는 중...</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <div class="prize-label">1등 당첨금</div>
+                        <div class="prize-amount" id="current-prize">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Tab 1 -->
+
+        <!-- Tab 2: 통계 분석 -->
+        <div id="stats-tab" class="tab-pane" style="display: none;">
+            <!-- Statistical Analysis Section -->
+            <div class="section">
+                <div class="section-title">📊 연도별 통계 분석</div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    선택한 기간 동안의 당첨번호 빈도를 분석하여 가장 많이 나온 번호를 추천합니다.
+                </p>
+
+                <div class="period-buttons">
+                    <button class="period-btn active" data-years="5">최근 5년</button>
+                    <button class="period-btn" data-years="10">최근 10년</button>
+                    <button class="period-btn" data-years="15">최근 15년</button>
+                    <button class="period-btn" data-years="20">최근 20년</button>
+                </div>
+
+                <div id="stats-loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>통계 데이터를 분석하는 중...</p>
+                </div>
+
+                <div id="stats-result" style="display: none;">
+                    <h3 style="margin-bottom: 15px; color: var(--text);">📈 번호별 출현 빈도</h3>
+                    <div class="stats-grid" id="stats-grid"></div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 15px; color: var(--text);">✨ AI 추천 번호</h3>
+                    <div class="recommended-numbers" id="recommended-numbers"></div>
+                </div>
+            </div>
+
+            <!-- Fortune Section -->
+            <div class="section fortune-section">
+                <div class="section-title">🔮 사주팔자 행운의 번호</div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    생년월일과 시간을 입력하면 사주팔자를 기반으로 행운의 번호를 추천해드립니다.
+                </p>
+
+                <div class="fortune-input-group">
+                    <label>생년월일</label>
+                    <input type="date" id="birth-date" max="2026-01-18">
+                </div>
+
+                <div class="fortune-input-group">
+                    <label>태어난 시간</label>
+                    <div class="time-cards" id="time-selection">
+                        <div class="time-card" data-time="dawn">
+                            <div class="time-icon">🌙</div>
+                            <div class="time-label">새벽</div>
+                            <div class="time-range">23:00-05:00</div>
+                        </div>
+                        <div class="time-card" data-time="morning">
+                            <div class="time-icon">🌅</div>
+                            <div class="time-label">아침</div>
+                            <div class="time-range">05:00-09:00</div>
+                        </div>
+                        <div class="time-card" data-time="noon">
+                            <div class="time-icon">☀️</div>
+                            <div class="time-label">점심</div>
+                            <div class="time-range">09:00-13:00</div>
+                        </div>
+                        <div class="time-card" data-time="afternoon">
+                            <div class="time-icon">🌤️</div>
+                            <div class="time-label">오후</div>
+                            <div class="time-range">13:00-17:00</div>
+                        </div>
+                        <div class="time-card" data-time="evening">
+                            <div class="time-icon">🌆</div>
+                            <div class="time-label">저녁</div>
+                            <div class="time-range">17:00-21:00</div>
+                        </div>
+                        <div class="time-card" data-time="night">
+                            <div class="time-icon">🌃</div>
+                            <div class="time-label">밤</div>
+                            <div class="time-range">21:00-23:00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="generateFortuneNumbers()" style="width: 100%;">
+                    행운의 번호 생성하기
+                </button>
+
+                <div class="fortune-result" id="fortune-result">
+                    <div class="fortune-description" id="fortune-description"></div>
+                    <div class="recommended-numbers" id="fortune-numbers"></div>
+                </div>
+            </div>
+
+            <!-- Face Reading Section -->
+            <div class="section face-reading-section">
+                <div class="section-title">👤 관상 분석 행운의 번호</div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    얼굴 특징을 단계별로 선택하면 AI가 관상학 기반으로 행운의 번호를 추천해드립니다.
+                </p>
+
+                <!-- Step Indicator -->
+                <div class="step-indicator">
+                    <div class="step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">얼굴형</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">이마</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">코</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">눈썹</div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Face Shape -->
+                <div class="face-reading-steps" id="step-1" style="display: block;">
+                    <h4 style="margin-bottom: 15px; color: var(--text);">얼굴형을 선택하세요</h4>
+                    <div class="face-shape-cards">
+                        <div class="face-card" data-value="round" onclick="selectFaceFeature('shape', 'round', this)">
+                            <div class="face-icon">
+                                <svg viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="35" fill="var(--primary-blue)" opacity="0.3"
+                                        stroke="var(--primary-blue)" stroke-width="2" />
+                                </svg>
+                            </div>
+                            <div class="face-label">둥근형</div>
+                        </div>
+                        <div class="face-card" data-value="square" onclick="selectFaceFeature('shape', 'square', this)">
+                            <div class="face-icon">
+                                <svg viewBox="0 0 100 100">
+                                    <rect x="20" y="20" width="60" height="60" fill="var(--primary-blue)" opacity="0.3"
+                                        stroke="var(--primary-blue)" stroke-width="2" />
+                                </svg>
+                            </div>
+                            <div class="face-label">사각형</div>
+                        </div>
+                        <div class="face-card" data-value="oval" onclick="selectFaceFeature('shape', 'oval', this)">
+                            <div class="face-icon">
+                                <svg viewBox="0 0 100 100">
+                                    <ellipse cx="50" cy="50" rx="28" ry="40" fill="var(--primary-blue)" opacity="0.3"
+                                        stroke="var(--primary-blue)" stroke-width="2" />
+                                </svg>
+                            </div>
+                            <div class="face-label">계란형</div>
+                        </div>
+                        <div class="face-card" data-value="triangle"
+                            onclick="selectFaceFeature('shape', 'triangle', this)">
+                            <div class="face-icon">
+                                <svg viewBox="0 0 100 100">
+                                    <polygon points="50,25 80,75 20,75" fill="var(--primary-blue)" opacity="0.3"
+                                        stroke="var(--primary-blue)" stroke-width="2" />
+                                </svg>
+                            </div>
+                            <div class="face-label">역삼각형</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Forehead -->
+                <div class="face-reading-steps" id="step-2" style="display: none;">
+                    <h4 style="margin-bottom: 15px; color: var(--text);">이마 특징을 선택하세요</h4>
+                    <div class="face-options">
+                        <div class="face-option" data-value="wide"
+                            onclick="selectFaceFeature('forehead', 'wide', this)">넓은
+                            이마</div>
+                        <div class="face-option" data-value="narrow"
+                            onclick="selectFaceFeature('forehead', 'narrow', this)">좁은 이마</div>
+                        <div class="face-option" data-value="high"
+                            onclick="selectFaceFeature('forehead', 'high', this)">높은
+                            이마</div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Nose -->
+                <div class="face-reading-steps" id="step-3" style="display: none;">
+                    <h4 style="margin-bottom: 15px; color: var(--text);">코 특징을 선택하세요</h4>
+                    <div class="face-options">
+                        <div class="face-option" data-value="straight"
+                            onclick="selectFaceFeature('nose', 'straight', this)">곧은 코</div>
+                        <div class="face-option" data-value="round" onclick="selectFaceFeature('nose', 'round', this)">
+                            둥근 코
+                        </div>
+                        <div class="face-option" data-value="sharp" onclick="selectFaceFeature('nose', 'sharp', this)">
+                            오똑한 코
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Eyebrows -->
+                <div class="face-reading-steps" id="step-4" style="display: none;">
+                    <h4 style="margin-bottom: 15px; color: var(--text);">눈썹 특징을 선택하세요</h4>
+                    <div class="face-options">
+                        <div class="face-option" data-value="thick"
+                            onclick="selectFaceFeature('eyebrow', 'thick', this)">진한
+                            눈썹</div>
+                        <div class="face-option" data-value="thin" onclick="selectFaceFeature('eyebrow', 'thin', this)">
+                            얇은
+                            눈썹</div>
+                        <div class="face-option" data-value="arched"
+                            onclick="selectFaceFeature('eyebrow', 'arched', this)">
+                            아치형 눈썹</div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container" id="face-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill">AI가 관상을 분석 중...</div>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div class="fortune-result" id="face-result">
+                    <div class="fortune-description" id="face-description"></div>
+                    <div class="recommended-numbers" id="face-numbers"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Tab 2 -->
+
+    <!-- Tab 3: 번호 생성 -->
+    <div id="generate-tab" class="tab-pane" style="display: none;">
+        <!-- 고급 통계 분석 인터랙티브 도구 -->
+        <div class="container" style="max-width: 1200px; margin: 60px auto; padding: 0 20px;">
+            <h2
+                style="font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                📊 고급 통계 분석 도구
+            </h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 50px; font-size: 1.1rem;">
+                역대 당첨번호 기반으로 나만의 번호를 만들어보세요
             </p>
 
-            <!-- Step Indicator -->
-            <div class="step-indicator">
-                <div class="step active" data-step="1">
-                    <div class="step-circle">1</div>
-                    <div class="step-label">얼굴형</div>
-                </div>
-                <div class="step" data-step="2">
-                    <div class="step-circle">2</div>
-                    <div class="step-label">이마</div>
-                </div>
-                <div class="step" data-step="3">
-                    <div class="step-circle">3</div>
-                    <div class="step-label">코</div>
-                </div>
-                <div class="step" data-step="4">
-                    <div class="step-circle">4</div>
-                    <div class="step-label">눈썹</div>
-                </div>
-            </div>
-
-            <!-- Step 1: Face Shape -->
-            <div class="face-reading-steps" id="step-1" style="display: block;">
-                <h4 style="margin-bottom: 15px; color: var(--text);">얼굴형을 선택하세요</h4>
-                <div class="face-shape-cards">
-                    <div class="face-card" data-value="round" onclick="selectFaceFeature('shape', 'round', this)">
-                        <div class="face-icon">
-                            <svg viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="35" fill="var(--primary-blue)" opacity="0.3"
-                                    stroke="var(--primary-blue)" stroke-width="2" />
-                            </svg>
-                        </div>
-                        <div class="face-label">둥근형</div>
-                    </div>
-                    <div class="face-card" data-value="square" onclick="selectFaceFeature('shape', 'square', this)">
-                        <div class="face-icon">
-                            <svg viewBox="0 0 100 100">
-                                <rect x="20" y="20" width="60" height="60" fill="var(--primary-blue)" opacity="0.3"
-                                    stroke="var(--primary-blue)" stroke-width="2" />
-                            </svg>
-                        </div>
-                        <div class="face-label">사각형</div>
-                    </div>
-                    <div class="face-card" data-value="oval" onclick="selectFaceFeature('shape', 'oval', this)">
-                        <div class="face-icon">
-                            <svg viewBox="0 0 100 100">
-                                <ellipse cx="50" cy="50" rx="28" ry="40" fill="var(--primary-blue)" opacity="0.3"
-                                    stroke="var(--primary-blue)" stroke-width="2" />
-                            </svg>
-                        </div>
-                        <div class="face-label">계란형</div>
-                    </div>
-                    <div class="face-card" data-value="triangle" onclick="selectFaceFeature('shape', 'triangle', this)">
-                        <div class="face-icon">
-                            <svg viewBox="0 0 100 100">
-                                <polygon points="50,25 80,75 20,75" fill="var(--primary-blue)" opacity="0.3"
-                                    stroke="var(--primary-blue)" stroke-width="2" />
-                            </svg>
-                        </div>
-                        <div class="face-label">역삼각형</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 2: Forehead -->
-            <div class="face-reading-steps" id="step-2" style="display: none;">
-                <h4 style="margin-bottom: 15px; color: var(--text);">이마 특징을 선택하세요</h4>
-                <div class="face-options">
-                    <div class="face-option" data-value="wide" onclick="selectFaceFeature('forehead', 'wide', this)">넓은
-                        이마</div>
-                    <div class="face-option" data-value="narrow"
-                        onclick="selectFaceFeature('forehead', 'narrow', this)">좁은 이마</div>
-                    <div class="face-option" data-value="high" onclick="selectFaceFeature('forehead', 'high', this)">높은
-                        이마</div>
-                </div>
-            </div>
-
-            <!-- Step 3: Nose -->
-            <div class="face-reading-steps" id="step-3" style="display: none;">
-                <h4 style="margin-bottom: 15px; color: var(--text);">코 특징을 선택하세요</h4>
-                <div class="face-options">
-                    <div class="face-option" data-value="straight"
-                        onclick="selectFaceFeature('nose', 'straight', this)">곧은 코</div>
-                    <div class="face-option" data-value="round" onclick="selectFaceFeature('nose', 'round', this)">둥근 코
-                    </div>
-                    <div class="face-option" data-value="sharp" onclick="selectFaceFeature('nose', 'sharp', this)">오똑한 코
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 4: Eyebrows -->
-            <div class="face-reading-steps" id="step-4" style="display: none;">
-                <h4 style="margin-bottom: 15px; color: var(--text);">눈썹 특징을 선택하세요</h4>
-                <div class="face-options">
-                    <div class="face-option" data-value="thick" onclick="selectFaceFeature('eyebrow', 'thick', this)">진한
-                        눈썹</div>
-                    <div class="face-option" data-value="thin" onclick="selectFaceFeature('eyebrow', 'thin', this)">얇은
-                        눈썹</div>
-                    <div class="face-option" data-value="arched" onclick="selectFaceFeature('eyebrow', 'arched', this)">
-                        아치형 눈썹</div>
-                </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="progress-container" id="face-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill">AI가 관상을 분석 중...</div>
-                </div>
-            </div>
-
-            <!-- Result -->
-            <div class="fortune-result" id="face-result">
-                <div class="fortune-description" id="face-description"></div>
-                <div class="recommended-numbers" id="face-numbers"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 고급 통계 분석 인터랙티브 도구 -->
-    <div class="container" style="max-width: 1200px; margin: 60px auto; padding: 0 20px;">
-        <h2
-            style="font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
-            📊 고급 통계 분석 도구
-        </h2>
-        <p style="text-align: center; color: var(--text-muted); margin-bottom: 50px; font-size: 1.1rem;">
-            역대 당첨번호 기반으로 나만의 번호를 만들어보세요
-        </p>
-
-        <div class="grid-container" style="gap: 30px;">
-            <!-- 1. 연속 미출현 번호 통계 -->
-            <div class="col-6" id="missing">
-                <div
-                    style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
-                    <h3
-                        style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                        🔍 연속 미출현 번호 통계
-                    </h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
-                        가장 오랫동안 나오지 않은 번호들을 확인하세요
-                    </p>
-                    <div id="missingNumbersList"
-                        style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0;"></div>
-                    <button onclick="generateFromMissing()"
-                        style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 15px;">
-                        💡 미출현 번호로 조합 만들기
-                    </button>
-                    <div id="missingResult" style="margin-top: 20px;"></div>
+            <div class="grid-container" style="gap: 30px;">
+                <!-- 1. 연속 미출현 번호 통계 -->
+                <div class="col-6" id="missing">
                     <div
-                        style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
-                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
-                            💡 Tip: 미출현 기간이 길다고 당첨 확률이 높은 것은 아닙니다.
+                        style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
+                        <h3
+                            style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            🔍 연속 미출현 번호 통계
+                        </h3>
+                        <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+                            가장 오랫동안 나오지 않은 번호들을 확인하세요
                         </p>
+                        <div id="missingNumbersList"
+                            style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0;">
+                        </div>
+                        <button onclick="generateFromMissing()"
+                            style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 15px;">
+                            💡 미출현 번호로 조합 만들기
+                        </button>
+                        <div id="missingResult" style="margin-top: 20px;"></div>
+                        <div
+                            style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+                                💡 Tip: 미출현 기간이 길다고 당첨 확률이 높은 것은 아닙니다.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 2. 홀수·짝수 출현 통계 -->
-            <div class="col-6" id="oddeven">
-                <div
-                    style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
-                    <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
-                        ⚖️ 홀수·짝수 출현 통계
-                    </h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
-                        원하는 홀짝 비율을 선택하세요
-                    </p>
-                    <div style="margin: 20px 0;">
-                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">홀짝 비율 선택:</label>
-                        <select id="oddEvenRatio"
-                            style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem;">
-                            <option value="3-3">홀수 3개 : 짝수 3개</option>
-                            <option value="4-2">홀수 4개 : 짝수 2개</option>
-                            <option value="2-4">홀수 2개 : 짝수 4개</option>
-                            <option value="5-1">홀수 5개 : 짝수 1개</option>
-                            <option value="1-5">홀수 1개 : 짝수 5개</option>
-                        </select>
-                    </div>
-                    <button onclick="generateFromOddEven()"
-                        style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">
-                        🎲 홀짝 비율로 조합 만들기
-                    </button>
-                    <div id="oddEvenResult" style="margin-top: 20px;"></div>
+                <!-- 2. 홀수·짝수 출현 통계 -->
+                <div class="col-6" id="oddeven">
                     <div
-                        style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
-                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
-                            📈 역대 당첨번호의 72%가 홀수 3-4개입니다.
+                        style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
+                        <h3
+                            style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
+                            ⚖️ 홀수·짝수 출현 통계
+                        </h3>
+                        <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+                            원하는 홀짝 비율을 선택하세요
                         </p>
+                        <div style="margin: 20px 0;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: 600;">홀짝 비율 선택:</label>
+                            <select id="oddEvenRatio"
+                                style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem;">
+                                <option value="3-3">홀수 3개 : 짝수 3개</option>
+                                <option value="4-2">홀수 4개 : 짝수 2개</option>
+                                <option value="2-4">홀수 2개 : 짝수 4개</option>
+                                <option value="5-1">홀수 5개 : 짝수 1개</option>
+                                <option value="1-5">홀수 1개 : 짝수 5개</option>
+                            </select>
+                        </div>
+                        <button onclick="generateFromOddEven()"
+                            style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">
+                            🎲 홀짝 비율로 조합 만들기
+                        </button>
+                        <div id="oddEvenResult" style="margin-top: 20px;"></div>
+                        <div
+                            style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+                                📈 역대 당첨번호의 72%가 홀수 3-4개입니다.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 3. 연속 번호 출현 통계 -->
-            <div class="col-6" id="consecutive">
-                <div
-                    style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
-                    <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
-                        🔢 연속 번호 출현 통계
-                    </h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
-                        연속 번호를 포함한 조합을 만들어보세요
-                    </p>
-                    <div style="margin: 20px 0;">
-                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">연속 번호 개수:</label>
-                        <select id="consecutiveCount"
-                            style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem;">
-                            <option value="0">연속 없음</option>
-                            <option value="2" selected>2개 연속 (예: 12, 13)</option>
-                            <option value="3">3개 연속 (예: 12, 13, 14)</option>
-                            <option value="4">4개 연속 (도전!)</option>
-                        </select>
-                    </div>
-                    <button onclick="generateWithConsecutive()"
-                        style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">
-                        🔢 연속 번호 조합 만들기
-                    </button>
-                    <div id="consecutiveResult" style="margin-top: 20px;"></div>
+                <!-- 3. 연속 번호 출현 통계 -->
+                <div class="col-6" id="consecutive">
                     <div
-                        style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
-                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
-                            🎲 2개 연속은 흔하지만, 3개 이상은 매우 드뭅니다.
+                        style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
+                        <h3
+                            style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
+                            🔢 연속 번호 출현 통계
+                        </h3>
+                        <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+                            연속 번호를 포함한 조합을 만들어보세요
                         </p>
+                        <div style="margin: 20px 0;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: 600;">연속 번호 개수:</label>
+                            <select id="consecutiveCount"
+                                style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem;">
+                                <option value="0">연속 없음</option>
+                                <option value="2" selected>2개 연속 (예: 12, 13)</option>
+                                <option value="3">3개 연속 (예: 12, 13, 14)</option>
+                                <option value="4">4개 연속 (도전!)</option>
+                            </select>
+                        </div>
+                        <button onclick="generateWithConsecutive()"
+                            style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">
+                            🔢 연속 번호 조합 만들기
+                        </button>
+                        <div id="consecutiveResult" style="margin-top: 20px;"></div>
+                        <div
+                            style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+                                🎲 2개 연속은 흔하지만, 3개 이상은 매우 드뭅니다.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 4. 번호합 분포 통계 -->
-            <div class="col-6" id="sum">
-                <div
-                    style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
-                    <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
-                        ➕ 번호합 분포 통계
-                    </h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
-                        원하는 합계 범위의 번호를 생성하세요
-                    </p>
-                    <div style="margin: 20px 0;">
-                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">번호 합계 범위:</label>
-                        <select id="sumRange"
-                            style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem;">
-                            <option value="90-120">90 ~ 120 (낮음)</option>
-                            <option value="121-150" selected>121 ~ 150 (이상적)</option>
-                            <option value="151-180">151 ~ 180 (높음)</option>
-                            <option value="60-90">60 ~ 90 (매우 낮음)</option>
-                            <option value="181-220">181 ~ 220 (매우 높음)</option>
-                        </select>
-                    </div>
-                    <button onclick="generateBySum()"
-                        style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">
-                        ➕ 번호합 조합 만들기
-                    </button>
-                    <div id="sumResult" style="margin-top: 20px;"></div>
+                <!-- 4. 번호합 분포 통계 -->
+                <div class="col-6" id="sum">
                     <div
-                        style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
-                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
-                            📊 역대 당첨번호의 65%가 121~150 범위입니다.
+                        style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); height: 100%;">
+                        <h3
+                            style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
+                            ➕ 번호합 분포 통계
+                        </h3>
+                        <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+                            원하는 합계 범위의 번호를 생성하세요
                         </p>
+                        <div style="margin: 20px 0;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: 600;">번호 합계 범위:</label>
+                            <select id="sumRange"
+                                style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem;">
+                                <option value="90-120">90 ~ 120 (낮음)</option>
+                                <option value="121-150" selected>121 ~ 150 (이상적)</option>
+                                <option value="151-180">151 ~ 180 (높음)</option>
+                                <option value="60-90">60 ~ 90 (매우 낮음)</option>
+                                <option value="181-220">181 ~ 220 (매우 높음)</option>
+                            </select>
+                        </div>
+                        <button onclick="generateBySum()"
+                            style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">
+                            ➕ 번호합 조합 만들기
+                        </button>
+                        <div id="sumResult" style="margin-top: 20px;"></div>
+                        <div
+                            style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+                                📊 역대 당첨번호의 65%가 121~150 범위입니다.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 5. 구간별 출현 통계 -->
-            <div class="col-12" id="range">
-                <div
-                    style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
-                    <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
-                        📍 구간별 출현 통계
-                    </h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
-                        각 구간에서 몇 개씩 선택할지 정하세요 (총 6개)
-                    </p>
-                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin: 20px 0;">
-                        <div>
-                            <label
-                                style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">1-10</label>
-                            <input type="number" id="range1" min="0" max="6" value="1"
-                                style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
-                        </div>
-                        <div>
-                            <label
-                                style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">11-20</label>
-                            <input type="number" id="range2" min="0" max="6" value="1"
-                                style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
-                        </div>
-                        <div>
-                            <label
-                                style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">21-30</label>
-                            <input type="number" id="range3" min="0" max="6" value="2"
-                                style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
-                        </div>
-                        <div>
-                            <label
-                                style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">31-40</label>
-                            <input type="number" id="range4" min="0" max="6" value="1"
-                                style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
-                        </div>
-                        <div>
-                            <label
-                                style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">41-45</label>
-                            <input type="number" id="range5" min="0" max="6" value="1"
-                                style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
-                        </div>
-                    </div>
-                    <div style="text-align: center; margin-bottom: 15px;">
-                        <span id="rangeTotal" style="font-size: 1.1rem; font-weight: 700; color: var(--primary-blue);">총
-                            6개</span>
-                    </div>
-                    <button onclick="generateByRange()"
-                        style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">
-                        📍 구간별 조합 만들기
-                    </button>
-                    <div id="rangeResult" style="margin-top: 20px;"></div>
+                <!-- 5. 구간별 출현 통계 -->
+                <div class="col-12" id="range">
                     <div
-                        style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
-                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
-                            🎯 모든 구간에서 골고루 선택하는 것이 좋습니다.
+                        style="background: white; border-radius: 20px; padding: 35px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+                        <h3
+                            style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 15px;">
+                            📍 구간별 출현 통계
+                        </h3>
+                        <p style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+                            각 구간에서 몇 개씩 선택할지 정하세요 (총 6개)
                         </p>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin: 20px 0;">
+                            <div>
+                                <label
+                                    style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">1-10</label>
+                                <input type="number" id="range1" min="0" max="6" value="1"
+                                    style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">11-20</label>
+                                <input type="number" id="range2" min="0" max="6" value="1"
+                                    style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">21-30</label>
+                                <input type="number" id="range3" min="0" max="6" value="2"
+                                    style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">31-40</label>
+                                <input type="number" id="range4" min="0" max="6" value="1"
+                                    style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; margin-bottom: 8px; font-weight: 600; text-align: center;">41-45</label>
+                                <input type="number" id="range5" min="0" max="6" value="1"
+                                    style="width: 100%; padding: 10px; text-align: center; border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 700;">
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <span id="rangeTotal"
+                                style="font-size: 1.1rem; font-weight: 700; color: var(--primary-blue);">총
+                                6개</span>
+                        </div>
+                        <button onclick="generateByRange()"
+                            style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">
+                            📍 구간별 조합 만들기
+                        </button>
+                        <div id="rangeResult" style="margin-top: 20px;"></div>
+                        <div
+                            style="background: #EFF6FF; border-left: 4px solid var(--primary-blue); padding: 12px 15px; margin-top: 15px; border-radius: 6px;">
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">
+                                🎯 모든 구간에서 골고루 선택하는 것이 좋습니다.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <!-- End Tab 3 -->
+
+    </div>
+    <!-- End Main Container -->
 
     <!-- Footer -->
     <div class="footer">
@@ -1407,6 +1453,30 @@
                 elem.style.color = total === 6 ? 'var(--primary-blue)' : '#EF4444';
             });
         });
+
+        // === 탭 전환 함수 ===
+        function switchTab(tabName) {
+            // 모든 탭 버튼 비활성화
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.style.background = '#F8FAFC';
+                btn.style.color = 'var(--text-secondary)';
+            });
+
+            // 모든 탭 패널 숨기기
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.style.display = 'none';
+            });
+
+            // 선택된 탭 활성화
+            event.target.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            event.target.style.color = 'white';
+
+            // 선택된 패널 표시
+            document.getElementById(tabName + '-tab').style.display = 'block';
+
+            // 부드러운 스크롤 to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {

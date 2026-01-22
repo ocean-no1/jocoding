@@ -13,8 +13,8 @@
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="css/common.css">
     <!-- Kakao Map API with services library for address search -->
-    <script type="text/javascript"
-        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8c78a44cbc45fec0aa3570551f1a082&libraries=services,clusterer"></script>
+    <script type="text/javascript" async
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8c78a44cbc45fec0aa3570551f1a082&libraries=services,clusterer&autoload=false"></script>
     <style>
         .map-container {
             width: 100%;
@@ -550,14 +550,19 @@
         window.onload = function () {
             // Kakao SDK 로딩 대기
             if (typeof kakao !== 'undefined' && typeof kakao.maps !== 'undefined') {
-                initMap();
+                // autoload=false 사용시 수동 로드
+                kakao.maps.load(() => {
+                    initMap();
+                });
             } else {
                 // SDK 로딩 재시도
                 let retryCount = 0;
                 const checkKakao = setInterval(() => {
                     if (typeof kakao !== 'undefined' && typeof kakao.maps !== 'undefined') {
                         clearInterval(checkKakao);
-                        initMap();
+                        kakao.maps.load(() => {
+                            initMap();
+                        });
                     } else if (retryCount++ > 20) {
                         clearInterval(checkKakao);
                         console.error('Kakao Maps SDK failed to load');

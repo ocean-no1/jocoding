@@ -548,7 +548,23 @@
 
         // 페이지 로드 시 지도 초기화
         window.onload = function () {
-            initMap();
+            // Kakao SDK 로딩 대기
+            if (typeof kakao !== 'undefined' && typeof kakao.maps !== 'undefined') {
+                initMap();
+            } else {
+                // SDK 로딩 재시도
+                let retryCount = 0;
+                const checkKakao = setInterval(() => {
+                    if (typeof kakao !== 'undefined' && typeof kakao.maps !== 'undefined') {
+                        clearInterval(checkKakao);
+                        initMap();
+                    } else if (retryCount++ > 20) {
+                        clearInterval(checkKakao);
+                        console.error('Kakao Maps SDK failed to load');
+                        showSimpleMap();
+                    }
+                }, 100);
+            }
         };
     </script>
 

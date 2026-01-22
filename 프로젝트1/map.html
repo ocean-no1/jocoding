@@ -2,6 +2,7 @@
 <html lang="ko">
 
 <head>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <!-- Microsoft Clarity -->
     <script type="text/javascript">
         (function (c, l, a, r, i, t, y) {
@@ -451,6 +452,130 @@
             color: #1F2937;
         }
 
+        /* Roadview Controls */
+        .roadview-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 201;
+            display: flex;
+            gap: 8px;
+        }
+
+        .rv-btn {
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .rv-btn:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* Roadview Controls */
+        .roadview-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 201;
+            /* Higher than map, same level as close button */
+            display: flex;
+            gap: 8px;
+        }
+
+        .rv-btn {
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .rv-btn:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* Roadview Toggle Button - Positioned to left of standard controls */
+        .roadview-control-btn {
+            position: absolute;
+            top: 25px;
+            /* Aligned with typical map controls */
+            right: 140px;
+            /* Moved left to avoid overlapping with MapTypeControl */
+            z-index: 100;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            /* Squared corners to match standard controls */
+            font-weight: 600;
+            color: #1F2937;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            height: 38px;
+        }
+
+        .roadview-control-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .roadview-control-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Marker Tracker Styles */
+        .tracker {
+            position: absolute;
+            z-index: 100;
+            cursor: pointer;
+        }
+
+        .balloon {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/balloon.png') no-repeat;
+            right: -30px;
+            bottom: -30px;
+        }
+
+        .tracker .icon {
+            position: absolute;
+            width: 27px;
+            height: 15px;
+            background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/icon.png') no-repeat;
+            left: -14px;
+            top: -7px;
+        }
+
         .overlay-title {
             font-size: 1.1rem;
             font-weight: 700;
@@ -484,6 +609,58 @@
             text-decoration: none;
             border: none;
         }
+
+        .search-results-list {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            display: none;
+        }
+
+        .search-results-list li {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-results-list li:hover {
+            background: #f8f9fa;
+        }
+
+        .search-results-list li:last-child {
+            border-bottom: none;
+        }
+
+        .search-item-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #1E3A8A;
+            margin-bottom: 4px;
+        }
+
+        .search-item-addr {
+            font-size: 0.85rem;
+            color: #64748B;
+        }
+
+        @media (max-width: 768px) {
+            .search-results-list {
+                width: calc(100% - 40px);
+                left: 20px;
+                right: 20px;
+            }
+        }
     </style>
 </head>
 
@@ -495,14 +672,26 @@
             <h1>🗺️ 주변 명당 찾기</h1>
         </div>
 
+        <!-- Center Address Display -->
+        <div id="centerAddr"
+            style="position: absolute; top: 80px; left: 20px; z-index: 10; background: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 6px; color: #374151;">
+            <span style="font-size: 1.1em;">📍</span> <span id="centerAddrText">지도 중심 주소 로딩 중...</span>
+        </div>
+
         <div class="search-box">
             <input type="text" class="search-input" id="search-input" placeholder="지역명 입력 (예: 강남구, 삼성동)"
                 onkeypress="if(event.key === 'Enter') searchLocation()">
             <button class="search-btn" onclick="searchLocation()">검색</button>
         </div>
+        <ul id="search-results" class="search-results-list"></ul>
 
         <button class="my-location-btn" onclick="goToMyLocation()" title="내 위치로 이동">
             📍
+        </button>
+
+        <!-- Roadview Toggle Button -->
+        <button id="roadviewControl" class="roadview-control-btn" onclick="toggleRoadviewMode()">
+            📷 로드뷰 모드
         </button>
 
         <!-- Custom Zoom Controls -->
@@ -522,16 +711,17 @@
         </div>
 
         <div class="legend">
-            <div class="legend-title">범례</div>
-            <div class="legend-item">
+            <div class="legend-title" onclick="filterMarkers('all')" style="cursor: pointer;" title="전체 보기">범례 (전체) ↻
+            </div>
+            <div class="legend-item" onclick="filterMarkers('gold')" id="legend-gold">
                 <div class="legend-marker marker-gold"></div>
                 <span>1등 당첨점 (3회 이상)</span>
             </div>
-            <div class="legend-item">
+            <div class="legend-item" onclick="filterMarkers('silver')" id="legend-silver">
                 <div class="legend-marker marker-silver"></div>
                 <span>1등 당첨점 (1-2회)</span>
             </div>
-            <div class="legend-item">
+            <div class="legend-item" onclick="filterMarkers('normal')" id="legend-normal">
                 <div class="legend-marker marker-normal"></div>
                 <span>일반 판매점</span>
             </div>
@@ -540,9 +730,14 @@
         <div id="map"></div>
 
         <!-- 로드뷰 컨테이너 -->
-        <div id="roadview"></div>
-        <button class="roadview-close-btn" id="roadview-close" onclick="closeRoadview()" style="display: none;">✕ 로드뷰
-            닫기</button>
+        <div id="roadview">
+            <div class="roadview-controls">
+                <button class="rv-btn" onclick="closeRoadview()">🗺️ 지도 보기</button>
+                <button class="rv-btn" onclick="resetRoadview()">↺ 초기화</button>
+                <a id="rvLink" href="#" target="_blank" class="rv-btn">🌏 카카오맵</a>
+            </div>
+            <button class="roadview-close-btn" id="roadview-close" onclick="closeRoadview()">✕ 로드뷰 닫기</button>
+        </div>
 
         <!-- 범례 (호갱노노 스타일) -->
         <div style="
@@ -583,6 +778,8 @@
             <button class="close-btn" onclick="closeStoreInfo()">✕</button>
             <div class="store-name" id="store-name">판매점 이름</div>
             <div class="store-address" id="store-address">주소</div>
+            <div class="store-distance" id="store-distance"
+                style="display:none; font-size:0.9rem; color:#2563EB; margin:5px 0 10px 0; font-weight:500;"></div>
             <div class="store-wins" id="store-wins">
                 <div class="win-badge first">1등 3회</div>
                 <div class="win-badge second">2등 7회</div>
@@ -601,6 +798,30 @@
         let markers = [];
         let clusterer; // 마커 클러스터러
 
+        // 로드뷰 관련 변수
+        let roadview = null;
+        let roadviewClient = null;
+        let rvResetValue = {}; // 로드뷰 초기화 값 저장
+
+        let isRoadviewMode = false;
+        let roadviewMarker = null;
+        let currentOverlay = null; // 현재 열린 커스텀 오버레이 추적용
+        let currentUserLocation = null; // 사용자 현재 위치 저장
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // 지구 반지름 (km)
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const d = R * c; // 거리 (km)
+
+            if (d < 1) return Math.round(d * 1000) + 'm';
+            return d.toFixed(1) + 'km';
+        }
         // === Google Sheets에서 데이터 가져오기 ===
         async function loadStoreData() {
             try {
@@ -682,8 +903,15 @@
 
                 map = new kakao.maps.Map(container, options);
 
+                // === 지도 타입 컨트롤 추가 (지도/스카이뷰) ===
+                const mapTypeControl = new kakao.maps.MapTypeControl();
+                map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
                 // 판매점 마커 표시
                 displayStores();
+
+                // 영역 변경 이벤트 리스너 등록
+                initBoundsListener();
 
                 // === 2. 클릭 이벤트 등록 ===
                 // 지도를 클릭한 위치에 표출할 마커입니다
@@ -694,8 +922,18 @@
                 clickMarker.setVisible(false); // 초기에는 숨김
 
                 kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
-                    // 클릭한 위도, 경도 정보를 가져옵니다 
                     const latlng = mouseEvent.latLng;
+
+                    // 로드뷰 모드일 경우
+                    if (isRoadviewMode) {
+                        if (roadviewMarker) {
+                            roadviewMarker.setPosition(latlng);
+                        }
+                        showRoadview(latlng.getLat(), latlng.getLng());
+                        return;
+                    }
+
+                    // 클릭한 위도, 경도 정보를 가져옵니다 
 
                     // 마커 위치를 클릭한 위치로 옮깁니다
                     clickMarker.setPosition(latlng);
@@ -759,8 +997,8 @@
             clusterer = new kakao.maps.MarkerClusterer({
                 map: map,
                 averageCenter: true,
-                minLevel: 6, // 최소 레벨 (6 이상에서 클러스터링)
-                disableClickZoom: false, // 클릭 시 줌
+                minLevel: 6,
+                disableClickZoom: true, // 클릭 시 1레벨씩 확대를 위해 true 설정
                 styles: [{
                     width: '53px',
                     height: '52px',
@@ -772,6 +1010,14 @@
                     lineHeight: '52px',
                     fontSize: '14px'
                 }]
+            });
+
+            // 마커 클러스터러 클릭 이벤트 등록
+            kakao.maps.event.addListener(clusterer, 'clusterclick', function (cluster) {
+                // 현재 지도 레벨에서 1레벨 확대한 레벨
+                var level = map.getLevel() - 1;
+                // 지도를 클릭된 클러스터의 마커의 위치를 기준으로 확대합니다
+                map.setLevel(level, { anchor: cluster.getCenter() });
             });
 
             storeData.forEach(store => {
@@ -822,6 +1068,15 @@
 
                 // 클릭 이벤트
                 kakao.maps.event.addListener(marker, 'click', function () {
+                    // 로드뷰 모드일 경우 마커 클릭 시 해당 위치의 로드뷰 실행
+                    if (isRoadviewMode) {
+                        showRoadview(store.lat, store.lng, store.name);
+                        // 로드뷰 마커도 해당 위치로 이동
+                        if (roadviewMarker) {
+                            roadviewMarker.setPosition(new kakao.maps.LatLng(store.lat, store.lng));
+                        }
+                        return;
+                    }
                     showStoreInfoOnMap(marker.storeInfo);
                 });
 
@@ -830,6 +1085,20 @@
 
             // 클러스터러에 마커 추가
             clusterer.addMarkers(markers);
+
+            // === 상위 당첨점(1등 3회 이상)에 마커 트래커 적용 ===
+            // 1등 당첨 횟수 내림차순 정렬 후 상위 3개 선택
+            const topStores = [...storeData].sort((a, b) => b.first - a.first).slice(0, 3);
+
+            markers.forEach(marker => {
+                // 상위 3개 점포에 포함되는지 확인
+                const isTopStore = topStores.some(top => top.name === marker.storeInfo.name && top.lat === marker.storeInfo.lat);
+
+                if (isTopStore) {
+                    const tracker = new MarkerTracker(map, marker);
+                    tracker.run();
+                }
+            });
         }
 
         function createMarkerImage(color) {
@@ -840,8 +1109,7 @@
             return new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
         }
 
-        // 현재 열려있는 커스텀 오버레이를 저장할 변수
-        let currentOverlay = null;
+
 
         function closeOverlay() {
             if (currentOverlay) {
@@ -869,6 +1137,18 @@
             document.getElementById('store-wins').innerHTML = winsHTML;
             document.getElementById('store-info').classList.add('active');
 
+            // 거리 표시 업데이트
+            const distanceEl = document.getElementById('store-distance');
+            if (distanceEl) {
+                if (currentUserLocation) {
+                    const dist = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, store.lat, store.lng);
+                    distanceEl.innerHTML = `📍 내 위치에서 <strong>${dist}</strong>`;
+                    distanceEl.style.display = 'block';
+                } else {
+                    distanceEl.style.display = 'none';
+                }
+            }
+
             // === 커스텀 오버레이 기능 추가 ===
 
             // 기존 오버레이 닫기
@@ -881,7 +1161,7 @@
                     <div class="overlay-title">${store.name}</div>
                     <div class="overlay-addr">${store.address}</div>
                     <div class="overlay-buttons">
-                        <button onclick="showRoadview(${store.lat}, ${store.lng})" class="overlay-btn" style="background:#FEE500; color:#191919;">
+                        <button onclick="showRoadview(${store.lat}, ${store.lng}, '${store.name}')" class="overlay-btn" style="background:#FEE500; color:#191919;">
                             📷 로드뷰
                         </button>
                         <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" class="overlay-btn" style="background:#3B82F6; color:white;">
@@ -909,7 +1189,7 @@
             // === 하단 패널 버튼 업데이트 ===
             const actionsHTML = `
                 <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                    <button onclick="showRoadview(${store.lat}, ${store.lng})" style="flex: 1; padding: 12px; background: #FEE500; color: #191919; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem;">
+                    <button onclick="showRoadview(${store.lat}, ${store.lng}, '${store.name}')" style="flex: 1; padding: 12px; background: #FEE500; color: #191919; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem;">
                         📷 로드뷰
                     </button>
                     <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" style="flex: 1; padding: 12px; background: #3B82F6; color: white; border: none; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem;">
@@ -937,26 +1217,89 @@
             document.getElementById('store-info').classList.remove('active');
         }
 
-        function searchLocation() {
-            const query = document.getElementById('search-input').value;
+        function searchLocation(keyword) {
+            const query = keyword || document.getElementById('search-input').value.trim();
             if (!query) {
-                alert('검색할 지역명을 입력하세요.');
+                alert('검색할 지역명이나 장소를 입력하세요.');
                 return;
             }
 
-            // lotto-enhanced.js의 searchAndMove 함수 사용
-            if (typeof searchAndMove === 'function') {
-                searchAndMove(query, map, markers, storeData);
-            } else {
-                alert('검색 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-            }
+            const ps = new kakao.maps.services.Places();
+            const listEl = document.getElementById('search-results');
+
+            // 키워드로 장소를 검색합니다
+            ps.keywordSearch(query, function (data, status, pagination) {
+                if (status === kakao.maps.services.Status.OK) {
+                    // 검색 결과 리스트 표시
+                    displaySearchList(data);
+
+                    // 첫 번째 결과로 이동
+                    const place = data[0];
+                    const coords = new kakao.maps.LatLng(place.y, place.x);
+                    map.setCenter(coords);
+                    map.setLevel(3);
+
+                } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+                    // 키워드 실패 시 주소 검색
+                    const geocoder = new kakao.maps.services.Geocoder();
+                    geocoder.addressSearch(query, function (result, addrStatus) {
+                        if (addrStatus === kakao.maps.services.Status.OK) {
+                            const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                            map.setCenter(coords);
+                            map.setLevel(3);
+                            listEl.style.display = 'none'; // 주소 검색 시 리스트 숨김
+                        } else {
+                            alert('검색 결과가 없습니다.');
+                            listEl.style.display = 'none';
+                        }
+                    });
+                } else {
+                    alert('검색 중 오류가 발생했습니다.');
+                }
+            });
         }
+
+        function displaySearchList(places) {
+            const listEl = document.getElementById('search-results');
+            listEl.innerHTML = '';
+            listEl.style.display = 'block';
+
+            places.slice(0, 5).forEach(place => {
+                const item = document.createElement('li');
+                item.innerHTML = `
+                    <div class="search-item-title">${place.place_name}</div>
+                    <div class="search-item-addr">${place.address_name}</div>
+                `;
+                item.onclick = () => {
+                    const coords = new kakao.maps.LatLng(place.y, place.x);
+                    map.setCenter(coords);
+                    map.setLevel(3);
+
+                    // 임시 마커
+                    const marker = new kakao.maps.Marker({
+                        map: map,
+                        position: coords
+                    });
+                    const infowindow = new kakao.maps.InfoWindow({
+                        content: `<div style="padding:5px;font-size:12px;">${place.place_name}</div>`
+                    });
+                    infowindow.open(map, marker);
+                    setTimeout(() => { marker.setMap(null); infowindow.close(); }, 3000);
+
+                    listEl.style.display = 'none';
+                };
+                listEl.appendChild(item);
+            });
+        }
+
 
         function goToMyLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
+
+                    currentUserLocation = { lat, lng }; // 위치 저장
 
                     if (typeof kakao !== 'undefined' && map) {
                         const moveLatLon = new kakao.maps.LatLng(lat, lng);
@@ -972,13 +1315,86 @@
             }
         }
 
-        // 로드뷰 표시 함수
-        function showRoadview(lat, lng) {
-            if (typeof initRoadview === 'function') {
-                initRoadview(lat, lng);
-                document.getElementById('roadview-close').style.display = 'block';
-            } else {
-                alert('로드뷰 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+        // 로드뷰 초기화 및 표시 함수
+        function initRoadview(lat, lng) {
+            showRoadview(lat, lng, null);
+        }
+
+        // 로드뷰 표시 함수 (이름 인자 추가)
+        function showRoadview(lat, lng, name) {
+            const roadviewContainer = document.getElementById('roadview');
+
+            // 전역 변수 초기화 (없으면 생성)
+            if (!roadview) {
+                roadview = new kakao.maps.Roadview(roadviewContainer);
+                roadviewClient = new kakao.maps.RoadviewClient();
+            }
+
+            const position = new kakao.maps.LatLng(lat, lng);
+
+            roadviewClient.getNearestPanoId(position, 50, function (panoId) {
+                if (panoId) {
+                    roadviewContainer.style.display = 'block';
+
+                    roadview.setPanoId(panoId);
+
+                    kakao.maps.event.addListener(roadview, 'init', function () {
+                        // 마커 추가
+                        const rMarker = new kakao.maps.Marker({
+                            position: position,
+                            map: roadview
+                        });
+
+                        // 커스텀 오버레이 추가 (이름이 있을 경우)
+                        if (name) {
+                            const content = `
+                                <div class="custom-overlay" style="min-width:auto; padding:10px 15px; box-shadow:0 4px 12px rgba(0,0,0,0.3); border:1px solid #ddd;">
+                                    <div class="overlay-title" style="margin:0; font-size:1rem; color:#1E3A8A;">${name}</div>
+                                </div>
+                            `;
+
+                            const rvCustomOverlay = new kakao.maps.CustomOverlay({
+                                position: position,
+                                content: content,
+                                yAnchor: 1.5
+                            });
+                            rvCustomOverlay.setMap(roadview);
+                        }
+
+                        // 뷰포인트 조정
+                        const projection = roadview.getProjection();
+                        const viewpoint = projection.viewpointFromCoords(rMarker.getPosition(), rMarker.getAltitude());
+                        roadview.setViewpoint(viewpoint);
+
+                        // 초기화 값 저장 (Reset 기능용)
+                        rvResetValue = {
+                            panoId: panoId,
+                            pan: viewpoint.pan,
+                            tilt: viewpoint.tilt,
+                            zoom: viewpoint.zoom
+                        };
+
+                        // 외부 링크 업데이트
+                        const rvLink = document.getElementById('rvLink');
+                        if (rvLink) {
+                            rvLink.href = 'https://map.kakao.com/?panoid=' + panoId + '&pan=' + viewpoint.pan + '&tilt=' + viewpoint.tilt + '&zoom=' + viewpoint.zoom;
+                        }
+                    });
+                } else {
+                    alert('해당 위치의 로드뷰가 없습니다.');
+                }
+            });
+        }
+
+        // 로드뷰 리셋 함수
+        function resetRoadview() {
+            if (roadview && rvResetValue.panoId) {
+                roadview.setViewpoint({
+                    pan: rvResetValue.pan,
+                    tilt: rvResetValue.tilt,
+                    zoom: rvResetValue.zoom
+                });
+                roadview.setPanoId(rvResetValue.panoId);
             }
         }
 
@@ -986,6 +1402,341 @@
         function closeRoadview() {
             document.getElementById('roadview').style.display = 'none';
             document.getElementById('roadview-close').style.display = 'none';
+        }
+
+        // 로드뷰 모드 토글 함수
+        function toggleRoadviewMode() {
+            const btn = document.getElementById('roadviewControl');
+            isRoadviewMode = !isRoadviewMode;
+
+            if (isRoadviewMode) {
+                btn.classList.add('active');
+                btn.innerHTML = '📷 로드뷰 종료';
+
+                // 지도 위에 로드뷰 도로 오버레이 추가
+                map.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
+
+                // 마커 생성 (동동이 스타일)
+                const markImage = new kakao.maps.MarkerImage(
+                    'https://t1.daumcdn.net/localimg/localimages/07/2018/pc/roadview_minimap_wk_2018.png',
+                    new kakao.maps.Size(26, 46),
+                    {
+                        spriteSize: new kakao.maps.Size(1666, 168),
+                        spriteOrigin: new kakao.maps.Point(705, 114),
+                        offset: new kakao.maps.Point(13, 46)
+                    }
+                );
+
+                if (!roadviewMarker) {
+                    roadviewMarker = new kakao.maps.Marker({
+                        image: markImage,
+                        position: map.getCenter(),
+                        draggable: true,
+                        map: map
+                    });
+
+                    // 마커 드래그 종료 시 로드뷰 실행
+                    kakao.maps.event.addListener(roadviewMarker, 'dragend', function () {
+                        const position = roadviewMarker.getPosition();
+                        showRoadview(position.getLat(), position.getLng());
+                    });
+                } else {
+                    roadviewMarker.setPosition(map.getCenter());
+                    roadviewMarker.setMap(map);
+                }
+
+                // 안내 메시지 표시
+                const resultDiv = document.getElementById('clickResult');
+                resultDiv.innerHTML = '지도 위의 파란 선(도로)을 클릭하거나 마커를 옮기면 로드뷰가 보입니다.';
+                resultDiv.style.display = 'block';
+
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '📷 로드뷰 모드';
+
+                // 로드뷰 도로 오버레이 제거
+                map.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
+
+                // 마커 제거
+                if (roadviewMarker) {
+                    roadviewMarker.setMap(null);
+                }
+
+                document.getElementById('clickResult').style.display = 'none';
+            }
+        }
+
+        // 로드뷰 모드 토글 함수
+        function toggleRoadviewMode() {
+            // ... (기존 코드 생략 - 변경 없음, MarkerTracker 아래에 추가하기 위해 위치만 잡음) ...
+            // 하지만 multi_replace의 특성상 마지막 chunk는 파일 끝부분에 추가하는 것이 안전함.
+            // 여기서는 MarkerTracker 클래스 정의를 파일 맨 끝(</body> 직전)에 추가하는 전략 사용.
+        }
+
+        /**
+         * 지도 영역 외부에 존재하는 마커를 추적하는 기능을 가진 객체입니다.
+         * 클리핑 알고리즘을 사용하여 tracker의 좌표를 구하고 있습니다.
+         */
+        function MarkerTracker(map, target) {
+            // 클리핑을 위한 outcode
+            var OUTCODE = {
+                INSIDE: 0, // 0b0000
+                TOP: 8, //0b1000
+                RIGHT: 2, // 0b0010
+                BOTTOM: 4, // 0b0100
+                LEFT: 1 // 0b0001
+            };
+
+            // viewport 영역을 구하기 위한 buffer값
+            var BOUNDS_BUFFER = 30;
+
+            // 클리핑 알고리즘으로 tracker의 좌표를 구하기 위한 buffer값
+            var CLIP_BUFFER = 40;
+
+            // trakcer 엘리먼트
+            var tracker = document.createElement('div');
+            tracker.className = 'tracker';
+
+            // 내부 아이콘
+            var icon = document.createElement('div');
+            icon.className = 'icon';
+
+            // 외부에 있는 target의 위치에 따라 회전하는 말풍선 모양의 엘리먼트
+            var balloon = document.createElement('div');
+            balloon.className = 'balloon';
+
+            tracker.appendChild(balloon);
+            tracker.appendChild(icon);
+
+            map.getNode().appendChild(tracker);
+
+            // traker를 클릭하면 target의 위치를 지도 중심으로 지정하고 오버레이 표시
+            tracker.onclick = function () {
+                map.setCenter(target.getPosition());
+                setVisible(false);
+                // 해당 마커의 오버레이 열기
+                if (target.storeInfo) {
+                    showStoreInfoOnMap(target.storeInfo);
+                }
+            };
+
+            // target의 위치를 추적하는 함수
+            function tracking() {
+                var proj = map.getProjection();
+
+                // 지도의 영역을 구합니다.
+                var bounds = map.getBounds();
+
+                // 지도의 영역을 기준으로 확장된 영역을 구합니다.
+                var extBounds = extendBounds(bounds, proj);
+
+                // target이 확장된 영역에 속하는지 판단하고
+                if (extBounds.contain(target.getPosition())) {
+                    // 속하면 tracker를 숨깁니다.
+                    setVisible(false);
+                } else {
+                    // target이 영역 밖에 있으면 계산을 시작합니다.
+
+                    // TooltipMarker의 위치
+                    var pos = proj.containerPointFromCoords(target.getPosition());
+
+                    // 지도 중심의 위치
+                    var center = proj.containerPointFromCoords(map.getCenter());
+
+                    // 현재 보이는 지도의 영역의 남서쪽 화면 좌표
+                    var sw = proj.containerPointFromCoords(bounds.getSouthWest());
+
+                    // 현재 보이는 지도의 영역의 북동쪽 화면 좌표
+                    var ne = proj.containerPointFromCoords(bounds.getNorthEast());
+
+                    // 클리핑할 가상의 내부 영역을 만듭니다.
+                    var top = ne.y + CLIP_BUFFER;
+                    var right = ne.x - CLIP_BUFFER;
+                    var bottom = sw.y - CLIP_BUFFER;
+                    var left = sw.x + CLIP_BUFFER;
+
+                    // 계산된 모든 좌표를 클리핑 로직에 넣어 좌표를 얻습니다.
+                    var clipPosition = getClipPosition(top, right, bottom, left, center, pos);
+
+                    // 클리핑된 좌표를 tracker의 위치로 사용합니다.
+                    tracker.style.top = clipPosition.y + 'px';
+                    tracker.style.left = clipPosition.x + 'px';
+
+                    // 말풍선의 회전각을 얻습니다.
+                    var angle = getAngle(center, pos);
+
+                    // 회전각을 CSS transform을 사용하여 지정합니다.
+                    balloon.style.cssText +=
+                        '-ms-transform: rotate(' + angle + 'deg);' +
+                        '-webkit-transform: rotate(' + angle + 'deg);' +
+                        'transform: rotate(' + angle + 'deg);';
+
+                    // target이 영역 밖에 있을 경우 tracker를 노출합니다.
+                    setVisible(true);
+                }
+            }
+
+            // 상하좌우로 BOUNDS_BUFFER(30px)만큼 bounds를 확장 하는 함수
+            function extendBounds(bounds, proj) {
+                var sw = proj.pointFromCoords(bounds.getSouthWest());
+                var ne = proj.pointFromCoords(bounds.getNorthEast());
+
+                sw.x -= BOUNDS_BUFFER;
+                sw.y += BOUNDS_BUFFER;
+
+                ne.x += BOUNDS_BUFFER;
+                ne.y -= BOUNDS_BUFFER;
+
+                return new kakao.maps.LatLngBounds(
+                    proj.coordsFromPoint(sw), proj.coordsFromPoint(ne));
+            }
+
+            // Cohen–Sutherland clipping algorithm
+            function getClipPosition(top, right, bottom, left, inner, outer) {
+                function calcOutcode(x, y) {
+                    var outcode = OUTCODE.INSIDE;
+
+                    if (x < left) {
+                        outcode |= OUTCODE.LEFT;
+                    } else if (x > right) {
+                        outcode |= OUTCODE.RIGHT;
+                    }
+
+                    if (y < top) {
+                        outcode |= OUTCODE.TOP;
+                    } else if (y > bottom) {
+                        outcode |= OUTCODE.BOTTOM;
+                    }
+
+                    return outcode;
+                }
+
+                var ix = inner.x;
+                var iy = inner.y;
+                var ox = outer.x;
+                var oy = outer.y;
+
+                var code = calcOutcode(ox, oy);
+
+                while (true) {
+                    if (!code) {
+                        break;
+                    }
+
+                    if (code & OUTCODE.TOP) {
+                        ox = ox + (ix - ox) / (iy - oy) * (top - oy);
+                        oy = top;
+                    } else if (code & OUTCODE.RIGHT) {
+                        oy = oy + (iy - oy) / (ix - ox) * (right - ox);
+                        ox = right;
+                    } else if (code & OUTCODE.BOTTOM) {
+                        ox = ox + (ix - ox) / (iy - oy) * (bottom - oy);
+                        oy = bottom;
+                    } else if (code & OUTCODE.LEFT) {
+                        oy = oy + (iy - oy) / (ix - ox) * (left - ox);
+                        ox = left;
+                    }
+
+                    code = calcOutcode(ox, oy);
+                }
+
+                return { x: ox, y: oy };
+            }
+
+            // 말풍선의 회전각을 구하기 위한 함수
+            function getAngle(center, target) {
+                var dx = target.x - center.x;
+                var dy = center.y - target.y;
+                var deg = Math.atan2(dy, dx) * 180 / Math.PI;
+
+                return ((-deg + 360) % 360 | 0) + 90;
+            }
+
+            // tracker의 보임/숨김을 지정하는 함수
+            function setVisible(visible) {
+                tracker.style.display = visible ? 'block' : 'none';
+            }
+
+            // Map 객체의 'zoom_start' 이벤트 핸들러
+            function hideTracker() {
+                setVisible(false);
+            }
+
+            // target의 추적을 실행합니다.
+            this.run = function () {
+                kakao.maps.event.addListener(map, 'zoom_start', hideTracker);
+                kakao.maps.event.addListener(map, 'zoom_changed', tracking);
+                kakao.maps.event.addListener(map, 'center_changed', tracking);
+                tracking();
+            };
+
+            // target의 추적을 중지합니다.
+            this.stop = function () {
+                kakao.maps.event.removeListener(map, 'zoom_start', hideTracker);
+                kakao.maps.event.removeListener(map, 'zoom_changed', tracking);
+                kakao.maps.event.removeListener(map, 'center_changed', tracking);
+                setVisible(false);
+            };
+        }
+
+        // --- Marker Filtering Logic ---
+        function filterMarkers(type) {
+            if (!clusterer || !markers.length) return;
+
+            // Highlight selected legend item
+            ['gold', 'silver', 'normal'].forEach(t => {
+                const el = document.getElementById('legend-' + t);
+                if (el) el.style.opacity = (type === 'all' || type === t) ? '1' : '0.4';
+            });
+            const titleEl = document.querySelector('.legend-title');
+            if (titleEl) titleEl.style.fontWeight = type === 'all' ? 'bold' : 'normal';
+
+            // Filter markers
+            const filteredMarkers = markers.filter(marker => {
+                const count = marker.storeInfo.first;
+                if (type === 'all') return true;
+                if (type === 'gold') return count >= 3;
+                if (type === 'silver') return count >= 1 && count < 3;
+                if (type === 'normal') return count === 0;
+                return true;
+            });
+
+            // Update Clusterer
+            clusterer.clear();
+            clusterer.addMarkers(filteredMarkers);
+        }
+
+        // --- Map Utilities (Resize & Bounds) ---
+
+        // 1. Window Resize Handler
+        window.addEventListener('resize', function () {
+            if (map) {
+                map.relayout();
+            }
+        });
+
+        // 2. Bounds Changed Handler
+        function initBoundsListener() {
+            const resultDiv = document.getElementById('clickResult');
+            if (map && resultDiv) {
+                kakao.maps.event.addListener(map, 'bounds_changed', function () {
+                    const center = map.getCenter();
+                    const bounds = map.getBounds();
+                    const sw = bounds.getSouthWest();
+                    const ne = bounds.getNorthEast();
+
+                    const message = `
+                        <div style="font-size:0.8rem; line-height:1.4;">
+                            <span style="color:#2563EB;">중심:</span> ${center.getLat().toFixed(4)}, ${center.getLng().toFixed(4)}<br>
+                            <span style="color:#666; font-size:0.75rem;">
+                            영역: (${sw.getLat().toFixed(3)}, ${sw.getLng().toFixed(3)}) ~ <br>
+                                  (${ne.getLat().toFixed(3)}, ${ne.getLng().toFixed(3)})
+                            </span>
+                        </div>
+                    `;
+                    resultDiv.innerHTML = message;
+                });
+            }
         }
 
         // 페이지 로드 시 지도 초기화

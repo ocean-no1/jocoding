@@ -389,23 +389,29 @@
         // 지도 초기화 (Kakao API 키 필요)
         function initMap() {
             // Kakao API가 로드되지 않았을 경우를 대비한 폴백
-            if (typeof kakao === 'undefined') {
-                alert('지도 API를 불러오는 중입니다. Kakao Map API 키가 필요합니다.');
-                // 간단한 HTML 지도로 대체
+            if (typeof kakao === 'undefined' || typeof kakao.maps === 'undefined') {
+                console.error('Kakao Maps API not loaded');
+                alert('지도를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.');
                 showSimpleMap();
                 return;
             }
 
-            const container = document.getElementById('map');
-            const options = {
-                center: new kakao.maps.LatLng(37.5089, 127.0533), // 서울 강남
-                level: 5
-            };
+            try {
+                const container = document.getElementById('map');
+                const options = {
+                    center: new kakao.maps.LatLng(37.5089, 127.0533), // 서울 강남
+                    level: 5
+                };
 
-            map = new kakao.maps.Map(container, options);
+                map = new kakao.maps.Map(container, options);
 
-            // 판매점 마커 표시
-            displayStores();
+                // 판매점 마커 표시
+                displayStores();
+            } catch (error) {
+                console.error('Map initialization error:', error);
+                alert('지도 초기화 중 오류가 발생했습니다: ' + error.message);
+                showSimpleMap();
+            }
         }
 
         // 간단한 HTML 지도 (API 대체용)

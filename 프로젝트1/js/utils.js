@@ -61,3 +61,37 @@ function calculateLatestDrawNo() {
     const diffWeeks = Math.floor(diffDays / 7);
     return diffWeeks + 1;
 }
+
+/**
+ * 두 좌표 사이의 거리 계산 (Haversine formula)
+ * @param {number} lat1 - 첫 번째 위도
+ * @param {number} lng1 - 첫 번째 경도
+ * @param {number} lat2 - 두 번째 위도
+ * @param {number} lng2 - 두 번째 경도
+ * @returns {number} 거리 (km)
+ */
+function calculateDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+/**
+ * 특정 반경 내에 있는지 확인
+ * @param {number} centerLat - 중심 위도
+ * @param {number} centerLng - 중심 경도
+ * @param {number} targetLat - 대상 위도
+ * @param {number} targetLng - 대상 경도
+ * @param {number} radius - 반경 (km)
+ * @returns {boolean} 반경 내에 있으면 true
+ */
+function isWithinRadius(centerLat, centerLng, targetLat, targetLng, radius) {
+    const distance = calculateDistance(centerLat, centerLng, targetLat, targetLng);
+    return distance <= radius;
+}

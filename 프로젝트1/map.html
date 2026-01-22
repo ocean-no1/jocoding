@@ -13,7 +13,11 @@
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <!-- Kakao Map API -->
     <script type="text/javascript"
-        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=8c78a44cbc45fec0aa35705516f1a082"></script>
+        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=8c78a44cbc45fec0aa35705516f1a082&libraries=services,clusterer,roadview"></script>
+
+    <!-- Utility Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/lotto-enhanced.js"></script>
     <style>
         .map-container {
             width: 100%;
@@ -256,6 +260,37 @@
             background: #4A90E2;
         }
 
+        #roadview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 200;
+            display: none;
+        }
+
+        .roadview-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 201;
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .roadview-close-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
         @media (max-width: 768px) {
             .search-box {
                 width: calc(100% - 40px);
@@ -284,7 +319,8 @@
         </div>
 
         <div class="search-box">
-            <input type="text" class="search-input" id="search-input" placeholder="지역명 입력 (예: 강남구, 삼성동)">
+            <input type="text" class="search-input" id="search-input" placeholder="지역명 입력 (예: 강남구, 삼성동)"
+                onkeypress="if(event.key === 'Enter') searchLocation()">
             <button class="search-btn" onclick="searchLocation()">검색</button>
         </div>
 
@@ -309,6 +345,11 @@
         </div>
 
         <div id="map"></div>
+
+        <!-- 로드뷰 컨테이너 -->
+        <div id="roadview"></div>
+        <button class="roadview-close-btn" id="roadview-close" onclick="closeRoadview()" style="display: none;">✕ 로드뷰
+            닫기</button>
 
         <!-- 범례 (호갱노노 스타일) -->
         <div style="
@@ -357,13 +398,14 @@
     </div>
 
     <script>
-        // === Google Sheets API 설정 ===
-        const SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbzEYp8grSTN7LctOLSTXON885wZ4lf7N0KaHHTbkHiM-gT1Vf5QUX7ywpGSRcg4FU-a/exec';
+        // Google Sheets API URL (Apps Script Web App)
+        const SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbztxG09bbt0mNRfErtMiNwtdL8jhXk-L_HPL9Enja-iAbse7YgAkHJKUnEGmO5vmUOQ/exec';
 
         // 전역 변수
         let storeData = [];
         let map;
         let markers = [];
+        let clusterer; // 마커 클러스터러
 
         // === Google Sheets에서 데이터 가져오기 ===
         async function loadStoreData() {
@@ -474,56 +516,81 @@
         }
 
         function displayStores() {
+            // 클러스터러 초기화
+            clusterer = new kakao.maps.MarkerClusterer({
+                map: map,
+                averageCenter: true,
+                minLevel: 6, // 최소 레벨 (6 이상에서 클러스터링)
+                disableClickZoom: false, // 클릭 시 줌
+                styles: [{
+                    width: '53px',
+                    height: '52px',
+                    background: 'rgba(255, 215, 0, 0.9)',
+                    borderRadius: '25px',
+                    color: '#1F2937',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    lineHeight: '52px',
+                    fontSize: '14px'
+                }]
+            });
+
             storeData.forEach(store => {
                 const markerPosition = new kakao.maps.LatLng(store.lat, store.lng);
 
-                // 당첨 횟수에 따라 풍선 색상 결정 (금융/재화 테마)
-                let balloonColor, textColor = 'white';
+                // 당첨 횟수에 따라 마커 색상 결정
+                let balloonColor;
                 if (store.first >= 3) {
-                    balloonColor = '#FFD700'; // 금색 (3회 이상 - 대박!)
+                    balloonColor = '#FFD700'; // 금색
                 } else if (store.first >= 1) {
-                    balloonColor = '#C0C0C0'; // 은색 (1-2회 - 준명당)
+                    balloonColor = '#C0C0C0'; // 은색
                 } else {
-                    balloonColor = '#A0A0A0'; // 회색 (일반)
+                    balloonColor = '#A0A0A0'; // 회색
                 }
 
-                // 호갱노노 스타일 풍선 HTML
-                const balloonContent = `
-                    <div style="position: relative; cursor: pointer;">
-                        <div style="
-                            background: ${balloonColor};
-                            color: ${textColor};
-                            padding: 5px 10px;
-                            border-radius: 16px;
-                            font-weight: 700;
-                            font-size: 0.85rem;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                            white-space: nowrap;
-                            min-width: 35px;
-                            text-align: center;
-                        ">
-                            ${store.first || 0}회
-                        </div>
-                    </div>
+                // SVG 마커 이미지 생성 (호갱노노 스타일)
+                const svgMarker = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="30" viewBox="0 0 50 30">
+                        <rect x="0" y="0" width="50" height="30" rx="15" ry="15" 
+                              fill="${balloonColor}" 
+                              stroke="#000" 
+                              stroke-width="0.5" 
+                              opacity="0.95"/>
+                        <text x="25" y="20" 
+                              font-family="Pretendard, sans-serif" 
+                              font-size="13" 
+                              font-weight="700" 
+                              fill="#fff" 
+                              text-anchor="middle">${store.first || 0}회</text>
+                    </svg>
                 `;
 
-                // CustomOverlay 생성
-                const customOverlay = new kakao.maps.CustomOverlay({
+                const markerImage = new kakao.maps.MarkerImage(
+                    'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgMarker),
+                    new kakao.maps.Size(50, 30),
+                    { offset: new kakao.maps.Point(25, 15) }
+                );
+
+                // 마커 생성
+                const marker = new kakao.maps.Marker({
                     position: markerPosition,
-                    content: balloonContent,
-                    yAnchor: 0.5
+                    image: markerImage,
+                    clickable: true
                 });
 
-                customOverlay.setMap(map);
+                // 마커에 판매점 정보 저장
+                marker.storeInfo = store;
 
                 // 클릭 이벤트
-                const overlayElement = customOverlay.getContent();
-                overlayElement.onclick = function () {
-                    showStoreInfoOnMap(store);
-                };
+                kakao.maps.event.addListener(marker, 'click', function () {
+                    showStoreInfoOnMap(marker.storeInfo);
+                });
 
-                markers.push(customOverlay);
+                markers.push(marker);
             });
+
+            // 클러스터러에 마커 추가
+            clusterer.addMarkers(markers);
         }
 
         function createMarkerImage(color) {
@@ -534,7 +601,11 @@
             return new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
         }
 
+        // 현재 열려있는 인포윈도우를 저장할 변수
+        let currentInfoWindow = null;
+
         function showStoreInfoOnMap(store) {
+            // 하단 패널 업데이트 (기존 기능 유지)
             document.getElementById('store-name').textContent = store.name;
             document.getElementById('store-address').textContent = store.address;
 
@@ -551,6 +622,62 @@
 
             document.getElementById('store-wins').innerHTML = winsHTML;
             document.getElementById('store-info').classList.add('active');
+
+            // === 팝업 (InfoWindow) 기능 추가 ===
+
+            // 기존 인포윈도우가 있다면 닫기
+            if (currentInfoWindow) {
+                currentInfoWindow.close();
+            }
+
+            // 인포윈도우 내용 (로드뷰, 길찾기 링크 포함)
+            const iwContent = `
+                <div style="padding:15px; min-width:220px;">
+                    <h4 style="margin:0 0 5px 0; font-size:16px; font-weight:bold; color:#1E3A8A;">${store.name}</h4>
+                    <div style="font-size:12px; color:#555; margin-bottom:10px;">${store.address}</div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px;">
+                        <button onclick="showRoadview(${store.lat}, ${store.lng})" style="
+                            text-decoration:none; 
+                            background:#FEE500; 
+                            color:#191919; 
+                            padding:5px 10px; 
+                            border:none;
+                            border-radius:4px; 
+                            font-weight:bold;
+                            cursor:pointer;
+                            display:flex; align-items:center; gap:3px;">
+                            📷 로드뷰 보기
+                        </button>
+                        <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" style="
+                            text-decoration:none; 
+                            background:#3B82F6; 
+                            color:white; 
+                            padding:5px 10px; 
+                            border-radius:4px; 
+                            font-weight:bold;
+                            display:flex; align-items:center; gap:3px;">
+                            🚗 길찾기
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            // 인포윈도우 위치 (마커보다 살짝 위)
+            const iwPosition = new kakao.maps.LatLng(store.lat, store.lng);
+
+            // 인포윈도우 생성
+            const infowindow = new kakao.maps.InfoWindow({
+                position: iwPosition,
+                content: iwContent,
+                removable: true // 닫기 버튼 표시
+            });
+
+            // 지도에 열기
+            infowindow.open(map);
+            currentInfoWindow = infowindow;
+
+            // 지도 중심 이동 (선택사항, 모바일에서 유용)
+            // map.panTo(iwPosition);
         }
 
         function showStoreInfo(store) {
@@ -568,8 +695,12 @@
                 return;
             }
 
-            // 간단한 알림 - services 라이브러리 없이
-            alert(`"${query}" 검색 기능은 추후 업데이트 예정입니다.\n현재는 "내 위치" 버튼을 사용해주세요.`);
+            // lotto-enhanced.js의 searchAndMove 함수 사용
+            if (typeof searchAndMove === 'function') {
+                searchAndMove(query, map, markers, storeData);
+            } else {
+                alert('검색 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+            }
         }
 
         function goToMyLocation() {
@@ -590,6 +721,22 @@
             } else {
                 alert('이 브라우저는 위치 서비스를 지원하지 않습니다.');
             }
+        }
+
+        // 로드뷰 표시 함수
+        function showRoadview(lat, lng) {
+            if (typeof initRoadview === 'function') {
+                initRoadview(lat, lng);
+                document.getElementById('roadview-close').style.display = 'block';
+            } else {
+                alert('로드뷰 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+            }
+        }
+
+        // 로드뷰 닫기 함수
+        function closeRoadview() {
+            document.getElementById('roadview').style.display = 'none';
+            document.getElementById('roadview-close').style.display = 'none';
         }
 
         // 페이지 로드 시 지도 초기화

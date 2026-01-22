@@ -249,3 +249,110 @@ function generateLuckyNumbers(seed, count) {
 
     return Array.from(numbers).sort((a, b) => a - b);
 }
+
+// ============================================
+// 지도 관련 함수 (map.html에서 사용)
+// ============================================
+
+/**
+ * 로드뷰 초기화 및 표시
+ * @param {number} lat - 위도
+ * @param {number} lng - 경도
+ */
+function initRoadview(lat, lng) {
+    if (typeof kakao === 'undefined' || !kakao.maps) {
+        logger.error('Kakao Maps API가 로드되지 않았습니다.');
+        return;
+    }
+
+    const roadviewContainer = document.getElementById('roadview');
+    const roadview = new kakao.maps.Roadview(roadviewContainer);
+    const roadviewClient = new kakao.maps.RoadviewClient();
+    const position = new kakao.maps.LatLng(lat, lng);
+
+    roadviewClient.getNearestPanoId(position, 50, function (panoId) {
+        if (panoId === null) {
+            alert('해당 위치의 로드뷰를 찾을 수 없습니다.');
+            roadviewContainer.style.display = 'none';
+        } else {
+            roadviewContainer.style.display = 'block';
+            roadview.setPanoId(panoId, position);
+            logger.log('로드뷰 표시:', lat, lng);
+        }
+    });
+}
+
+/**
+ * 주변 마커 강조
+ * @param {number} centerLat - 중심 위도
+ * @param {number} centerLng - 중심 경도
+ * @param {number} radius - 반경 (km)
+ * @param {Array} markers - 마커 배열
+ * @param {Array} storeData - 판매점 데이터
+ */
+function highlightNearbyMarkers(centerLat, centerLng, radius, markers, storeData) {
+    if (typeof isWithinRadius !== 'function') {
+        logger.error('isWithinRadius 함수를 찾을 수 없습니다.');
+        return;
+    }
+
+    markers.forEach((marker, index) => {
+        const store = storeData[index];
+        if (!store) return;
+
+        const isNearby = isWithinRadius(centerLat, centerLng, store.lat, store.lng, radius);
+
+        // 마커 강조 효과 (스케일 및 애니메이션)
+        const overlayElement = marker.getContent();
+        if (isNearby) {
+            overlayElement.style.transform = 'scale(1.3)';
+            overlayElement.style.transition = 'transform 0.3s ease';
+            overlayElement.style.zIndex = '1000';
+        } else {
+            overlayElement.style.transform = 'scale(1)';
+            overlayElement.style.zIndex = '1';
+        }
+    });
+
+    logger.log(`${radius}km 반경 내 마커 강조 완료`);
+}
+
+/**
+ * 키워드 검색 및 지도 이동
+ * @param {string} keyword - 검색 키워드
+ * @param {object} map - 카카오맵 객체
+ * @param {Array} markers - 마커 배열
+ * @param {Array} storeData - 판매점 데이터
+ */
+function searchAndMove(keyword, map, markers, storeData) {
+    if (typeof kakao === 'undefined' || !kakao.maps || !kakao.maps.services) {
+        logger.error('Kakao Maps Services API가 로드되지 않았습니다.');
+        alert('검색 기능을 사용할 수 없습니다. 페이지를 새로고침해주세요.');
+        return;
+    }
+
+    const ps = new kakao.maps.services.Places();
+
+    ps.keywordSearch(keyword, function (data, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            const place = data[0];
+            const moveLatLon = new kakao.maps.LatLng(place.y, place.x);
+
+            // 지도 이동 (panTo)
+            map.panTo(moveLatLon);
+
+            // 주변 마커 강조 (1km 반경)
+            highlightNearbyMarkers(place.y, place.x, 1, markers, storeData);
+
+            logger.log('검색 완료:', keyword, '→', place.place_name);
+
+            // 검색 결과 알림
+            alert(`📍 "${place.place_name}"(으)로 이동했습니다.\n주변 1km 이내의 명당을 확인하세요!`);
+        } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+            alert('검색 결과가 없습니다. 다른 키워드를 입력해주세요.');
+        } else {
+            alert('검색 중 오류가 발생했습니다.');
+        }
+    });
+}
+

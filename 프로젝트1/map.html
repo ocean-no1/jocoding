@@ -134,57 +134,168 @@
             background: var(--primary-orange);
         }
 
-        .my-location-btn {
+        /* Map Controls Group (Right Side) */
+        .map-controls {
             position: absolute;
-            bottom: 120px;
+            top: 50%;
             right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             z-index: 100;
-            width: 50px;
-            height: 50px;
-            background: white;
-            border: none;
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .my-location-btn:hover {
+        .control-btn {
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            /* Square-ish with rounded corners like Kakao */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .control-btn.active {
             background: var(--primary-blue);
             color: white;
-            transform: scale(1.1);
+            border-color: var(--primary-blue);
         }
 
-        .store-info-box {
+        /* Bottom Sheet */
+        .bottom-sheet {
             position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
+            bottom: 0;
+            left: 0;
+            width: 100%;
             background: white;
-            padding: 20px 25px;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            min-width: 350px;
-            display: none;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 200;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            padding-bottom: env(safe-area-inset-bottom);
+            /* Safe area for iPhone X+ */
         }
 
-        .store-info-box.active {
-            display: block;
-            animation: slideUp 0.3s ease;
+        .bottom-sheet.active {
+            transform: translateY(0);
         }
 
-        @keyframes slideUp {
-            from {
-                transform: translate(-50%, 100px);
-                opacity: 0;
-            }
+        .sheet-handle-bar {
+            width: 100%;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
 
-            to {
-                transform: translateX(-50%);
-                opacity: 1;
-            }
+        .sheet-handle {
+            width: 40px;
+            height: 5px;
+            background: #E0E0E0;
+            border-radius: 10px;
+        }
+
+        .sheet-content {
+            padding: 0 25px 30px 25px;
+        }
+
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .sheet-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 4px;
+        }
+
+        .sheet-addr {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Action Buttons Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px;
+            border-radius: 12px;
+            background: #F5F6F8;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: #EBEDF0;
+        }
+
+        .action-btn i {
+            font-size: 1.4rem;
+            margin-bottom: 2px;
+        }
+
+        .action-btn.share {
+            color: #333;
+        }
+
+        .action-btn.kakao {
+            color: #3C1E1E;
+            background: #FAE100;
+        }
+
+        .action-btn.kakao:hover {
+            background: #E6CF00;
+        }
+
+        .action-btn.naver {
+            color: white;
+            background: #03C75A;
+        }
+
+        .action-btn.naver:hover {
+            background: #02B050;
+        }
+
+        /* Hide old elements */
+        .store-info-box,
+        .my-location-btn,
+        .zoom-control {
+            display: none !important;
         }
 
         .store-name {
@@ -700,35 +811,61 @@
         <a href="index.html" class="back-button">🏠 홈으로</a>
 
         <div class="map-header">
-            <h1>🗺️ 주변 명당 찾기</h1>
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <img src="lotto_logo.png" alt="로또 로고" style="height: 24px;">
+                <h1>명당 지도</h1>
+            </a>
+            <button onclick="toggleLegend()" class="legend-btn" style="
+                background: none; 
+                border: 1px solid #eee; 
+                padding: 6px 12px; 
+                border-radius: 15px; 
+                font-size: 0.85rem; 
+                cursor: pointer;">
+                범례
+            </button>
         </div>
 
-        <!-- Center Address Display -->
-        <div id="centerAddr"
-            style="position: absolute; top: 80px; left: 20px; z-index: 10; background: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 6px; color: #374151;">
-            <span style="font-size: 1.1em;">📍</span> <span id="centerAddrText">지도 중심 주소 로딩 중...</span>
+        <!-- Floating Controls (Right) -->
+        <div class="map-controls">
+            <!-- Heatmap Toggle -->
+            <button id="heatmapBtn" class="control-btn" onclick="toggleHeatmap()" title="히트맵 보기">
+                <i class="fas fa-layer-group"></i>
+            </button>
+            <div style="height: 10px;"></div> <!-- Spacer -->
+
+            <!-- Roadview Toggle -->
+            <button id="roadviewBtn" class="control-btn" onclick="toggleRoadviewMode()" title="로드뷰 모드">
+                <i class="fas fa-street-view"></i>
+            </button>
+
+            <div style="height: 10px;"></div>
+
+            <!-- Zoom Controls -->
+            <button class="control-btn" onclick="zoomIn()" title="확대">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button class="control-btn" onclick="zoomOut()" title="축소">
+                <i class="fas fa-minus"></i>
+            </button>
+
+            <div style="height: 10px;"></div> <!-- Spacer -->
+
+            <!-- My Location -->
+            <button class="control-btn" onclick="goToMyLocation()" title="내 위치">
+                <i class="fas fa-crosshairs"></i>
+            </button>
         </div>
 
-        <div class="search-box">
-            <input type="text" class="search-input" id="search-input" placeholder="지역명 입력 (예: 강남구, 삼성동)"
-                onkeypress="if(event.key === 'Enter') searchLocation()">
-            <button class="search-btn" onclick="searchLocation()">검색</button>
-        </div>
-        <ul id="search-results" class="search-results-list"></ul>
-
-        <button class="my-location-btn" onclick="goToMyLocation()" title="내 위치로 이동">
-            📍
-        </button>
-
-        <!-- Roadview Toggle Button -->
-        <button id="roadviewControl" class="roadview-control-btn" onclick="toggleRoadviewMode()">
-            📷 로드뷰 모드
-        </button>
-
-        <!-- Custom Zoom Controls -->
-        <div class="zoom-control">
-            <button class="zoom-btn" onclick="zoomIn()" title="확대">+</button>
-            <button class="zoom-btn" onclick="zoomOut()" title="축소">-</button>
+        <!-- Bottom Sheet -->
+        <div class="bottom-sheet" id="storeBottomSheet">
+            <div class="sheet-handle-bar" onclick="closeBottomSheet()">
+                <div class="sheet-handle"></div>
+            </div>
+            <div class="sheet-content">
+                <!-- Content injected via JS -->
+                <div id="sheetBody"></div>
+            </div>
         </div>
 
         <!-- Click Coordinate & Zoom Level Display -->
@@ -830,14 +967,15 @@
         let clusterer; // 마커 클러스터러
 
         // 로드뷰 관련 변수
-        let roadview = null;
-        let roadviewClient = null;
-        let rvResetValue = {}; // 로드뷰 초기화 값 저장
-
         let isRoadviewMode = false;
         let roadviewMarker = null;
-        let currentOverlay = null; // 현재 열린 커스텀 오버레이 추적용
-        let currentUserLocation = null; // 사용자 현재 위치 저장
+        let roadviewClient = null;
+        let roadview = null;
+        let rvResetValue = {}; // 로드뷰 리셋을 위한 초기값 저장
+
+        // Heatmap Variables
+        let isHeatmapMode = false;
+        let heatmapOverlays = []; // Array to store circle overlays
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371; // 지구 반지름 (km)
@@ -853,6 +991,7 @@
             if (d < 1) return Math.round(d * 1000) + 'm';
             return d.toFixed(1) + 'km';
         }
+
         // === Google Sheets에서 데이터 가져오기 ===
         async function loadStoreData() {
             try {
@@ -1130,101 +1269,143 @@
             }
         }
 
-        function showStoreInfoOnMap(store) {
-            // 하단 패널 업데이트 (기존 기능 유지)
-            document.getElementById('store-name').textContent = store.name;
-            document.getElementById('store-address').textContent = store.address;
-
-            let winsHTML = '';
-            if (store.first > 0) {
-                winsHTML += `<div class="win-badge first">1등 ${store.first}회</div>`;
+        function closeBottomSheet() {
+            document.getElementById('storeBottomSheet').classList.remove('active');
+            // 선택된 마커가 있다면 닫기 등 추가 로직 가능
+            if (currentOverlay) {
+                currentOverlay.setMap(null);
+                currentOverlay = null; // 오버레이도 같이 닫기
             }
-            if (store.second > 0) {
-                winsHTML += `<div class="win-badge second">2등 ${store.second}회</div>`;
-            }
-            if (store.first === 0 && store.second === 0) {
-                winsHTML = '<div style="color: #64748B;">당첨 이력 집계 중</div>';
-            }
+        }
 
-            document.getElementById('store-wins').innerHTML = winsHTML;
-            document.getElementById('store-info').classList.add('active');
+        // Toggle Heatmap Mode
+        function toggleHeatmap() {
+            isHeatmapMode = !isHeatmapMode;
+            const btn = document.getElementById('heatmapBtn');
 
-            // 거리 표시 업데이트
-            const distanceEl = document.getElementById('store-distance');
-            if (distanceEl) {
-                if (currentUserLocation) {
-                    const dist = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, store.lat, store.lng);
-                    distanceEl.innerHTML = `📍 내 위치에서 <strong>${dist}</strong>`;
-                    distanceEl.style.display = 'block';
-                } else {
-                    distanceEl.style.display = 'none';
+            if (isHeatmapMode) {
+                btn.classList.add('active');
+
+                // Hide Clusters & Markers
+                clusterer.clear();
+                // Note: markers array still holds marker objects but clusterer manages map display
+                // If markers were added directly to map, we'd need to setMap(null) for each.
+                // Assuming clusterer handles everything.
+
+                // Draw Heatmap Circles
+                drawHeatmap();
+            } else {
+                btn.classList.remove('active');
+
+                // Clear Heatmap
+                clearHeatmap();
+
+                // Show Clusters
+                clusterer.addMarkers(markers);
+            }
+        }
+
+        function drawHeatmap() {
+            storeData.forEach(store => {
+                // Determine Color & Radius based on 1st prize wins
+                let color = '#FFD700'; // Default Yellow
+                let opacity = 0.4;
+                let radius = 300; // Base 300m
+
+                if (store.first >= 10) {
+                    color = '#DC2626'; // Red
+                    opacity = 0.6;
+                    radius = 500;
+                } else if (store.first >= 5) {
+                    color = '#F97316'; // Orange
+                    opacity = 0.5;
+                    radius = 400;
                 }
+
+                // Create Circle
+                const circle = new kakao.maps.Circle({
+                    center: new kakao.maps.LatLng(store.lat, store.lng),
+                    radius: radius,
+                    strokeWeight: 0,
+                    fillColor: color,
+                    fillOpacity: opacity
+                });
+
+                circle.setMap(map);
+                heatmapOverlays.push(circle);
+
+                // Add click listener to circle (optional: open info)
+                kakao.maps.event.addListener(circle, 'click', function () {
+                    showStoreInfoOnMap(store);
+                });
+            });
+        }
+
+        function clearHeatmap() {
+            heatmapOverlays.forEach(circle => circle.setMap(null));
+            heatmapOverlays = [];
+        }
+
+        function showStoreInfoOnMap(store) {
+            // Update Bottom Sheet Content
+            const sheetBody = document.getElementById('sheetBody');
+
+            // Badges
+            let badges = '';
+            if (store.first > 0) badges += `<span class="win-badge first">1등 ${store.first}회</span>`;
+            if (store.second > 0) badges += `<span class="win-badge second">2등 ${store.second}회</span>`;
+            if (!badges) badges = '<span style="color:#999;font-size:0.9rem;">당첨 이력 집계 중</span>';
+
+            // Distance
+            let distHTML = '';
+            if (currentUserLocation) {
+                const dist = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, store.lat, store.lng);
+                distHTML = `<div style="font-size:0.9rem; color:#2563EB; margin-top:5px;">📍 내 위치에서 ${dist}</div>`;
             }
 
-            // === 커스텀 오버레이 기능 추가 ===
-
-            // 기존 오버레이 닫기
-            closeOverlay();
-
-            // 커스텀 오버레이 컨텐츠 HTML
-            const content = `
-                <div class="custom-overlay">
-                    <button class="overlay-close" onclick="closeOverlay()">✕</button>
-                    <div class="overlay-title">${store.name}</div>
-                    <div class="overlay-addr">${store.address}</div>
-                    <div class="overlay-buttons">
-                        <button onclick="showRoadview(${store.lat}, ${store.lng}, '${store.name}')" class="overlay-btn" style="background:#FEE500; color:#191919;">
-                            📷 로드뷰
-                        </button>
-                        <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" class="overlay-btn" style="background:#3B82F6; color:white;">
-                            🚗 길찾기
-                        </a>
-                        <button onclick="processShare('${store.name}', '${store.address}', ${store.first})" class="overlay-btn" style="background:#10B981; color:white;">
-                            📤 공유
-                        </button>
+            sheetBody.innerHTML = `
+                <div class="sheet-header">
+                    <div>
+                        <div class="sheet-title">${store.name}</div>
+                        <div class="sheet-addr">${store.address}</div>
+                        ${distHTML}
                     </div>
                 </div>
+                <div class="store-wins" style="margin-bottom:20px;">
+                    ${badges}
+                </div>
+                
+                <div class="action-grid">
+                    <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" class="action-btn kakao">
+                        <i class="fas fa-map-marked-alt"></i> 카카오맵
+                    </a>
+                    <a href="https://map.naver.com/index.nhn?slng=${store.lng}&slat=${store.lat}&stext=${store.name}" target="_blank" class="action-btn naver">
+                        <i class="fas fa-map-signs"></i> 네이버맵
+                    </a>
+                    <button class="action-btn share" onclick="processShare('${store.name}', '${store.address}', ${store.first})">
+                        <i class="fas fa-share-alt"></i> 공유하기
+                    </button>
+                </div>
+                
+                 <div style="text-align: center; margin-top: 15px;">
+                    <a onclick="showRoadview(${store.lat}, ${store.lng}, '${store.name}')" style="color: #64748B; font-size: 0.85rem; text-decoration: underline; cursor: pointer;">
+                        📷 로드뷰 미리보기
+                    </a>
+                </div>
             `;
 
-            // 오버레이 위치
+            // Display Bottom Sheet
+            document.getElementById('storeBottomSheet').classList.add('active');
+
+            // Pan map to store (with offset for bottom sheet)
             const position = new kakao.maps.LatLng(store.lat, store.lng);
 
-            // 커스텀 오버레이 생성
-            const customOverlay = new kakao.maps.CustomOverlay({
-                position: position,
-                content: content,
-                yAnchor: 1.15, // 마커보다 약간 위쪽에 표시
-                zIndex: 100
-            });
+            // Adjust center slightly down so marker isn't covered by sheet
+            // Simple approach: pan directly to lat/lng, then maybe zoom in
+            map.panTo(position);
 
-            // 지도에 표시
-            customOverlay.setMap(map);
-            currentOverlay = customOverlay;
-
-            // === 하단 패널 버튼 업데이트 ===
-            const actionsHTML = `
-                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                    <button onclick="showRoadview(${store.lat}, ${store.lng}, '${store.name}')" style="flex: 1; padding: 12px; background: #FEE500; color: #191919; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem;">
-                        📷 로드뷰
-                    </button>
-                    <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" style="flex: 1; padding: 12px; background: #3B82F6; color: white; border: none; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem;">
-                        🚗 길찾기
-                    </a>
-                </div>
-                <button onclick="processShare('${store.name}', '${store.address}', ${store.first})" style="width: 100%; padding: 12px; background: #10B981; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.95rem; margin-bottom: 8px;">
-                     📤 친구에게 매장 정보 공유하기
-                </button>
-                <div style="text-align: center;">
-                    <a href="https://map.kakao.com/link/roadview/${store.lat},${store.lng}" target="_blank" style="color: #64748B; font-size: 0.85rem; text-decoration: underline; cursor: pointer;">
-                        🌏 카카오맵에서 로드뷰 크게 보기 (새창)
-                    </a>
-                </div>
-            `;
-            document.getElementById('store-actions').innerHTML = actionsHTML;
-
-            // 지도 중심 이동 및 줌인 (사용자 요청: 줌인 기능)
-            map.panTo(iwPosition);
-            map.setLevel(2, { animate: true });
+            // Optional: Create a temporary highlight marker or overlay if needed
+            // For now, relying on the existing marker or circle interaction
         }
 
         function showStoreInfo(store) {
@@ -1422,19 +1603,18 @@
             document.getElementById('roadview-close').style.display = 'none';
         }
 
-        // 로드뷰 모드 토글 함수
+        // Toggle Roadview Mode
         function toggleRoadviewMode() {
-            const btn = document.getElementById('roadviewControl');
+            const btn = document.getElementById('roadviewBtn');
             isRoadviewMode = !isRoadviewMode;
 
             if (isRoadviewMode) {
                 btn.classList.add('active');
-                btn.innerHTML = '📷 로드뷰 종료';
 
-                // 지도 위에 로드뷰 도로 오버레이 추가
+                // Switch to Roadview overlay
                 map.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
 
-                // 마커 생성 (동동이 스타일)
+                // Create Roadview Walker Marker (Dongdong-i)
                 const markImage = new kakao.maps.MarkerImage(
                     'https://t1.daumcdn.net/localimg/localimages/07/2018/pc/roadview_minimap_wk_2018.png',
                     new kakao.maps.Size(26, 46),
@@ -1453,7 +1633,7 @@
                         map: map
                     });
 
-                    // 마커 드래그 종료 시 로드뷰 실행
+                    // Event: When drag ends, show roadview
                     kakao.maps.event.addListener(roadviewMarker, 'dragend', function () {
                         const position = roadviewMarker.getPosition();
                         showRoadview(position.getLat(), position.getLng());
@@ -1463,24 +1643,21 @@
                     roadviewMarker.setMap(map);
                 }
 
-                // 안내 메시지 표시
-                const resultDiv = document.getElementById('clickResult');
-                resultDiv.innerHTML = '지도 위의 파란 선(도로)을 클릭하거나 마커를 옮기면 로드뷰가 보입니다.';
-                resultDiv.style.display = 'block';
+                alert('지도 위의 파란 선(도로)를 클릭하면 로드뷰가 열립니다.');
 
             } else {
                 btn.classList.remove('active');
-                btn.innerHTML = '📷 로드뷰 모드';
 
-                // 로드뷰 도로 오버레이 제거
+                // Remove Roadview overlay
                 map.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
 
-                // 마커 제거
+                // Remove Marker
                 if (roadviewMarker) {
                     roadviewMarker.setMap(null);
                 }
 
-                document.getElementById('clickResult').style.display = 'none';
+                // Hide Roadview container if open
+                closeRoadview();
             }
         }
 

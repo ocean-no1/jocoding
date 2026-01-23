@@ -604,6 +604,68 @@
             var s = d.createElement('script'); s.async = true; s.src = 'https://static.userback.io/widget/v1.js'; (d.head || d.body).appendChild(s);
         })(document);
     </script>
+    <style>
+        /* Layers Menu Styles */
+        .layers-menu {
+            position: absolute;
+            right: 50px;
+            /* Right of the control buttons */
+            top: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            width: 200px;
+            display: none;
+            /* Hidden by default */
+            flex-direction: column;
+            gap: 12px;
+            z-index: 200;
+        }
+
+        .layers-menu.active {
+            display: flex;
+        }
+
+        .layers-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .layers-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .layer-btn {
+            padding: 8px 12px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #f8f9fa;
+            color: #333;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .layer-btn:hover {
+            background: #e9ecef;
+        }
+
+        .layer-btn.active {
+            background: #e3f2fd;
+            color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            font-weight: 600;
+        }
+    </style>
 </head>
 
 <body>
@@ -629,6 +691,75 @@
                 <button id="heatmapBtn" class="control-btn" onclick="toggleHeatmap()" title="히트맵/일반지도 토글">
                     <i class="fas fa-layer-group"></i>
                 </button>
+
+                <!-- Layers Button -->
+                <div style="position: relative;">
+                    <button id="layersBtn" class="control-btn" onclick="toggleLayersMenu()" title="지도 설정">
+                        <i class="fas fa-map"></i>
+                    </button>
+                    <!-- Layers Menu (Popup) -->
+                    <div id="layersMenu" class="layers-menu">
+                        <!-- Map Type -->
+                        <div class="layers-section">
+                            <div class="layers-label">지도 유형</div>
+                            <button class="layer-btn active" onclick="setMapType('roadmap')" id="btn-roadmap">
+                                <i class="fas fa-map-marked-alt"></i> 일반 지도
+                            </button>
+                            <button class="layer-btn" onclick="setMapType('skyview')" id="btn-skyview">
+                                <i class="fas fa-satellite"></i> 스카이뷰
+                            </button>
+                        </div>
+                        <div style="height: 1px; background: #eee; margin: 5px 0;"></div>
+                        <!-- Overlays -->
+                        <div class="layers-section">
+                            <div class="layers-label">정보 겹쳐보기</div>
+                            <button class="layer-btn" onclick="toggleOverlay('traffic')" id="btn-traffic">
+                                <i class="fas fa-car"></i> 교통정보
+                            </button>
+                            <button class="layer-btn" onclick="toggleOverlay('bicycle')" id="btn-bicycle">
+                                <i class="fas fa-bicycle"></i> 자전거도로
+                            </button>
+                            <button class="layer-btn" onclick="toggleOverlay('terrain')" id="btn-terrain">
+                                <i class="fas fa-mountain"></i> 지형도
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layers Button -->
+                <div style="position: relative;">
+                    <button id="layersBtn" class="control-btn" onclick="toggleLayersMenu()" title="지도 설정">
+                        <i class="fas fa-map"></i>
+                    </button>
+                    <!-- Layers Menu (Popup) -->
+                    <div id="layersMenu" class="layers-menu">
+                        <!-- Map Type -->
+                        <div class="layers-section">
+                            <div class="layers-label">지도 유형</div>
+                            <button class="layer-btn active" onclick="setMapType('roadmap')" id="btn-roadmap">
+                                <i class="fas fa-map-marked-alt"></i> 일반 지도
+                            </button>
+                            <button class="layer-btn" onclick="setMapType('skyview')" id="btn-skyview">
+                                <i class="fas fa-satellite"></i> 스카이뷰
+                            </button>
+                        </div>
+                        <div style="height: 1px; background: #eee; margin: 5px 0;"></div>
+                        <!-- Overlays -->
+                        <div class="layers-section">
+                            <div class="layers-label">정보 겹쳐보기</div>
+                            <button class="layer-btn" onclick="toggleOverlay('traffic')" id="btn-traffic">
+                                <i class="fas fa-car"></i> 교통정보
+                            </button>
+                            <button class="layer-btn" onclick="toggleOverlay('bicycle')" id="btn-bicycle">
+                                <i class="fas fa-bicycle"></i> 자전거도로
+                            </button>
+                            <button class="layer-btn" onclick="toggleOverlay('terrain')" id="btn-terrain">
+                                <i class="fas fa-mountain"></i> 지형도
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <button id="roadviewBtn" class="control-btn" onclick="toggleRoadviewMode()" title="로드뷰">
                     <i class="fas fa-street-view"></i>
                 </button>
@@ -1835,6 +1966,61 @@
                 toast.style.transition = 'opacity 0.3s';
                 setTimeout(() => document.body.removeChild(toast), 300);
             }, 2000);
+        }
+
+        // === 6. New Features: Layers & Overlays ===
+
+        let currentMapType = 'roadmap';
+        const overlayStatus = {
+            traffic: false,
+            bicycle: false,
+            terrain: false
+        };
+
+        function toggleLayersMenu() {
+            const menu = document.getElementById('layersMenu');
+            menu.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('layersMenu');
+            const btn = document.getElementById('layersBtn');
+            if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
+        function setMapType(type) {
+            if (type === 'roadmap') {
+                map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
+                document.getElementById('btn-roadmap').classList.add('active');
+                document.getElementById('btn-skyview').classList.remove('active');
+            } else if (type === 'skyview') {
+                map.setMapTypeId(kakao.maps.MapTypeId.HYBRID); // Using HYBRID for labels
+                document.getElementById('btn-roadmap').classList.remove('active');
+                document.getElementById('btn-skyview').classList.add('active');
+            }
+            currentMapType = type;
+        }
+
+        function toggleOverlay(type) {
+            const btn = document.getElementById('btn-' + type);
+            let mapTypeId;
+
+            if (type === 'traffic') mapTypeId = kakao.maps.MapTypeId.TRAFFIC;
+            else if (type === 'bicycle') mapTypeId = kakao.maps.MapTypeId.BICYCLE;
+            else if (type === 'terrain') mapTypeId = kakao.maps.MapTypeId.TERRAIN;
+
+            if (overlayStatus[type]) {
+                map.removeOverlayMapTypeId(mapTypeId);
+                overlayStatus[type] = false;
+                btn.classList.remove('active');
+            } else {
+                map.addOverlayMapTypeId(mapTypeId);
+                overlayStatus[type] = true;
+                btn.classList.add('active');
+            }
         }
 
         // 페이지 로드 시 지도 초기화

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>페이지를 찾을 수 없습니다 - 1등 명당</title>
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            --primary-blue: #3B82F6;
+            --primary-orange: #F97316;
+            --text-dark: #1F2937;
+            --text-gray: #64748B;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #F8FAFC;
+            text-align: center;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 6rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin: 0;
+            line-height: 1;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin: 20px 0;
+        }
+
+        p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary-blue), #2563EB);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .illustration {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="illustration">🤔</div>
+        <h1>404</h1>
+        <h2>페이지를 찾을 수 없습니다</h2>
+        <p>
+            요청하신 페이지가 사라졌거나 잘못된 경로입니다.<br>
+            입력하신 주소를 다시 확인해주세요.
+        </p>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <a href="/" class="btn">🏠 홈으로 가기</a>
+            <a href="map.html" class="btn"
+                style="background: white; color: var(--text-dark); border: 1px solid #ddd;">🗺️ 지도 보기</a>
+        </div>
+    </div>
+</body>
+
+</html>

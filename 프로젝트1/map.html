@@ -22,6 +22,22 @@
         gtag('config', 'G-VZLKFEGD77');
     </script>
 
+    <!-- JSON-LD Structured Data for Map -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Map",
+      "name": "전국 로또 명당 지도",
+      "description": "전국 주요 로또 1등 당첨점의 위치와 당첨 기록을 보여주는 인터랙티브 지도입니다.",
+      "url": "https://publiclensk.org/map.html",
+      "provider": {
+        "@type": "Organization",
+        "name": "PublicLensk",
+        "url": "https://publiclensk.org"
+      }
+    }
+    </script>
+
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482753613081557"
         crossorigin="anonymous"></script>
 
@@ -58,6 +74,24 @@
     <script src="js/utils.js?v=20260122_fix3"></script>
     <script src="js/lotto-enhanced.js?v=20260122_fix3"></script>
     <style>
+        :root {
+            --primary-blue: #3B82F6;
+            --primary-orange: #F97316;
+            --text-dark: #1F2937;
+            --text-gray: #64748B;
+            --bg-white: #FFFFFF;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            /* Prevent scroll on map page */
+            font-family: 'Pretendard', sans-serif;
+        }
+
         .map-container {
             width: 100%;
             height: 100vh;
@@ -69,72 +103,84 @@
             height: 100%;
         }
 
-        .map-header {
+        /* === Unified Map Header & Search === */
+        .map-ui-top {
             position: absolute;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 20px;
             z-index: 100;
-            background: white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
         }
 
-        .map-header h1 {
-            font-size: 1.3rem;
+        .map-brand {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .map-brand:hover {
+            transform: scale(1.02);
+        }
+
+        .map-brand img {
+            height: 24px;
+        }
+
+        .map-brand h1 {
+            font-size: 1rem;
             font-weight: 700;
-            color: var(--primary-blue);
+            color: var(--text-dark);
             margin: 0;
         }
 
         .search-box {
-            position: absolute;
-            top: 100px;
-            left: 20px;
-            z-index: 100;
+            position: relative;
+            /* Changed from absolute to flow in .map-ui-top */
             background: white;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            width: 320px;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            width: 340px;
+            display: flex;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .search-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
+            flex: 1;
+            padding: 14px 16px;
+            border: none;
             font-size: 1rem;
-            margin-bottom: 10px;
-        }
-
-        .search-input:focus {
             outline: none;
-            border-color: var(--primary-blue);
+            color: var(--text-dark);
         }
 
         .search-btn {
-            width: 100%;
-            padding: 12px;
             background: var(--primary-blue);
             color: white;
             border: none;
-            border-radius: 8px;
+            padding: 0 20px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background 0.2s;
         }
 
         .search-btn:hover {
-            background: var(--primary-orange);
+            background: #2563EB;
         }
 
-        /* Map Controls Group (Right Side) */
+        /* === Floating Controls (Right Side) === */
         .map-controls {
             position: absolute;
             top: 50%;
@@ -142,818 +188,524 @@
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             z-index: 100;
+        }
+
+        .control-group {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .control-btn {
             width: 44px;
             height: 44px;
             background: white;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            /* Square-ish with rounded corners like Kakao */
+            border: none;
+            border-bottom: 1px solid #F1F5F9;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            color: #333;
+            font-size: 1.1rem;
+            color: #475569;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.2s;
         }
 
+        .control-btn:last-child {
+            border-bottom: none;
+        }
+
         .control-btn:hover {
-            background: #f8f9fa;
+            background: #F8FAFC;
+            color: var(--primary-blue);
         }
 
         .control-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
+            background: #EFF6FF;
+            color: var(--primary-blue);
+            border-left: 3px solid var(--primary-blue);
         }
 
-        /* Bottom Sheet */
+        /* === Legend Button === */
+        .legend-btn {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748B;
+            border: 1px solid #E2E8F0;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+            /* Push to right if needed */
+        }
+
+        .legend-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            width: 200px;
+        }
+
+        .legend-content.show {
+            display: block;
+        }
+
+        /* === Bottom Sheet === */
         .bottom-sheet {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             background: white;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
             z-index: 200;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            padding-bottom: env(safe-area-inset-bottom);
-            /* Safe area for iPhone X+ */
+            transform: translateY(110%);
+            /* Hidden by default */
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .bottom-sheet.active {
             transform: translateY(0);
         }
 
-        .sheet-handle-bar {
+        .sheet-handle-area {
             width: 100%;
-            height: 24px;
+            padding: 12px 0;
             display: flex;
-            align-items: center;
             justify-content: center;
-            cursor: pointer;
+            cursor: grab;
         }
 
         .sheet-handle {
             width: 40px;
             height: 5px;
-            background: #E0E0E0;
+            background: #E2E8F0;
             border-radius: 10px;
         }
 
-        .sheet-content {
-            padding: 0 25px 30px 25px;
+        .sheet-body {
+            padding: 0 25px 40px 25px;
         }
 
-        .sheet-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
+        .store-header {
+            margin-bottom: 20px;
         }
 
-        .sheet-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #111;
-            margin-bottom: 4px;
+        .store-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 6px;
         }
 
-        .sheet-addr {
+        .store-meta {
             font-size: 0.95rem;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        /* Action Buttons Grid */
-        .action-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .action-btn {
+            color: var(--text-gray);
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 12px;
-            border-radius: 12px;
-            background: #F5F6F8;
-            color: #333;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: background 0.2s;
-            border: none;
-            cursor: pointer;
+            gap: 10px;
         }
 
-        .action-btn:hover {
-            background: #EBEDF0;
-        }
-
-        .action-btn i {
-            font-size: 1.4rem;
-            margin-bottom: 2px;
-        }
-
-        .action-btn.share {
-            color: #333;
-        }
-
-        .action-btn.kakao {
-            color: #3C1E1E;
-            background: #FAE100;
-        }
-
-        .action-btn.kakao:hover {
-            background: #E6CF00;
-        }
-
-        .action-btn.naver {
-            color: white;
-            background: #03C75A;
-        }
-
-        .action-btn.naver:hover {
-            background: #02B050;
-        }
-
-        /* Hide old elements */
-        .store-info-box,
-        .my-location-btn,
-        .zoom-control {
-            display: none !important;
-        }
-
-        .store-name {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-            margin-bottom: 8px;
-        }
-
-        .store-address {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-        }
-
-        .store-wins {
+        .win-badges {
             display: flex;
-            gap: 15px;
+            gap: 8px;
             margin-top: 12px;
         }
 
-        .win-badge {
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .win-badge.first {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: white;
-        }
-
-        .win-badge.second {
-            background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
-            color: white;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            padding: 12px 20px;
-            background: white;
-            border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .back-button:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-
-        .legend {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 100;
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .legend-title {
-            font-size: 0.9rem;
+        .badge {
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
             font-weight: 700;
-            margin-bottom: 8px;
+            color: white;
         }
 
-        .legend-item {
+        .badge.first {
+            background: linear-gradient(135deg, #FFD700, #F59E0B);
+        }
+
+        .badge.second {
+            background: linear-gradient(135deg, #94A3B8, #64748B);
+        }
+
+        /* Action Buttons */
+        .sheet-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .action-card {
+            background: #F8FAFC;
+            border-radius: 16px;
+            padding: 15px 10px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 8px;
-            margin-bottom: 5px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            background: white;
+            border-color: #E2E8F0;
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 1.5rem;
+            margin-bottom: 2px;
+        }
+
+        .action-label {
             font-size: 0.85rem;
+            font-weight: 600;
         }
 
-        .legend-marker {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+        /* Branding Colors for Actions */
+        .action-card.kakao .action-icon {
+            color: #3C1E1E;
         }
 
-        .marker-gold {
-            background: #FFD700;
+        .action-card.naver .action-icon {
+            color: #03C75A;
         }
 
-        .marker-silver {
-            background: #C0C0C0;
+        .action-card.share .action-icon {
+            color: var(--primary-blue);
         }
 
-        .marker-normal {
-            background: #4A90E2;
+        /* Search Results */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 10px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 101;
         }
 
+        .search-results.show {
+            display: block;
+        }
+
+        .result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #F1F5F9;
+            cursor: pointer;
+        }
+
+        .result-item:hover {
+            background: #F8FAFC;
+        }
+
+        .result-item-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .result-item-addr {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-top: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-box {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .map-ui-top {
+                width: calc(100% - 40px);
+            }
+
+            .map-controls {
+                right: 10px;
+            }
+
+            .bottom-sheet {
+                border-radius: 20px 20px 0 0;
+            }
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Re-Search Button (App-like) */
+        .re-search-btn {
+            position: absolute;
+            top: 100px;
+            /* Below header */
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: var(--primary-blue);
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--primary-blue);
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 90;
+            cursor: pointer;
+            display: none;
+            /* Hidden by default */
+            align-items: center;
+            gap: 6px;
+            animation: fadeInDown 0.3s;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        /* List View Sidebar (Desktop) */
+        .store-list-sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 380px;
+            height: 100%;
+            background: white;
+            z-index: 150;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(-100%);
+            /* Hidden by default */
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .store-list-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .list-header {
+            padding: 20px;
+            border-bottom: 1px solid #F1F5F9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .list-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .list-card {
+            padding: 15px;
+            border-bottom: 1px solid #F1F5F9;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 8px;
+        }
+
+        .list-card:hover {
+            background: #F8FAFC;
+        }
+
+        /* Toggle List Button */
+        .list-toggle-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 90;
+            background: #1F2937;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            display: flex;
+            /* Flex to show */
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .store-list-sidebar {
+                width: 100%;
+                top: 50%;
+                height: 50%;
+                border-radius: 20px 20px 0 0;
+                transform: translateY(100%);
+            }
+
+            .store-list-sidebar.open {
+                transform: translateY(0);
+            }
+        }
+
+        /* Roadview Container */
         #roadview {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 9999;
+            z-index: 50;
             display: none;
-        }
-
-        .roadview-close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            /* Ensure it's on top of everything */
-            padding: 15px 25px;
-            /* Larger touch target */
-            background: #EF4444;
-            /* Red for clear "Exit" action */
-            border: none;
-            color: white;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s, background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .roadview-close-btn:hover {
-            background: #DC2626;
-            transform: scale(1.05);
-        }
-
-        /* Custom Zoom Control */
-        .zoom-control {
-            position: absolute;
-            bottom: 190px;
-            right: 20px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .zoom-btn {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1F2937;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .zoom-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        /* Click Coordinate Result */
-        .click-result {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 10px 20px;
-            border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #1F2937;
-            display: none;
-            /* Initially hidden */
-        }
-
-        .zoom-control {
-            position: absolute;
-            bottom: 190px;
-            right: 20px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .zoom-btn {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1F2937;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .zoom-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .roadview-close-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .search-box {
-                width: calc(100% - 40px);
-                left: 20px;
-                right: 20px;
-            }
-
-            .store-info-box {
-                min-width: auto;
-                width: calc(100% - 40px);
-            }
-
-            .map-header h1 {
-                font-size: 1.1rem;
-            }
-        }
-
-        /* Custom Overlay Style */
-        .custom-overlay {
-            position: relative;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            min-width: 260px;
-            border: 1px solid #E2E8F0;
-        }
-
-        .custom-overlay::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-top: 10px solid white;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-        }
-
-        .overlay-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            border: none;
-            background: none;
-            color: #94A3B8;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .overlay-close:hover {
-            color: #1F2937;
-        }
-
-        /* Roadview Controls */
-        .roadview-controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 201;
-            display: flex;
-            gap: 8px;
-        }
-
-        .rv-btn {
-            padding: 8px 12px;
-            background: white;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #1e293b;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .rv-btn:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
-
-        /* Roadview Controls */
-        .roadview-controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 201;
-            /* Higher than map, same level as close button */
-            display: flex;
-            gap: 8px;
-        }
-
-        .rv-btn {
-            padding: 8px 12px;
-            background: white;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #1e293b;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .rv-btn:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
-
-        /* Roadview Toggle Button - Positioned to left of standard controls */
-        .roadview-control-btn {
-            position: absolute;
-            top: 25px;
-            /* Aligned with typical map controls */
-            right: 140px;
-            /* Moved left to avoid overlapping with MapTypeControl */
-            z-index: 100;
-            padding: 8px 12px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            /* Squared corners to match standard controls */
-            font-weight: 600;
-            color: #1F2937;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.85rem;
-            height: 38px;
-        }
-
-        .roadview-control-btn:hover {
-            background: #f8f9fa;
-        }
-
-        .roadview-control-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Marker Tracker Styles */
-        .tracker {
-            position: absolute;
-            z-index: 100;
-            cursor: pointer;
-        }
-
-        .balloon {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/balloon.png') no-repeat;
-            right: -30px;
-            bottom: -30px;
-        }
-
-        .tracker .icon {
-            position: absolute;
-            width: 27px;
-            height: 15px;
-            background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/icon.png') no-repeat;
-            left: -14px;
-            top: -7px;
-        }
-
-        .overlay-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #1E3A8A;
-            margin-bottom: 5px;
-            padding-right: 20px;
-        }
-
-        .overlay-addr {
-            font-size: 0.85rem;
-            color: #64748B;
-            margin-bottom: 12px;
-        }
-
-        .overlay-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .overlay-btn {
-            flex: 1;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            text-decoration: none;
-            border: none;
-        }
-
-        .search-results-list {
-            position: absolute;
-            top: 60px;
-            left: 20px;
-            width: 320px;
-            max-height: 400px;
-            overflow-y: auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            padding: 0;
-            margin: 0;
-            list-style: none;
-            display: none;
-        }
-
-        .search-results-list li {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .search-results-list li:hover {
-            background: #f8f9fa;
-        }
-
-        .search-results-list li:last-child {
-            border-bottom: none;
-        }
-
-        .search-item-title {
-            font-weight: bold;
-            font-size: 0.95rem;
-            color: #1E3A8A;
-            margin-bottom: 4px;
-        }
-
-        .search-item-addr {
-            font-size: 0.85rem;
-            color: #64748B;
-        }
-
-        @media (max-width: 768px) {
-            .search-results-list {
-                width: calc(100% - 40px);
-                left: 20px;
-                right: 20px;
-            }
         }
     </style>
 </head>
 
 <body>
     <div class="map-container">
-        <a href="index.html" class="back-button">🏠 홈으로</a>
-
-        <div class="map-header">
-            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                <img src="lotto_logo.png" alt="로또 로고" style="height: 24px;">
+        <!-- Unified Top UI -->
+        <div class="map-ui-top">
+            <a href="index.html" class="map-brand">
+                <img src="lotto_logo.png" alt="로또 로고">
                 <h1>명당 지도</h1>
             </a>
-            <button onclick="toggleLegend()" class="legend-btn" style="
-                background: none; 
-                border: 1px solid #eee; 
-                padding: 6px 12px; 
-                border-radius: 15px; 
-                font-size: 0.85rem; 
-                cursor: pointer;">
-                범례
-            </button>
+
+            <div class="search-box">
+                <input type="text" id="search-input" class="search-input" placeholder="지역명 입력 (예: 강남구, 삼성동)"
+                    onkeypress="if(event.keyCode==13) searchLocation();">
+                <button class="search-btn" onclick="searchLocation()">검색</button>
+            </div>
+            <ul id="search-results" class="search-results-list"></ul>
         </div>
 
         <!-- Floating Controls (Right) -->
         <div class="map-controls">
-            <!-- Heatmap Toggle -->
-            <button id="heatmapBtn" class="control-btn" onclick="toggleHeatmap()" title="히트맵 보기">
-                <i class="fas fa-layer-group"></i>
-            </button>
-            <div style="height: 10px;"></div> <!-- Spacer -->
+            <div class="control-group">
+                <button id="heatmapBtn" class="control-btn" onclick="toggleHeatmap()" title="히트맵/일반지도 토글">
+                    <i class="fas fa-layer-group"></i>
+                </button>
+                <button id="roadviewBtn" class="control-btn" onclick="toggleRoadviewMode()" title="로드뷰">
+                    <i class="fas fa-street-view"></i>
+                </button>
+            </div>
 
-            <!-- Roadview Toggle -->
-            <button id="roadviewBtn" class="control-btn" onclick="toggleRoadviewMode()" title="로드뷰 모드">
-                <i class="fas fa-street-view"></i>
-            </button>
+            <div class="control-group" style="margin-top:10px">
+                <button class="control-btn" onclick="zoomIn()" title="확대">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="control-btn" onclick="zoomOut()" title="축소">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
 
-            <div style="height: 10px;"></div>
+            <div class="control-group" style="margin-top:10px">
+                <button class="control-btn" onclick="goToMyLocation()" title="내 위치">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+            </div>
 
-            <!-- Zoom Controls -->
-            <button class="control-btn" onclick="zoomIn()" title="확대">
-                <i class="fas fa-plus"></i>
-            </button>
-            <button class="control-btn" onclick="zoomOut()" title="축소">
-                <i class="fas fa-minus"></i>
-            </button>
-
-            <div style="height: 10px;"></div> <!-- Spacer -->
-
-            <!-- My Location -->
-            <button class="control-btn" onclick="goToMyLocation()" title="내 위치">
-                <i class="fas fa-crosshairs"></i>
-            </button>
+            <div style="margin-top: 10px; position: relative; text-align: right;">
+                <button class="legend-btn" onclick="toggleLegend()" title="범례 보기">
+                    <i class="fas fa-info-circle"></i> 범례
+                </button>
+                <div id="legend-content" class="legend-content">
+                    <div class="legend-title">당첨 횟수 범례</div>
+                    <div class="legend-item" onclick="filterMarkers('gold')">
+                        <div class="legend-marker marker-gold"></div> 1등 3회 이상
+                    </div>
+                    <div class="legend-item" onclick="filterMarkers('silver')">
+                        <div class="legend-marker marker-silver"></div> 1등 1-2회
+                    </div>
+                    <div class="legend-item" onclick="filterMarkers('normal')">
+                        <div class="legend-marker marker-normal"></div> 일반 판매점
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Map Area -->
+        <div id="map"></div>
 
         <!-- Bottom Sheet -->
         <div class="bottom-sheet" id="storeBottomSheet">
-            <div class="sheet-handle-bar" onclick="closeBottomSheet()">
+            <div class="sheet-handle-area" onclick="closeBottomSheet()">
                 <div class="sheet-handle"></div>
             </div>
-            <div class="sheet-content">
+            <div class="sheet-body" id="sheetBody">
                 <!-- Content injected via JS -->
-                <div id="sheetBody"></div>
             </div>
         </div>
 
-        <!-- Click Coordinate & Zoom Level Display -->
-        <div id="clickResult" class="click-result">
-            지도를 클릭하거나 확대/축소해보세요
-        </div>
-
-        <div class="zoom-control">
-            <button class="zoom-btn" onclick="zoomIn()" title="확대">+</button>
-            <button class="zoom-btn" onclick="zoomOut()" title="축소">-</button>
-        </div>
-
-        <div class="legend">
-            <div class="legend-title" onclick="filterMarkers('all')" style="cursor: pointer;" title="전체 보기">범례 (전체) ↻
-            </div>
-            <div class="legend-item" onclick="filterMarkers('gold')" id="legend-gold">
-                <div class="legend-marker marker-gold"></div>
-                <span>1등 당첨점 (3회 이상)</span>
-            </div>
-            <div class="legend-item" onclick="filterMarkers('silver')" id="legend-silver">
-                <div class="legend-marker marker-silver"></div>
-                <span>1등 당첨점 (1-2회)</span>
-            </div>
-            <div class="legend-item" onclick="filterMarkers('normal')" id="legend-normal">
-                <div class="legend-marker marker-normal"></div>
-                <span>일반 판매점</span>
-            </div>
-        </div>
-
-        <div id="map"></div>
-
-        <!-- 로드뷰 컨테이너 -->
+        <!-- Roadview (Hidden by default) -->
         <div id="roadview">
             <div class="roadview-controls">
                 <button class="rv-btn" onclick="closeRoadview()">🗺️ 지도 보기</button>
                 <button class="rv-btn" onclick="resetRoadview()">↺ 초기화</button>
                 <a id="rvLink" href="#" target="_blank" class="rv-btn">🌏 카카오맵</a>
             </div>
-            <button class="roadview-close-btn" id="roadview-close" onclick="closeRoadview()">✕ 로드뷰 닫기</button>
+            <button class="roadview-close-btn" onclick="closeRoadview()">✕ 닫기</button>
         </div>
 
-        <!-- 범례 (호갱노노 스타일) -->
-        <div style="
-            position: absolute;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 15px 25px;
-            border-radius: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            z-index: 100;
-        ">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div
-                    style="width: 40px; height: 24px; background: #FFD700; border-radius: 12px; text-align: center; color: #1F2937; font-size: 0.75rem; line-height: 24px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    3+</div>
-                <span style="font-size: 0.9rem; font-weight: 600; color: #1F2937;">1등 3회 이상 🏆</span>
+        <!-- Re-Search Button -->
+        <button id="reSearchBtn" class="re-search-btn" onclick="searchInCurrentBounds()">
+            <i class="fas fa-redo"></i> 현 지도에서 검색
+        </button>
+
+        <!-- List View Toggle -->
+        <button class="list-toggle-btn" onclick="toggleListView()">
+            <i class="fas fa-list"></i> 목록 보기
+        </button>
+
+        <!-- List Sidebar -->
+        <div class="store-list-sidebar" id="storeListSidebar">
+            <div class="list-header">
+                <h2 style="margin:0; font-size:1.2rem; font-weight:700;">주변 판매점</h2>
+                <button onclick="toggleListView()"
+                    style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div
-                    style="width: 40px; height: 24px; background: #C0C0C0; border-radius: 12px; text-align: center; color: #1F2937; font-size: 0.75rem; line-height: 24px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    1-2</div>
-                <span style="font-size: 0.9rem; font-weight: 600; color: #1F2937;">1등 1-2회 🥈</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div
-                    style="width: 40px; height: 24px; background: #A0A0A0; border-radius: 12px; text-align: center; color: white; font-size: 0.75rem; line-height: 24px; font-weight: 700;">
-                    0</div>
-                <span style="font-size: 0.9rem; font-weight: 600; color: #1F2937;">일반 판매점</span>
+            <div class="list-content" id="sidebarContent">
+                <div style="text-align:center; color:#999; margin-top:50px;">지도를 움직여 검색해보세요</div>
             </div>
         </div>
 
-        <div class="store-info-box" id="store-info">
-            <button class="close-btn" onclick="closeStoreInfo()">✕</button>
-            <div class="store-name" id="store-name">판매점 이름</div>
-            <div class="store-address" id="store-address">주소</div>
-            <div class="store-distance" id="store-distance"
-                style="display:none; font-size:0.9rem; color:#2563EB; margin:5px 0 10px 0; font-weight:500;"></div>
-            <div class="store-wins" id="store-wins">
-                <div class="win-badge first">1등 3회</div>
-                <div class="win-badge second">2등 7회</div>
-            </div>
-            <div id="store-actions" style="margin-top: 15px;"></div>
-        </div>
+        <div id="clickResult" style="display:none;"></div>
     </div>
 
     <script>
@@ -1376,10 +1128,10 @@
                 </div>
                 
                 <div class="action-grid">
-                    <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" class="action-btn kakao">
+                    <a href="https://map.kakao.com/link/to/${store.name},${store.lat},${store.lng}" target="_blank" rel="noopener noreferrer" class="action-btn kakao">
                         <i class="fas fa-map-marked-alt"></i> 카카오맵
                     </a>
-                    <a href="https://map.naver.com/index.nhn?slng=${store.lng}&slat=${store.lat}&stext=${store.name}" target="_blank" class="action-btn naver">
+                    <a href="https://map.naver.com/index.nhn?slng=${store.lng}&slat=${store.lat}&stext=${store.name}" target="_blank" rel="noopener noreferrer" class="action-btn naver">
                         <i class="fas fa-map-signs"></i> 네이버맵
                     </a>
                     <button class="action-btn share" onclick="processShare('${store.name}', '${store.address}', ${store.first})">
@@ -1661,12 +1413,7 @@
             }
         }
 
-        // 로드뷰 모드 토글 함수
-        function toggleRoadviewMode() {
-            // ... (기존 코드 생략 - 변경 없음, MarkerTracker 아래에 추가하기 위해 위치만 잡음) ...
-            // 하지만 multi_replace의 특성상 마지막 chunk는 파일 끝부분에 추가하는 것이 안전함.
-            // 여기서는 MarkerTracker 클래스 정의를 파일 맨 끝(</body> 직전)에 추가하는 전략 사용.
-        }
+
 
         /**
          * 지도 영역 외부에 존재하는 마커를 추적하는 기능을 가진 객체입니다.
@@ -1910,28 +1657,176 @@
             }
         });
 
-        // 2. Bounds Changed Handler
+        // === 2. Bounds Changed Handler (Updated for "Search Here") ===
         function initBoundsListener() {
-            const resultDiv = document.getElementById('clickResult');
-            if (map && resultDiv) {
-                kakao.maps.event.addListener(map, 'bounds_changed', function () {
-                    const center = map.getCenter();
-                    const bounds = map.getBounds();
-                    const sw = bounds.getSouthWest();
-                    const ne = bounds.getNorthEast();
+            if (map) {
+                kakao.maps.event.addListener(map, 'dragend', function () {
+                    // Show "Search Here" button when map is moved
+                    document.getElementById('reSearchBtn').style.display = 'flex';
+                });
 
-                    const message = `
-            < div style = "font-size:0.8rem; line-height:1.4;" >
-                <span style="color:#2563EB;">중심:</span> ${center.getLat().toFixed(4)}, ${center.getLng().toFixed(4)} <br>
-                    <span style="color:#666; font-size:0.75rem;">
-                        영역: (${sw.getLat().toFixed(3)}, ${sw.getLng().toFixed(3)}) ~ <br>
-                            (${ne.getLat().toFixed(3)}, ${ne.getLng().toFixed(3)})
-                    </span>
-                </div>
-                    `;
-                    resultDiv.innerHTML = message;
+                kakao.maps.event.addListener(map, 'zoom_changed', function () {
+                    document.getElementById('reSearchBtn').style.display = 'flex';
                 });
             }
+        }
+
+        // === List View & Search Logic ===
+
+        let isListOpen = false;
+
+        function toggleListView() {
+            const sidebar = document.getElementById('storeListSidebar');
+            isListOpen = !isListOpen;
+
+            if (isListOpen) {
+                sidebar.classList.add('open');
+                // Auto-refresh list if opening
+                searchInCurrentBounds();
+            } else {
+                sidebar.classList.remove('open');
+            }
+        }
+
+        function searchInCurrentBounds() {
+            // Hide button
+            document.getElementById('reSearchBtn').style.display = 'none';
+
+            // Get Current Bounds
+            const bounds = map.getBounds();
+            const sw = bounds.getSouthWest();
+            const ne = bounds.getNorthEast();
+
+            // Filter stores within bounds
+            const visibleStores = storeData.filter(store => {
+                return store.lat >= sw.getLat() && store.lat <= ne.getLat() &&
+                    store.lng >= sw.getLng() && store.lng <= ne.getLng();
+            });
+
+            // Sort by 1st prize wins (desc)
+            visibleStores.sort((a, b) => b.first - a.first);
+
+            renderSidebar(visibleStores);
+
+            if (isListOpen) {
+                showToast(`${visibleStores.length}개의 판매점이 검색되었습니다.`);
+            }
+        }
+
+        function renderSidebar(stores) {
+            const container = document.getElementById('sidebarContent');
+            if (stores.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">이 지역에는 판매점이 없습니다.</div>';
+                return;
+            }
+
+            container.innerHTML = stores.map(store => `
+                <div class="list-card" onclick="moveToStore(${store.lat}, ${store.lng})">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div style="font-weight:700; color:#1F2937; font-size:1rem;">${store.name}</div>
+                        ${store.first > 0 ? `<span class="badge first" style="font-size:0.75rem;">1등 ${store.first}회</span>` : ''}
+                    </div>
+                    <div style="font-size:0.85rem; color:#64748B; margin-top:4px;">${store.address}</div>
+                </div>
+            `).join('');
+        }
+
+        function moveToStore(lat, lng) {
+            map.panTo(new kakao.maps.LatLng(lat, lng));
+            // Specifically find the store object to show info
+            const target = storeData.find(s => s.lat === lat && s.lng === lng);
+            if (target) showStoreInfoOnMap(target);
+
+            // On mobile, maybe close list?
+            if (window.innerWidth <= 768) {
+                toggleListView();
+            }
+        }
+
+        // === UI Control Functions ===
+        function toggleLegend() {
+            const content = document.getElementById('legend-content');
+            const btn = document.querySelector('.legend-btn');
+
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                btn.style.background = 'white';
+                btn.style.color = '#64748B';
+            } else {
+                content.style.display = 'block';
+                btn.style.background = '#EFF6FF';
+                btn.style.color = '#3B82F6';
+            }
+        }
+
+        function toggleBottomSheet() {
+            const sheet = document.getElementById('storeBottomSheet');
+            if (sheet.classList.contains('active')) {
+                closeBottomSheet();
+            }
+        }
+
+        // === Share Functionality ===
+        async function processShare(name, address, count) {
+            const shareData = {
+                title: `${name} - 로또 명당`,
+                text: `${name}은 1등 당첨이 ${count}회나 나온 명당입니다! \n주소: ${address}\n`,
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    // Share cancelled or failed
+                }
+            } else {
+                // Clipboard Fallback
+                const textToCopy = `${shareData.title}\n${shareData.text}`;
+                copyToClipboard(textToCopy);
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => showToast('정보가 복사되었습니다!'));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('정보가 복사되었습니다!');
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+                background: rgba(0,0,0,0.8); color: white; padding: 12px 24px;
+                border-radius: 25px; font-size: 0.9rem; z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: fadeIn 0.3s;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 2000);
         }
 
         // 페이지 로드 시 지도 초기화

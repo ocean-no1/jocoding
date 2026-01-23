@@ -22,7 +22,27 @@
         gtag('config', 'G-VZLKFEGD77');
     </script>
 
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "동행복권 AI 통계 분석 서비스",
+      "url": "https://publiclensk.org/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://publiclensk.org/map.html?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482753613081557"
+        crossorigin="anonymous"></script>
+
+    <!-- Kakao SDK -->
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
+        integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2txfYR9bGrnNW7l8h79BSY"
         crossorigin="anonymous"></script>
 
     <meta charset="UTF-8">
@@ -153,11 +173,12 @@
                 style="background: white; border-radius: 24px; padding: 50px 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
                 <h2
                     style="text-align: center; color: var(--primary-blue); font-size: 2.5rem; font-weight: 800; margin-bottom: 30px;">
-                    📊 AI 기반 통계 분석으로 스마트한 복권 구매를 돕습니다
+                    🤔 로또 당첨, 운일까요? 과학일까요?
                 </h2>
                 <p
                     style="text-align: center; font-size: 1.2rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 50px;">
-                    20년간 축적된 역대 당첨번호 빅데이터를 AI가 실시간으로 분석하여, 통계적으로 의미 있는 번호 조합을 추천하는 무료 서비스입니다.
+                    매주 토요일 저녁, <strong>로또 1등의 꿈</strong>을꾸는 분들을 위해 준비했습니다.<br>
+                    20년치 빅데이터를 <strong>AI가 분석</strong>하여 단순한 운이 아닌, 통계적 확률을 높여드립니다.
                 </p>
 
                 <div
@@ -166,10 +187,10 @@
                         style="padding: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 16px; border-left: 4px solid var(--primary-blue);">
                         <h3
                             style="color: var(--primary-blue); font-size: 1.5rem; margin-bottom: 15px; font-weight: 700;">
-                            🎲 AI 번호 추천</h3>
+                            🎲 AI 번호 추천 (어떻게 추출하나요?)</h3>
                         <p style="font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary);">
-                            S-Score 알고리즘을 활용하여 출현 빈도, 최근 트렌드, 간격 분석, 조합 패턴을 종합적으로 분석합니다.
-                            1회차부터 최신 회차까지의 전체 데이터를 기반으로 통계적으로 의미 있는 번호를 추천합니다.
+                            <strong>S-Score 알고리즘</strong>이 지난 20년간의 당첨 패턴을 학습했습니다.
+                            단순한 난수가 아닌, 출현 빈도와 제외수를 고려하여 <strong>당첨 확률이 높은 번호 6개</strong>를 과학적으로 조합해 드립니다.
                         </p>
                     </div>
 
@@ -177,20 +198,20 @@
                         style="padding: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 16px; border-left: 4px solid var(--primary-orange);">
                         <h3
                             style="color: var(--primary-orange); font-size: 1.5rem; margin-bottom: 15px; font-weight: 700;">
-                            📈 실시간 통계 분석</h3>
+                            📈 실시간 통계 분석 (언제 확인하나요?)</h3>
                         <p style="font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary);">
-                            최근 5년 또는 전체 기간의 번호 출현 빈도, 홀짝 분포, 연속번호 패턴, 미출현 번호 등을
-                            실시간으로 분석하고 시각화합니다. 통계 데이터는 매주 추첨 후 자동으로 업데이트됩니다.
+                            복권 구매 전, <strong>최근 번호 추세</strong>가 궁금하신가요?
+                            홀짝 비율, 연속 번호, 미출현 번호 등 핵심 통계를 <strong>매주 토요일 추첨 직후</strong> 실시간으로 업데이트하여 보여드립니다.
                         </p>
                     </div>
 
                     <div
                         style="padding: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 16px; border-left: 4px solid #667eea;">
                         <h3 style="color: #667eea; font-size: 1.5rem; margin-bottom: 15px; font-weight: 700;">🗺️ 명당 판매점
-                            지도</h3>
+                            지도 (어디서 사야 하나요?)</h3>
                         <p style="font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary);">
-                            내 주변의 1등 당첨 판매점을 카카오맵에서 실시간으로 확인할 수 있습니다.
-                            로드뷰 기능으로 판매점 위치를 미리 확인하고, 검색 기능으로 특정 지역의 명당을 쉽게 찾을 수 있습니다.
+                            "우리 동네 로또 1등 당첨점은 어디일까?"<br>
+                            <strong>내 위치 중심</strong>으로 전국의 1등 배출 명당을 지도에서 바로 찾아보세요. 로드뷰로 미리 매장 위치를 확인할 수도 있습니다.
                         </p>
                     </div>
                 </div>
@@ -358,6 +379,16 @@
                 <div id="pension-ai-number"></div>
                 <p class="result-description">빈도 분석을 기반으로 생성된 추천 번호입니다</p>
             </div>
+
+            <!-- 결과 공유하기 버튼 -->
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="shareToKakao()"
+                    style="background: #FEE500; color: #191919; border: none; padding: 12px 30px; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(254, 229, 0, 0.4); display: inline-flex; align-items: center; gap: 8px; transition: transform 0.2s;">
+                    <img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+                        alt="카카오톡" style="width: 20px; height: 20px;">
+                    친구에게 행운 공유하기
+                </button>
+            </div>
         </div>
 
         <!-- 빠른 기능 접근 섹션 -->
@@ -467,6 +498,35 @@
 
             </div>
 
+            <!-- Viral Share Section -->
+            <div style="text-align: center; margin: 60px 0 80px;">
+                <h3 style="color: var(--text-primary); margin-bottom: 25px; font-size: 1.5rem;">🍀 혼자 알기 아까운 행운, 친구와
+                    나누세요!</h3>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <!-- Kakao -->
+                    <button onclick="shareToKakao()"
+                        style="width: 50px; height: 50px; border-radius: 50%; border: none; background: #FEE500; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                        <img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+                            alt="Kakao" style="width: 24px;">
+                    </button>
+                    <!-- Twitter -->
+                    <button onclick="shareToTwitter()"
+                        style="width: 50px; height: 50px; border-radius: 50%; border: none; background: #000; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                        <span style="font-size: 1.2rem; font-weight: 700;">𝕏</span>
+                    </button>
+                    <!-- Facebook -->
+                    <button onclick="shareToFacebook()"
+                        style="width: 50px; height: 50px; border-radius: 50%; border: none; background: #1877F2; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                        <span style="font-size: 1.2rem; font-weight: 700;">f</span>
+                    </button>
+                    <!-- Copy Link -->
+                    <button onclick="copyUrl()"
+                        style="width: 50px; height: 50px; border-radius: 50%; border: none; background: #EFF6FF; color: #2563EB; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                        <span style="font-size: 1.2rem;">🔗</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Footer -->
             <div class="footer">
                 <p><strong>⚠️ 면책 조항:</strong> 본 서비스는 통계 분석 기반의 <strong>참고용 서비스</strong>입니다. 제공되는 모든 정보(AI 추천 번호, 통계 데이터
@@ -474,23 +534,23 @@
                     관계가 없는 독립 서비스입니다.</p>
                 <p>
                     <a href="privacy.html" style="color: white; text-decoration: underline;">개인정보처리방침</a> |
-                    <a href="https://github.com/ocean-no1/jocoding/issues" target="_blank"
+                    <a href="https://github.com/ocean-no1/jocoding/issues" target="_blank" rel="noopener noreferrer"
                         style="color: white; text-decoration: underline;">문의하기</a>
                 </p>
-                <p>© 2026 AI 통계 분석 서비스 | 동행복권 공식 사이트: <a href="https://dhlottery.co.kr"
-                        target="_blank">dhlottery.co.kr</a>
+                <p>© 2026 AI 통계 분석 서비스 | 동행복권 공식 사이트: <a href="https://dhlottery.co.kr" target="_blank"
+                        rel="noopener noreferrer">dhlottery.co.kr</a>
                 </p>
             </div>
         </div>
 
         <!-- Right Ad Space -->
 
-        <script src="js/utils.js?v=20260121_v3"></script>
-        <script src="js/common.js?v=20260121_v3"></script>
-        <script src="js/fallback-data.js?v=20260121_v3"></script>
-        <script src="js/stats-data.js?v=20260121_v3"></script>
-        <script src="js/lotto-recent-data.js?v=20260121_v3"></script>
-        <script src="js/pension-recent-data.js?v=20260121_v3"></script>
+        <script src="js/utils.js?v=20260121_v3" defer></script>
+        <script src="js/common.js?v=20260121_v3" defer></script>
+        <script src="js/fallback-data.js?v=20260121_v3" defer></script>
+        <script src="js/stats-data.js?v=20260121_v3" defer></script>
+        <script src="js/lotto-recent-data.js?v=20260121_v3" defer></script>
+        <script src="js/pension-recent-data.js?v=20260121_v3" defer></script>
         <script>
             // Calculate latest draw number
             function calculateLatestDrawNo() {

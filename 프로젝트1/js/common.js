@@ -131,3 +131,111 @@ function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+
+// --- Social Sharing Functions ---
+
+// Kakao Init Flag
+let isKakaoInitialized = false;
+
+function initKakao() {
+    if (isKakaoInitialized) return;
+    if (typeof Kakao !== 'undefined') {
+        if (!Kakao.isInitialized()) {
+            Kakao.init('8c78a44cbc45fec0aa35705516f1a082'); // User's API Key
+        }
+        isKakaoInitialized = true;
+    }
+}
+
+// Share to KakaoTalk
+function shareToKakao() {
+    initKakao();
+    if (!isKakaoInitialized) {
+        alert('카카오톡 공유 기능을 불러오지 못했습니다.');
+        return;
+    }
+
+    Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+            title: '🤑 AI가 분석한 로또 1등 당첨 번호는?',
+            description: '20년치 빅데이터 분석! 이번 주 내 행운의 번호를 지금 확인해보세요.',
+            imageUrl: 'https://publiclensk.org/lotto_logo.png', // Fallback to PNG for now
+            link: {
+                mobileWebUrl: 'https://publiclensk.org',
+                webUrl: 'https://publiclensk.org',
+            },
+        },
+        buttons: [
+            {
+                title: '💰 내 번호 확인하기',
+                link: {
+                    mobileWebUrl: 'https://publiclensk.org',
+                    webUrl: 'https://publiclensk.org',
+                },
+            },
+        ],
+    });
+}
+
+// Share to Twitter (X)
+function shareToTwitter() {
+    const text = "💰 로또 1등의 꿈, AI가 분석해드립니다! 이번 주 당첨 번호 미리 확인하세요. #로또명당 #AI로또 #동행복권";
+    const url = "https://publiclensk.org";
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+}
+
+// Share to Facebook
+function shareToFacebook() {
+    const url = "https://publiclensk.org";
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+}
+
+// Copy URL to Clipboard
+async function copyUrl() {
+    try {
+        await navigator.clipboard.writeText("https://publiclensk.org");
+        showToast("링크가 복사되었습니다! 친구에게 공유해보세요.");
+    } catch (err) {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = "https://publiclensk.org";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast("링크가 복사되었습니다!");
+    }
+}
+
+// Toast Notification
+function showToast(message) {
+    // Create toast element if not exists
+    let toast = document.getElementById('toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-notification';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            z-index: 1000;
+            font-size: 0.95rem;
+            transition: opacity 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        `;
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    setTimeout(() => {
+        toast.style.opacity = '0';
+    }, 3000);
+}

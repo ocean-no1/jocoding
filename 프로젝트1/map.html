@@ -68,7 +68,7 @@
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
     <!-- Kakao Map API -->
     <script type="text/javascript"
-        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=8c78a44cbc45fec0aa35705516f1a082&libraries=services,clusterer"></script>
+        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=8c78a44cbc45fec0aa35705516f1a082&libraries=services,clusterer&autoload=false"></script>
 
     <!-- Utility Scripts -->
     <script src="js/utils.js?v=20260122_fix3"></script>
@@ -2023,9 +2023,25 @@
             }
         }
 
-        // 페이지 로드 시 지도 초기화
+        // 페이지 로드 시 지도 초기화 (autoload=false 대응)
         window.onload = function () {
-            initMap();
+            if (typeof kakao !== 'undefined' && kakao.maps) {
+                kakao.maps.load(function () {
+                    initMap();
+
+                    // 윈도우 리사이즈 시 지도 레이아웃 재설정
+                    window.addEventListener('resize', function () {
+                        if (map) {
+                            map.relayout();
+                            // 중심점 유지 (선택사항)
+                            // const center = map.getCenter();
+                            // map.setCenter(center);
+                        }
+                    });
+                });
+            } else {
+                console.error("Kakao Maps SDK not loaded.");
+            }
         };
     </script>
 
